@@ -11,14 +11,14 @@ import { InputComponent } from "../../../components/input.component";
 //   FirebaseRecaptchaVerifierModal,
 // } from "expo-firebase-recaptcha";
 import { fbApp, fbAuth, fbOtp } from "../../../../firebase-config";
-import auth from "@react-native-firebase/auth"
+// import auth from "@react-native-firebase/auth"
 import { ButtonComponent } from "../../../components/button.component";
 import RedirectIcon from "../../../../assets/svgs/redirect";
 import {
   PhoneAuthProvider,
   signInWithCredential,
 } from "firebase/auth";
-import { OverlayComponent } from "../../../components/overlay.component";
+// import { OverlayComponent } from "../../../components/overlay.component";
 import { Keyboard } from "react-native";
 import { DriverContext, screens } from "../../../infrastructure/service/driver/context/driver.context";
 

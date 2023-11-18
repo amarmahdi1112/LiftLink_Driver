@@ -103,7 +103,7 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
   }, [selectedValet]);
 
   useEffect(() => {
-    onValetExists(selectedValet.order.orderId);
+    onValetExists(Array.isArray(selectedValet.order) ? selectedValet.order[0].orderId : selectedValet.order.orderId);
   }, []);
 
   const obj2 = {
@@ -264,7 +264,7 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
       <LabelComponent>Customer Location</LabelComponent>
       <Spacer variant="top.medium" />
       <LabelComponent title2={true}>
-        #{selectedValet.order.pickupLocation || "N/A"}
+        #{Array.isArray(selectedValet.order) ? selectedValet.order[0].pickupLocation : selectedValet.order.pickupLocation || "N/A"}
       </LabelComponent>
       <Spacer variant="top.large" />
       {userType === "customer" && (
@@ -329,7 +329,7 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
       <LabelComponent title2={true}>
         #
         {format(
-          new Date(selectedValet.order.orderDeliveryDate),
+          new Date(Array.isArray(selectedValet.order) ? selectedValet.order[0].orderDeliveryDate : selectedValet.order.orderDeliveryDate),
           "dd MMM, yyyy"
         )}
       </LabelComponent>

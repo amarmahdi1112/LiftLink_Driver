@@ -82,7 +82,7 @@ const CardPadding = styled.View`
 `;
 
 const LabelContainer = styled.View`
-  width: 90%;
+  width: 80%;
   padding-right: 10px;
 `;
 
@@ -192,7 +192,7 @@ export const CardComponent: FC<PropsWithChildren<CardComponentProps>> = ({
                 <Spacer variant="top.xsmall" />
                 <LabelContainer>
                   <LabelComponent inverted={true} title2={true}>
-                    {data.order.pickupLocation}
+                    {Array.isArray(data.order) ? data.order[0].pickupLocation : data.order.pickupLocation}
                   </LabelComponent>
                 </LabelContainer>
               </ContentView>
@@ -219,12 +219,12 @@ export const CardComponent: FC<PropsWithChildren<CardComponentProps>> = ({
             <FooterContainer>
               <Chip>
                 <LabelComponent inverted={true} title2={true}>
-                  {data.order.orderStatus.split("_").join(" ")}
+                  {Array.isArray(data.order) ? data.order[0].orderStatus.split("_").join(" "): data.order.orderStatus.split("_").join(" ")}
                 </LabelComponent>
               </Chip>
               <Spacer variant="top.large" />
               <LabelComponent title2={true} inverted={true}>
-                {data.order.orderId.substring(0, 6).toUpperCase()}
+                {Array.isArray(data.order) ? data.order[0].orderId.substring(0, 6).toUpperCase(): data.order.orderId.substring(0, 6).toUpperCase()}
               </LabelComponent>
             </FooterContainer>
           </>

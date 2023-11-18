@@ -290,9 +290,9 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
     if (isObjEmpty(currentLocation)) {
       getLocation();
     }
-    console.log(selectedValet.order.pickupLocation, "selectedValet");
+    console.log("selectedValet", selectedValet);
     if (userType === "dealership")
-      setDestinationLocation(selectedValet.order.pickupLocation + ", Edmonton");
+      setDestinationLocation(Array.isArray(selectedValet.order) ? (selectedValet as any).order[0].pickupLocation : selectedValet.order.pickupLocation + ", Edmonton");
     else if (userType === "customer")
       setDestinationLocation(selectedValet.dealership.dealershipAddress);
     else Alert.alert("Error", "Invalid user type");
@@ -315,7 +315,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
       (startedValet.valetStatus ===
         ValetStatus.DEALERSHIP_TO_CUSTOMER_STARTED ||
         startedValet.valetStatus ===
-          ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED ||
+        ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED ||
         startedValet.valetStatus === ValetStatus.CUSTOMER_RETURN_STARTED)
     ) {
       setStarted(true);
@@ -487,7 +487,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                   <Spacer variant="top.xsmall" />
                   {!isObjEmpty(selectedValet) && (
                     <LabelComponent inverted={true} title2={true}>
-                      {selectedValet.order.pickupLocation || "N/A"}
+                      {Array.isArray(selectedValet.order) ? (selectedValet as any).order[0].pickupLocation : selectedValet.order.pickupLocation || "N/A"}
                     </LabelComponent>
                   )}
                 </ContentView>
@@ -502,7 +502,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                   <Spacer variant="top.xsmall" />
                   <LabelComponent inverted={true} title2={true}>
                     {format(
-                      new Date(selectedValet.order.orderDeliveryDate),
+                      new Date(Array.isArray(selectedValet.order) ? (selectedValet as any).order[0].orderDeliveryDate : selectedValet.order.orderDeliveryDate),
                       "MM/dd/yyyy"
                     )}
                   </LabelComponent>

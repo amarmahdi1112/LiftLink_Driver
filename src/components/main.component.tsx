@@ -101,28 +101,20 @@ export const MainContainer: FC<PropsWithChildren<MainContainerProps>> = ({
   showLogo = false,
   showGreetings = false,
   showAvatar = false,
-  showTab = false,
-  tabs,
   styles,
   isLoading = true,
   initial = true,
   secondaryPage = false,
   navigation,
 }) => {
-  const [tabList, setTabList] = useState<any[]>([]); // Replace 'any' with the type of your tabs
   const { profile } = useContext(DriverContext);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (tabs) {
-      setTabList(tabs);
-    }
-  }, [tabs]);
 
   useEffect(() => {
     if (!isObjEmpty(profile)) {
       setLoading(false);
     }
+    console.log(profile);
   }, [profile]);
 
   return (
@@ -169,24 +161,6 @@ export const MainContainer: FC<PropsWithChildren<MainContainerProps>> = ({
           >
             <Menu width={32} height={32} />
           </Pressable>
-        )}
-        {showTab && (
-          <TabsContainer>
-            {tabList &&
-              tabList.map((tab, index) => {
-                return (
-                  <Pressable key={index} onPress={() => tab.changePage()}>
-                    <React.Fragment key={index}>
-                      {tab.active ? (
-                        <LogoTextDark>{tab.title}</LogoTextDark>
-                      ) : (
-                        <LogoTextLight>{tab.title}</LogoTextLight>
-                      )}
-                    </React.Fragment>
-                  </Pressable>
-                );
-              })}
-          </TabsContainer>
         )}
       </HeaderBackground>
       {children}

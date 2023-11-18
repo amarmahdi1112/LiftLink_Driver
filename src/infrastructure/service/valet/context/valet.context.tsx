@@ -115,8 +115,9 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const onStartValet = async (state: any, valetId: any, inputs = null) => {
     setStartLoading(true);
     try {
+      console.log("inputs from start valet", inputs)
       const { data } = await startValet({
-        variables: { state: state, valetId: valetId, inputs: inputs },
+        variables: { state, valetId, inputs },
       });
 
       if (!isObjEmpty(data) && !isObjEmpty(data.updateValet)) {
@@ -141,6 +142,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         !isObjEmpty(getAllStartedDriverValets) &&
         getAllStartedDriverValets.length > 0
       ) {
+        console.log("started valet", getAllStartedDriverValets[0]);
         setStartedValet(getAllStartedDriverValets[0]);
       } else {
         throw new Error("No started valets found");

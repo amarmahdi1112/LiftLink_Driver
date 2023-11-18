@@ -29,13 +29,13 @@ import { OrdersProvider } from "./src/infrastructure/service/orders/context/orde
 // import { SERVER_URL } from "@env";
 
 // AsyncStorage.clear();
-const tunnel = true;
+const tunnel = false;
 
 const wsLink: any = new GraphQLWsLink(
   createClient({
     url: tunnel
       ? "ws://178.128.224.133/graphql/"
-      : "ws://172.20.10.2:8000/graphql/",
+      : "ws://192.168.1.74:8000/graphql",
     on: {
       connected: () => console.log("ws connected"),
       error: (e) => console.log("ws error", e),
@@ -60,7 +60,7 @@ const wsLink: any = new GraphQLWsLink(
 const httpLink = createHttpLink({
   uri: tunnel
     ? "http://178.128.224.133/graphql/"
-    : "http://172.20.10.2:8000/graphql/",
+    : "http://192.168.1.74:8000/graphql",
 });
 
 const authLink = setContext(async (request, { headers }) => {

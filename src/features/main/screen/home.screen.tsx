@@ -148,6 +148,8 @@ const NoOrderContainer = styled.View`
 
 const NoOrderImg = styled.Image`
   resize-mode: contain;
+  width: 100px;
+  height: 100px;
 `;
 
 const RequestContainer = styled.View<StyledPagerViewProps>`
@@ -271,6 +273,7 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   }, [orders]);
 
   useEffect(() => {
+    console.log(startedValet, 'started valet');
     if(confirmation) setConfirmations(confirmation)
   }, [confirmation])
 
