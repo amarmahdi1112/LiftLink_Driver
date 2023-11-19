@@ -163,12 +163,10 @@ export const DriverPhoneVerificationScreen: FC<
                 );
                 await signInWithCredential(fbAuth, credential)
                   .then(async (result: any) => {
-                    console.log(result, "from phone verification");
                     await updatePhoneMutation!(phone as any);
                     setScreen(screens.names);
                   })
                   .catch((error: any) => {
-                    // console.error(error, "from phone verification");
                     showMessage(error.message);
                   });
               }}

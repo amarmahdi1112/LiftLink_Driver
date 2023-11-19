@@ -175,7 +175,6 @@ export const ConfirmedOrdersScreen: React.FC<ConfirmedOrdersScreenProps> = ({
                     order={true}
                     data={item}
                     onPress={() => {
-                      console.log(item, "item");
                       setSelectedValet(item);
                       navigation.navigate("Valet");
                     }}

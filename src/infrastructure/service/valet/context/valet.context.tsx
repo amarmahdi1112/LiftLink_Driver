@@ -83,14 +83,11 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   });
 
   const onValetExists = async (orderId: any) => {
-    console.log("order id from valet exists", orderId);
     try {
       await valetExists.refetch({ orderId: orderId }).then(({ data }) => {
         setExists(data.valetExists);
-        console.log("data from valet exists", data);
       });
     } catch (error: any) {
-      console.log("error from valet exists", error);
       setError(error);
       throw error;
     }
@@ -115,7 +112,6 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const onStartValet = async (state: any, valetId: any, inputs = null) => {
     setStartLoading(true);
     try {
-      console.log("inputs from start valet", inputs)
       const { data } = await startValet({
         variables: { state, valetId, inputs },
       });
@@ -126,7 +122,6 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         throw new Error("No valet data found");
       }
     } catch (error: any) {
-      console.error(`Failed to start valet: ${error.message}`);
       throw error;
     } finally {
       setStartLoading(false);
@@ -142,7 +137,6 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         !isObjEmpty(getAllStartedDriverValets) &&
         getAllStartedDriverValets.length > 0
       ) {
-        console.log("started valet", getAllStartedDriverValets[0]);
         setStartedValet(getAllStartedDriverValets[0]);
       } else {
         throw new Error("No started valets found");
@@ -166,15 +160,10 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         },
       });
     } catch (error) {
-      console.log("error from location", error);
       throw error;
     }
   };
-
-  // useEffect(() => {
-  //   onGetStartedValet();
-  // }, []);
-
+  
   return (
     <ValetContext.Provider
       value={{

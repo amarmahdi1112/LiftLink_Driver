@@ -54,17 +54,14 @@ export const DriverScreen: FC<DriverScreenProps> = ({ children, navigation }) =>
 
   const checker = () => {
     if (!profile.isVerified) {
-      console.log("not verified");
       setScreen(screens.phoneVerification);
       return;
     }
     if (!profile.firstName || !profile.lastName) {
-      console.log("no names");
       setScreen(screens.names);
       return;
     }
     if (isObjEmpty(profile.profilePicture)) {
-      console.log("no profile picture");
       setScreen(screens.profile);
       return;
     }

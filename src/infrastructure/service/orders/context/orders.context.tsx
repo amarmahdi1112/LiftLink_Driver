@@ -39,12 +39,10 @@ export const OrdersProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
 
   const getAllOrders = async () => {
     setOrders([]);
-    console.log("get all orders");
     try {
       setRefreshing(true);
       await orderData.refetch();
       const orderD = await orderData.data.getUnconfirmedOrders;
-      console.log("order data", orderD);
       const orders = orderD.map((order: any) => {
         const orderObj = order.order[0];
         order = { ...order, order: orderObj };
@@ -53,7 +51,6 @@ export const OrdersProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       setOrders(orders);
       setError(null);
     } catch (err: any) {
-      console.log("error##########??????", err.message);
       setError(err.message);
     } finally {
       setRefreshing(false);
@@ -66,10 +63,6 @@ export const OrdersProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
     });
     setOrders(newOrders);
   };
-
-  useEffect(() => {
-    console.log("order data", orders);
-  }, [orders]);
 
   useEffect(() => {
     if (assignedOrderSubscription) {

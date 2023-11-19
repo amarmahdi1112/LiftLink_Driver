@@ -141,7 +141,6 @@ export const OrderConfirmationScreen: FC<OrderScreenProps> = ({
 
   useEffect(() => {
     if (!isObjEmpty(selectedOrder)) {
-      console.log("selectedOrder", selectedOrder);
       getCustomerInfo();
     }
   }, [selectedOrder]);

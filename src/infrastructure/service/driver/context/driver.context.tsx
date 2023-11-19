@@ -60,14 +60,12 @@ export const DriverProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       const { data } = await updateName({
         variables: { firstName, lastName },
       });
-      console.log(data);
       let _profile = { ...profile } as any;
       _profile.firstName = firstName;
       _profile.lastName = lastName;
       setProfile(_profile);
       return data.updateName;
     } catch (error) {
-      console.log(error);
     }
   };
 

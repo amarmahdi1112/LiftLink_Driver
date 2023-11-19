@@ -101,7 +101,6 @@ export const CamCardComponent: FC<CamCardComponentProps> = ({ imageLink, _key, c
         }
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -120,8 +119,6 @@ export const CamCardComponent: FC<CamCardComponentProps> = ({ imageLink, _key, c
     }
     setImage(null);
   };
-
-  // console.log(image, "from cam card component")
 
   return (
     <CardComponent

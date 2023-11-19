@@ -70,7 +70,6 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
   };
 
   useEffect(() => {
-    console.log("user from auth screen>>>>>>>>>>>>>", user);
     if (!isObjEmpty(user)) {
       navigation.navigate("MainNavigation");
     }

@@ -62,7 +62,6 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
       setLoading(confirmOrderLoading);
       return data;
     } catch (error: any) {
-      console.log("error######", error);
       setError(error.message);
       return;
     }
@@ -78,7 +77,6 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
       setLoading(declineOrderLoading);
       return data;
     } catch (error: any) {
-      console.log("error", error.message);
       setError(error.message);
       return;
     }
@@ -96,9 +94,7 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
       const { data, error } = await getConfrmedOrders.refetch({
         ...pagination,
       });
-      console.log(pagination);
       if (data) {
-        console.log("data", data);
         if (confirmedOrders.length > 0)
           setConfirmedOrders((prev) => {
             let newOrders: any[] = [];
@@ -137,7 +133,6 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
         throw new Error(error.message);
       }
     } catch (error: any) {
-      console.log("error from get confirmed orders", error.message);
       setError(error.message);
       setLoading(false);
       return;
@@ -159,7 +154,6 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
 
   useEffect(() => {
     if (error) {
-      console.log("error", (error as any).message);
       setError((error as any).message);
     }
   }, [error as any]);

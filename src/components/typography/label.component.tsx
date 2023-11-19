@@ -52,6 +52,7 @@ const DateTitle = styled.Text<TextProps>`
 `;
 
 interface LabelComponentProps {
+  key?: string;
   title?: boolean;
   title1?: boolean;
   title2?: boolean;
@@ -62,6 +63,7 @@ interface LabelComponentProps {
 }
 
 export const LabelComponent: FC<PropsWithChildren<LabelComponentProps>> = ({
+  key,
   children,
   title = false,
   title2 = false,

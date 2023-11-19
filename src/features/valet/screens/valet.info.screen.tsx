@@ -152,11 +152,7 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
       Alert.alert("yo chill out", "Valet already started");
     }
   }, [exists]);
-
-  useEffect(() => {
-    console.log("selectedValet", selectedValet);
-  }, [selectedValet]);
-
+  
   return !isObjEmpty(startedValet) || !isObjEmpty(selectedValet) ? (
     <>
       <Spacer variant="top.large" />

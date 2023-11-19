@@ -35,15 +35,7 @@ const wsLink: any = new GraphQLWsLink(
   createClient({
     url: tunnel
       ? "ws://178.128.224.133/graphql/"
-      : "ws://192.168.1.74:8000/graphql",
-    on: {
-      connected: () => console.log("ws connected"),
-      error: (e) => console.log("ws error", e),
-      closed: () => console.log("ws closed"),
-      connecting: () => console.log("ws connecting"),
-      ping: () => console.log("ws ping"),
-      pong: () => console.log("ws pong"),
-    },
+      : "ws:/192.168.1.70:8000/graphql",
     connectionParams: async () => {
       const token = await AsyncStorage.getItem("token");
       return {
@@ -51,7 +43,6 @@ const wsLink: any = new GraphQLWsLink(
       };
     },
     shouldRetry: (error) => {
-      console.log("ws shouldRetry", error);
       return true;
     },
   })
@@ -60,7 +51,7 @@ const wsLink: any = new GraphQLWsLink(
 const httpLink = createHttpLink({
   uri: tunnel
     ? "http://178.128.224.133/graphql/"
-    : "http://192.168.1.74:8000/graphql",
+    : "http:/192.168.1.70:8000/graphql",
 });
 
 const authLink = setContext(async (request, { headers }) => {
@@ -108,11 +99,6 @@ export default function App() {
     return null;
   }
 
-  if (wsLink.subscriptionClient?.client?.readyState === WebSocket.OPEN) {
-    console.log("WebSocket is connected");
-  } else {
-    console.log("WebSocket is not connected");
-  }
 
   return (
     <ApolloProvider client={client}>
@@ -120,7 +106,6 @@ export default function App() {
         <SafeAreaComponent>
           <AuthProvider>
             <DriverProvider>
-              {/* <DriverProfileProvider> */}
               <ConfirmationProvider>
                 <OrdersProvider>
                   <ValetProvider>
@@ -128,7 +113,6 @@ export default function App() {
                   </ValetProvider>
                 </OrdersProvider>
               </ConfirmationProvider>
-              {/* </DriverProfileProvider> */}
             </DriverProvider>
           </AuthProvider>
         </SafeAreaComponent>

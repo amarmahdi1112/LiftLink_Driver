@@ -73,7 +73,6 @@ export const Splash: FC<SplashProps> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    console.log("loading>>>>>>>>>>>>>>>", loading);
     if (!loading) {
       if (!isObjEmpty(profile)) {
         setTimeout(() => {
@@ -87,7 +86,6 @@ export const Splash: FC<SplashProps> = ({ navigation }) => {
       }
       if (errorDriver) {
         setTimeout(() => {
-          console.log("denied");
           navigation.navigate("Auth");
         }, 2000);
       }

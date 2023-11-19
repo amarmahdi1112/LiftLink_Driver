@@ -207,18 +207,8 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     setPoly();
-    console.log(currentLocation);
   }, []);
-
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     setCount((prev) => prev + 1);
-  //     if (polylineCoords[count] !== undefined) changeCurrentLocation(polylineCoords[count])
-  //     console.log("count", count);
-  //     console.log("polylineCoords", polylineCoords[count]);
-  //   }, 4000);
-  // }, [polylineCoords]);
-
+  
   const mapCamView = async (coords: any) => {
     if (
       mapRef.current &&
@@ -290,7 +280,6 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
     if (isObjEmpty(currentLocation)) {
       getLocation();
     }
-    console.log("selectedValet", selectedValet);
     if (userType === "dealership")
       setDestinationLocation(Array.isArray(selectedValet.order) ? (selectedValet as any).order[0].pickupLocation : selectedValet.order.pickupLocation + ", Edmonton");
     else if (userType === "customer")
@@ -309,7 +298,6 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
   };
 
   useEffect(() => {
-    console.log("startedValet###########", startedValet);
     if (
       !isObjEmpty(startedValet) &&
       (startedValet.valetStatus ===
@@ -542,7 +530,6 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
           }}
           onSlideEnd={async () => {
             if (!started && userType === "dealership") {
-              console.log("DEALERSHIP_TO_CUSTOMER_STARTED");
               await onStartValet(
                 ValetStatus.DEALERSHIP_TO_CUSTOMER_STARTED,
                 selectedValet.valetId || valetData.valetId
@@ -551,7 +538,6 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
               return;
             }
             if (userType === "dealership" && started) {
-              console.log("DEALERSHIP_TO_CUSTOMER_COMPLETED");
               await onStartValet(
                 ValetStatus.DEALERSHIP_TO_CUSTOMER_COMPLETED,
                 selectedValet.valetId || valetData.valetId
@@ -561,7 +547,6 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
               setScreen("details");
             }
             if (!started && userType === "customer") {
-              console.log("CUSTOMER_TO_DEALERSHIP_STARTED");
               await onStartValet(
                 ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED,
                 selectedValet.valetId || valetData.valetId
@@ -570,7 +555,6 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
               return;
             }
             if (started && userType === "customer") {
-              console.log("CUSTOMER_TO_DEALERSHIP_COMPLETED");
               await onStartValet(
                 ValetStatus.CUSTOMER_TO_DEALERSHIP_COMPLETED,
                 selectedValet.valetId || valetData.valetId

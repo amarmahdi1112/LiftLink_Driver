@@ -79,7 +79,6 @@ export const DriverProfileScreen: FC<DriverProfileScreenProps> = ({ navigation }
   const [progress, setProgress] = useState(0);
 
   const handleUpload = async () => {
-    console.log("handleUpload");
     const imageKey = `object_${Object.keys(imageObject).length - 1}`;
     const fileName = imageObject[imageKey].substring(
       imageObject[imageKey].lastIndexOf("/") + 1
@@ -107,10 +106,8 @@ export const DriverProfileScreen: FC<DriverProfileScreenProps> = ({ navigation }
           navigation.navigate("Home");
         })
         .catch((error) => {
-          console.log(error, "error from uploadImage#############");
         });
     } catch (error) {
-      console.log(error, "error from handleUpload");
     }
   };
 

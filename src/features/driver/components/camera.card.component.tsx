@@ -76,7 +76,6 @@ export const CamCardComponent: FC<CamCardProps> = ({
         ...imageObject,
         [`object_${Object.keys(imageObject).length}`]: result.assets[0].uri,
       });
-      console.log(result.assets[0].uri, "from cam card component");
     }
   };
 
@@ -98,26 +97,20 @@ export const CamCardComponent: FC<CamCardProps> = ({
         setImage(uri);
       }
     } catch (error) {
-      console.log(error);
     }
   };
-
-  // console.log(image, "from cam card component")
-
   return (
     <CardComponent key={_key as any} overrideChildren={true}>
       <CustomCard>
         {image && !imageLink ? (
           <Picture
             source={{ uri: image }}
-            onError={(error) => console.log(error, "from image")}
             style={{ width: 180, height: 180, marginBottom: 10 }}
           />
         ) : null}
         {!image && imageLink && (
           <Picture
             source={{ uri: imageLink }}
-            onError={(error) => console.log(error, "from image")}
             style={{ width: 180, height: 180, marginBottom: 10 }}
           />
         )}
@@ -131,7 +124,6 @@ export const CamCardComponent: FC<CamCardProps> = ({
                   `object_${Object.keys(imageObject).length - 1}`
                 ],
               }}
-              onError={(error) => console.log(error, "from image")}
               style={{ width: 180, height: 180, marginBottom: 10 }}
             />
           )}

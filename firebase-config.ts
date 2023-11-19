@@ -64,7 +64,6 @@ const uploadToFirebase = async (
 ) => {
   const response = await fetch(blob);
   const blobData = await response.blob();
-  console.log("Uploading file to Firebase:", blobData);
 
   const storageRef = ref(storage, path);
   const uploadTask = uploadBytesResumable(storageRef, blobData);
@@ -76,7 +75,6 @@ const uploadToFirebase = async (
         (snapshot) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`Upload is ${progress}% done`);
           onProgress && onProgress(progress);
         },
         (error) => {
@@ -84,7 +82,6 @@ const uploadToFirebase = async (
           reject(error);
         },
         async () => {
-          console.log("File uploaded to Firebase successfully!");
           const url = await getDownloadURL(uploadTask.snapshot.ref);
           resolve({
             url,

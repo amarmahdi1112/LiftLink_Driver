@@ -114,7 +114,6 @@ export const MainContainer: FC<PropsWithChildren<MainContainerProps>> = ({
     if (!isObjEmpty(profile)) {
       setLoading(false);
     }
-    console.log(profile);
   }, [profile]);
 
   return (

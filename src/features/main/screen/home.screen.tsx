@@ -273,7 +273,6 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   }, [orders]);
 
   useEffect(() => {
-    console.log(startedValet, 'started valet');
     if(confirmation) setConfirmations(confirmation)
   }, [confirmation])
 
@@ -309,8 +308,6 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               order={true}
               data={startedValet}
               onPress={() => {
-                // navigation.navigate("Map");
-                console.log("started valet", startedValet);
                 setSelectedValet(startedValet);
                 if (
                   startedValet.valetStatus ===

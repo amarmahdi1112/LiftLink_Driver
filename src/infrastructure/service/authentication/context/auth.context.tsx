@@ -95,7 +95,6 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
     } catch (error: any) {
       setError(error);
       setLoading(false);
-      console.log("error", error.message);
       throw error;
     }
   };
@@ -105,7 +104,6 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
     password: string,
     email: string
   ) => {
-    console.log({ username: username, password: password, email: email });
     if (usernameError || passwordError || emailError) {
       return;
     }
@@ -124,7 +122,6 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
     } catch (error: any) {
       setError(error);
       setLoading(false);
-      console.log("error", error.message);
     }
   };
 
@@ -152,11 +149,9 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
           setError(null);
           AsyncStorage.clear();
         }
-        console.log("isLoggedIn######", isLoggedIn);
         if (error) {
           setIsAuthenticated(false);
           setError(error as any);
-          console.log("error from auth", error.message);
         }
       }
     } catch (error: any) {
@@ -172,10 +167,8 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
       const { data } = await updatePhone({
         variables: { phoneNumber: phone },
       });
-      console.log(data);
       return data;
     } catch (error) {
-      console.log(error);
       throw error;
     }
   };

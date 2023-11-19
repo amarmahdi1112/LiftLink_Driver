@@ -295,8 +295,6 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
         mileage: 1000,
       };
 
-      console.log(datas, "datas>>>>>>>>>>>##########");
-
       if (userType === "dealership") await onCreateValet(datas);
       if (userType === "customer")
         await onStartValet(
@@ -307,13 +305,11 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
 
       if (valetData) {
         setInProgress(false);
-        console.log("im here");
         navigation.navigate("Map");
         clearall();
         return;
       }
     } catch (error: any) {
-      console.log("error#######", error.message);
       setInProgress(false);
       setErrorMessage(error.message);
       setError(true);

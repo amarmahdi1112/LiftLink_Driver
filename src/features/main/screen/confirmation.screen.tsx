@@ -123,7 +123,6 @@ export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
       },
     });
     if (error) {
-      console.log("error", error);
       return;
     }
     setShowCancelSuccessModal(true);
@@ -140,7 +139,6 @@ export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
       },
     });
     if (error) {
-      console.log("error", error);
       return;
     }
     setShowSuccessModal(true);
