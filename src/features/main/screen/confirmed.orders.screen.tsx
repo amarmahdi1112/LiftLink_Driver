@@ -48,7 +48,7 @@ interface OrderProps {
   backgroundColor?: string;
 }
 
-const OrderContainer = styled(CardComponent)<OrderProps>`
+const OrderContainer = styled(CardComponent) <OrderProps>`
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
@@ -167,27 +167,25 @@ export const ConfirmedOrdersScreen: React.FC<ConfirmedOrdersScreenProps> = ({
             <TopSpacer none={confirmedOrders.length !== 0}>
               <LabelComponent title={true}>Confirmed Order(s)</LabelComponent>
               {confirmedOrders.map((item) => (
-                <>
-                  <OrderContainer
-                    backgroundColor={colors.bg.secondary}
-                    justifyContent={"flex-start"}
-                    alignItems={"flex-start"}
-                    order={true}
-                    data={item}
-                    onPress={() => {
-                      setSelectedValet(item);
-                      navigation.navigate("Valet");
+                <OrderContainer
+                  backgroundColor={colors.bg.secondary}
+                  justifyContent={"flex-start"}
+                  alignItems={"flex-start"}
+                  order={true}
+                  data={item}
+                  onPress={() => {
+                    setSelectedValet(item);
+                    navigation.navigate("Valet");
+                  }}
+                  key={item}
+                >
+                  <Image
+                    source={{
+                      uri: "https://firebasestorage.googleapis.com/v0/b/ll-v2-4a68f.appspot.com/o/app_images%2FemptyIndicator.png?alt=media&token=fb225083-eac2-403d-b4fe-00f23823426d",
                     }}
-                    key={item.assignId}
-                  >
-                    <Image
-                      source={{
-                        uri: "https://firebasestorage.googleapis.com/v0/b/ll-v2-4a68f.appspot.com/o/app_images%2FemptyIndicator.png?alt=media&token=fb225083-eac2-403d-b4fe-00f23823426d",
-                      }}
-                      resizeMode="contain"
-                    />
-                  </OrderContainer>
-                </>
+                    resizeMode="contain"
+                  />
+                </OrderContainer>
               ))}
             </TopSpacer>
           )}

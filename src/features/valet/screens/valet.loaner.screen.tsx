@@ -182,118 +182,118 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
 
   const uploadImages = async () => {
     // console.log(selectedValet.order.orderId, "selectedValet");
-    // setError(false);
-    // setErrorMessage("");
-    // setFimgError(false);
-    // setBimgError(false);
-    // setLimgError(false);
-    // setrImgError(false);
-    // setMileageError(false);
-    // setGasLevelError(false);
-    // if (userType !== "customer") {
-    //   await onValetExists(selectedValet.order.orderId);
-    //   if (exists) throw new Error("Valet already started");
-    // }
-    // setInProgress(true);
-    // if (
-    //   isObjEmpty(front) ||
-    //   isObjEmpty(back) ||
-    //   isObjEmpty(left) ||
-    //   isObjEmpty(right)
-    // ) {
-    //   setErrorMessage("Please take all pictures");
-    //   setError(true);
-    // }
-    // if (front === "") {
-    //   setFimgError(true);
-    //   setError(true);
-    // }
-    // if (back === "") {
-    //   setBimgError(true);
-    //   setError(true);
-    // }
-    // if (left === "") {
-    //   setLimgError(true);
-    //   setError(true);
-    // }
-    // if (right === "") {
-    //   setrImgError(true);
-    //   setError(true);
-    // }
-    // if (mileage === "") {
-    //   setMileageError(true);
-    //   setError(true);
-    // }
-    // if (gasLevel === "") {
-    //   setGasLevelError(true);
-    //   setError(true);
-    // }
-    // if (error) {
-    //   setInProgress(false);
-    //   return;
-    // }
+    setError(false);
+    setErrorMessage("");
+    setFimgError(false);
+    setBimgError(false);
+    setLimgError(false);
+    setrImgError(false);
+    setMileageError(false);
+    setGasLevelError(false);
+    if (userType !== "customer") {
+      await onValetExists(selectedValet.order.orderId);
+      if (exists) throw new Error("Valet already started");
+    }
+    setInProgress(true);
+    if (
+      isObjEmpty(front) ||
+      isObjEmpty(back) ||
+      isObjEmpty(left) ||
+      isObjEmpty(right)
+    ) {
+      setErrorMessage("Please take all pictures");
+      setError(true);
+    }
+    if (front === "") {
+      setFimgError(true);
+      setError(true);
+    }
+    if (back === "") {
+      setBimgError(true);
+      setError(true);
+    }
+    if (left === "") {
+      setLimgError(true);
+      setError(true);
+    }
+    if (right === "") {
+      setrImgError(true);
+      setError(true);
+    }
+    if (mileage === "") {
+      setMileageError(true);
+      setError(true);
+    }
+    if (gasLevel === "") {
+      setGasLevelError(true);
+      setError(true);
+    }
+    if (error) {
+      setInProgress(false);
+      return;
+    }
 
     try {
-      // const frontUrl =
-      //   frontImgUrl ||
-      //   (await handleUpload(front, (progress) => {
-      //     console.log(progress, "progress");
-      //     setProgressFront(Number.parseInt(progress));
-      //   }));
-      // setFrontImgUrl(frontUrl);
-      // const rightUrl =
-      //   rightImgUrl ||
-      //   (await handleUpload(right, (progress) => {
-      //     setProgressRight(Number.parseInt(progress));
-      //   }));
-      // setRightImgUrl(rightUrl);
-      // const backUrl =
-      //   backImgUrl ||
-      //   (await handleUpload(back, (progress) => {
-      //     setProgressBack(Number.parseInt(progress));
-      //   }));
-      // setBackImgUrl(backUrl);
-      // const leftUrl =
-      //   leftImgUrl ||
-      //   (await handleUpload(left, (progress) => {
-      //     setProgressLeft(Number.parseInt(progress));
-      //   }));
-      // setLeftImgUrl(leftUrl);
+      const frontUrl =
+        frontImgUrl ||
+        (await handleUpload(front, (progress: any) => {
+          console.log(progress, "progress");
+          setProgressFront(Number.parseInt(progress));
+        }));
+      setFrontImgUrl(frontUrl);
+      const rightUrl =
+        rightImgUrl ||
+        (await handleUpload(right, (progress: any) => {
+          setProgressRight(Number.parseInt(progress));
+        }));
+      setRightImgUrl(rightUrl);
+      const backUrl =
+        backImgUrl ||
+        (await handleUpload(back, (progress: any) => {
+          setProgressBack(Number.parseInt(progress));
+        }));
+      setBackImgUrl(backUrl);
+      const leftUrl =
+        leftImgUrl ||
+        (await handleUpload(left, (progress: any) => {
+          setProgressLeft(Number.parseInt(progress));
+        }));
+      setLeftImgUrl(leftUrl);
 
-      // const datas = {
-      //   frontImage: frontUrl,
-      //   backImage: backUrl,
-      //   leftImage: leftUrl,
-      //   rightImage: rightUrl,
-      //   mileage: Number.parseInt(mileage),
-      //   gasLevel: Number.parseInt(gasLevel),
-      //   comments: comments,
-      //   customerId: selectedValet.customerId,
-      //   dealershipId: selectedValet.dealership.dealershipId,
-      //   orderId: selectedValet.order.orderId,
-      //   userType: userType,
-      // };
+      const datas = {
+        frontImage: frontUrl,
+        backImage: backUrl,
+        leftImage: leftUrl,
+        rightImage: rightUrl,
+        mileage: Number.parseInt(mileage),
+        gasLevel: Number.parseInt(gasLevel),
+        comments: comments,
+        customerId: selectedValet.customerId,
+        dealershipId: selectedValet.dealership.dealershipId,
+        orderId: selectedValet.order.orderId,
+        userType: userType,
+      };
 
       // console.log("selectedValet", startedValet);
 
-      const datas = {
-        userType: userType,
-        customerId: selectedValet.customerId || startedValet.customer.userId,
-        dealershipId:
-          selectedValet.dealership.dealershipId || startedValet.dealershipId,
-        orderId: selectedValet.order.orderId || startedValet.order.orderId,
-        backImage:
-          "https://media.istockphoto.com/id/854923054/photo/three-dimensional-modern-white-car.jpg?s=2048x2048&w=is&k=20&c=FIGHMkABg9xpB4vHMEOcCjVRZzw3ogGbLJVpSAryJmw=",
-        rightImage:
-          "https://media.istockphoto.com/id/1157655660/photo/generic-red-suv-on-a-white-background-side-view.jpg?s=2048x2048&w=is&k=20&c=u_vqLBX3koM67osQVXrWogzYtvgpx__mORzyfBLXo6U=",
-        frontImage:
-          "https://media.istockphoto.com/id/1154617648/photo/3d-illustration-of-generic-compact-car-front-view.jpg?s=2048x2048&w=is&k=20&c=scw578Hsr_L2-857IQz9oiiTBJIdovTMlLuISOrKuF4=",
-        leftImage:
-          "https://media.istockphoto.com/id/1135255668/photo/blue-hatchback-car.jpg?s=1024x1024&w=is&k=20&c=KDl9n7tu0f73NiymNk_G_KOzIvtijZSJkVWLZ7s8L1Y=",
-        comments: "something something......",
-        gasLevel: 100,
-        mileage: 1000,
-      };
+      // const datas = {
+      //   userType: userType,
+      //   customerId: selectedValet.customerId || startedValet.customer.userId,
+      //   dealershipId:
+      //     selectedValet.dealership.dealershipId || startedValet.dealershipId,
+      //   orderId: selectedValet.order.orderId || startedValet.order.orderId,
+      //   backImage:
+      //     "https://media.istockphoto.com/id/854923054/photo/three-dimensional-modern-white-car.jpg?s=2048x2048&w=is&k=20&c=FIGHMkABg9xpB4vHMEOcCjVRZzw3ogGbLJVpSAryJmw=",
+      //   rightImage:
+      //     "https://media.istockphoto.com/id/1157655660/photo/generic-red-suv-on-a-white-background-side-view.jpg?s=2048x2048&w=is&k=20&c=u_vqLBX3koM67osQVXrWogzYtvgpx__mORzyfBLXo6U=",
+      //   frontImage:
+      //     "https://media.istockphoto.com/id/1154617648/photo/3d-illustration-of-generic-compact-car-front-view.jpg?s=2048x2048&w=is&k=20&c=scw578Hsr_L2-857IQz9oiiTBJIdovTMlLuISOrKuF4=",
+      //   leftImage:
+      //     "https://media.istockphoto.com/id/1135255668/photo/blue-hatchback-car.jpg?s=1024x1024&w=is&k=20&c=KDl9n7tu0f73NiymNk_G_KOzIvtijZSJkVWLZ7s8L1Y=",
+      //   comments: "something something......",
+      //   gasLevel: 100,
+      //   mileage: 1000,
+      // };
 
       if (userType === "dealership") await onCreateValet(datas);
       if (userType === "customer")
@@ -357,7 +357,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
                 <Spacer variant="top.large" />
                 <Label title2={true}>Front</Label>
                 <Spacer variant="top.small" />
-                <CamCardComponent _key="img_front" side={"front"} />
+                <CamCardComponent side={"front"} />
                 {/* <StyledText>{progressFront}</StyledText> */}
                 <ErrorMessage>
                   {fimgError ? "Please take a picture" : ""}
@@ -365,7 +365,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
                 <Spacer variant="top.large" />
                 <Label title2={true}>Right</Label>
                 <Spacer variant="top.small" />
-                <CamCardComponent _key={"img_right"} side={"right"} />
+                <CamCardComponent side={"right"} />
                 {/* <StyledText>{progressRight}</StyledText> */}
                 <ErrorMessage>
                   {rimgError ? "Please take a picture" : ""}
@@ -373,7 +373,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
                 <Spacer variant="top.large" />
                 <Label title2={true}>Back</Label>
                 <Spacer variant="top.small" />
-                <CamCardComponent _key="img_back" side={"back"} />
+                <CamCardComponent side={"back"} />
                 {/* <StyledText>{progressBack}</StyledText> */}
                 <ErrorMessage>
                   {bimgError ? "Please take a picture" : ""}
@@ -381,7 +381,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
                 <Spacer variant="top.large" />
                 <Label title2={true}>Left</Label>
                 <Spacer variant="top.small" />
-                <CamCardComponent _key="img_left" side={"left"} />
+                <CamCardComponent side={"left"} />
                 {/* <StyledText>{progressLeft}</StyledText> */}
                 <ErrorMessage>
                   {limgError ? "Please take a picture" : ""}
@@ -421,7 +421,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
                   placeholder="Enter Comments"
                   onChangeText={(e: any) => setComments(e)}
                   multiline
-                  height={300}
+                  height={"300px"}
                 />
                 <Spacer variant="top.small" />
               </>

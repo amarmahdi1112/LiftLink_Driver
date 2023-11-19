@@ -20,12 +20,11 @@ const Picture = styled.Image`
 
 interface CamCardComponentProps {
   imageLink?: string;
-  _key: string;
   clearContainer?: boolean;
   side?: string;
 }
 
-export const CamCardComponent: FC<CamCardComponentProps> = ({ imageLink, _key, clearContainer, side }) => {
+export const CamCardComponent: FC<CamCardComponentProps> = ({ imageLink, clearContainer, side }) => {
   const [image, setImage] = useState(null);
   const {
     front,
@@ -122,7 +121,6 @@ export const CamCardComponent: FC<CamCardComponentProps> = ({ imageLink, _key, c
 
   return (
     <CardComponent
-      key={_key}
       overrideChildren={true}
       bordered={true}
       size={{

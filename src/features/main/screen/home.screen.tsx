@@ -372,6 +372,7 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                     <DayAndDateLabels
                       isSameDay={isSameDay(d, today)}
                       selected={selected}
+                      key={day}
                     >
                       <LabelComponent
                         inverted={isSameDay(d, today) || selected}
@@ -406,18 +407,19 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             {confirmations.map((item: any) => {
               return (
                 <ListContainer
+                  key={item.confirmationId}
                   onPress={() => {
                     setConfirmation!(item);
                     navigation.navigate("Confirm");
                   }}
                 >
-                  <ListCard>
-                    <ListComponent>
-                      <CarDescription>
-                        <LabelComponent>
+                  <ListCard key={item.confirmationId}>
+                    <ListComponent key={item.confirmationId}>
+                      <CarDescription key={item.confirmationId}>
+                        <LabelComponent  key={item.confirmationId}>
                           {item.dealership.dealershipName}
                         </LabelComponent>
-                        <LabelComponent title2={true}>
+                        <LabelComponent title2={true}  key={item.confirmationId}>
                           {isSameDay(new Date(item.confirmationDate), today)
                             ? "Today"
                             : format(
@@ -466,7 +468,7 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             {orders.map((item) => (
               <>
                 <OrderContainer
-                  key={item.orderId} // Assuming startedValet has an id property
+                  key={item.orderId}
                   backgroundColor={colors.bg.secondary}
                   justifyContent={"flex-start"}
                   alignItems={"flex-start"}

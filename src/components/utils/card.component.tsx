@@ -106,7 +106,7 @@ const FooterContainer = styled.View`
 `;
 
 interface CardComponentProps {
-  key: string;
+  key?: string;
   data?: any; // Replace 'any' with the type of your data
   size?: any; // Replace 'any' with the type of your size
   style?: any; // Replace 'any' with the type of your style
