@@ -1,5 +1,5 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // import { AuthNavigator } from "./signin.navigation";
 import { MainNavigator } from "./main.navigation";
 import { Splash } from "../../features/main/screen/splash.screen";
@@ -10,7 +10,7 @@ type StackNavigatorParams = {
   AuthNavigation: undefined;
 };
 
-const Stack = createStackNavigator<StackNavigatorParams>();
+const Stack = createNativeStackNavigator<StackNavigatorParams>();
 
 export const SplashNavigator: React.FC = () => {
   return (

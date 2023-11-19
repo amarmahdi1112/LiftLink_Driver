@@ -1,12 +1,13 @@
 /* eslint-disable react/prop-types */
 import React, { FC, PropsWithChildren } from "react";
-import { Button } from "react-native-paper";
-import { Image } from "react-native";
+// import { Button } from "react-native-paper";
+// import { Image } from "react-native";
+import { Button, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import LogOutIcon from "../../assets/svgs/logout";
 import { Spacer } from "./utils/spacer.component";
 
-const StyledButton = styled.TouchableOpacity<{ background?: string }>`
+const StyledButton = styled(TouchableOpacity)<{ background?: string }>`
   background-color: ${(props) =>
     props.background
       ? props.background

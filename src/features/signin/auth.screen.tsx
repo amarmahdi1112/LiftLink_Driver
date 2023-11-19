@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, FC } from "react";
 import styled from "styled-components/native";
-import { Alert, KeyboardAvoidingView, Platform, Pressable } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, Pressable, View } from "react-native";
 import { AuthContext } from "../../infrastructure/service/authentication/context/auth.context";
 import { MainContainer } from "../../components/main.component";
 import { SigninScreen } from "./screen/signin.screen";
@@ -10,6 +10,7 @@ import LogOutIcon from "../../../assets/svgs/logout";
 import { Spacer } from "../../components/utils/spacer.component";
 import { SignupScreen } from "./screen/signup.screen";
 import { isObjEmpty } from "../main/screen/main.screen";
+import { Text } from "react-native-paper";
 
 const ScrollView = styled.ScrollView`
   flex: 1;
@@ -62,9 +63,11 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
   const [loadingState, setLoadingState] = useState(true);
 
   const handleLogin = async () => {
+    console.log("username", username);
     try {
       await onLogin!(username as any, password as any);
     } catch (error) {
+      console.log("error", error);
       setError!(error);
     }
   };
@@ -128,10 +131,11 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
           <ButtonComponent
             title="Sign In"
             onPress={async () => {
-              if (username === "") setUsernameError!(true);
-              if (password === "") setPasswordError!(true);
-              if (!usernameError && !passwordError && username && password)
-                await handleLogin();
+              console.log("username", username);
+              // if (username === "") setUsernameError!(true);
+              // if (password === "") setPasswordError!(true);
+              // if (!usernameError && !passwordError && username && password)
+              //   await handleLogin();
             }}
             loading={loadingState}
           >
@@ -144,18 +148,19 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
           <ButtonComponent
             title="Sign Up"
             onPress={async () => {
-              if (username === "") setUsernameError!(true);
-              if (password === "") setPasswordError!(true);
-              if (email === "") setEmailError!(true);
-              if (
-                !usernameError &&
-                !passwordError &&
-                !emailError &&
-                username &&
-                password &&
-                email
-              )
-                await onSignup!(username, password, email);
+              // if (username === "") setUsernameError!(true);
+              // if (password === "") setPasswordError!(true);
+              // if (email === "") setEmailError!(true);
+              // if (
+              //   !usernameError &&
+              //   !passwordError &&
+              //   !emailError &&
+              //   username &&
+              //   password &&
+              //   email
+              // )
+              //   await onSignup!(username, password, email);
+              console.log("username", username);
             }}
           >
             <LogOutIcon width={24} height={24} />

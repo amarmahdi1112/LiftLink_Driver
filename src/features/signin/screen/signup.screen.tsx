@@ -60,13 +60,13 @@ export const SignupScreen: FC<SignupScreenProps> = ({ navigation }) => {
         <InputComponent
           value={username}
           onChangeText={(text) => {
-            if (text.length === 0) {
+            if (!text._dispatchInstances.memoizedProps.value) {
               setUsernameError!(true);
             }
-            if (text.length > 0 && usernameError) {
+            if (text._dispatchInstances.memoizedProps.value && usernameError) {
               setUsernameError!(false);
             }
-            setUsername!(text);
+            setUsername!(text._dispatchInstances.memoizedProps.value);
           }}
           isError={usernameError}
         />
@@ -77,13 +77,13 @@ export const SignupScreen: FC<SignupScreenProps> = ({ navigation }) => {
         <InputComponent
           value={email}
           onChangeText={(text) => {
-            if (text.length === 0) {
+            if (!text._dispatchInstances.memoizedProps.value) {
               setEmailError!(true);
             }
-            if (text.length > 0 && emailError) {
+            if (text._dispatchInstances.memoizedProps.value && emailError) {
               setEmailError!(false);
             }
-            setEmail!(text);
+            setEmail!(text._dispatchInstances.memoizedProps.value);
           }}
           isError={emailError}
         />
@@ -94,10 +94,10 @@ export const SignupScreen: FC<SignupScreenProps> = ({ navigation }) => {
         <InputComponent
           value={password}
           onChangeText={(text) => {
-            if (text.length === 0) {
+            if (!text._dispatchInstances.memoizedProps.value) {
               setPasswordError!(true);
             }
-            if (text.length > 0 && passwordError) {
+            if (text._dispatchInstances.memoizedProps.value && passwordError) {
               setPasswordError!(false);
             }
             setPassword!(text);

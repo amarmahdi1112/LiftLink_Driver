@@ -1,5 +1,5 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DriverScreen } from "../../features/driver/driver.screen";
 
 type StackNavigatorParams = {
@@ -7,7 +7,7 @@ type StackNavigatorParams = {
   MainNavigation: any;
 };
 
-const Stack = createStackNavigator<StackNavigatorParams>();
+const Stack = createNativeStackNavigator<StackNavigatorParams>();
 
 export const DriverNavigation: React.FC = () => {
   return (

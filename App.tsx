@@ -1,6 +1,4 @@
-/* eslint-disable space-before-function-paren */
-/* eslint-disable react/react-in-jsx-scope */
-/* eslint-disable no-tabs */
+import 'react-native-gesture-handler';
 import { ThemeProvider } from "styled-components";
 import { Navigator } from "./src/infrastructure/navigation/index.navigation";
 import { theme } from "./src/infrastructure/theme";
@@ -15,27 +13,25 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AppRegistry } from "react-native";
+import { AppRegistry, View } from "react-native";
 import { AuthProvider } from "./src/infrastructure/service/authentication/context/auth.context";
 import { ValetProvider } from "./src/infrastructure/service/valet/context/valet.context";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
-// import { WebSocketLink } from "apollo-link-ws";
 import { DriverProvider } from "./src/infrastructure/service/driver/context/driver.context";
-// import { DriverProfileProvider } from "./src/infrastructure/service/driver/context/driver.profile.context";
 import { ConfirmationProvider } from "./src/infrastructure/service/confirmation/context/confirmation.context";
 import { OrdersProvider } from "./src/infrastructure/service/orders/context/orders.context";
-// import { SERVER_URL } from "@env";
+import { useCallback } from "react";
+import * as ExpoSplashScreen from "expo-splash-screen";
 
-// AsyncStorage.clear();
 const tunnel = false;
 
 const wsLink: any = new GraphQLWsLink(
   createClient({
     url: tunnel
       ? "ws://178.128.224.133/graphql/"
-      : "ws:/192.168.1.70:8000/graphql",
+      : "ws://192.168.1.70:8000/graphql",
     connectionParams: async () => {
       const token = await AsyncStorage.getItem("token");
       return {
@@ -51,7 +47,7 @@ const wsLink: any = new GraphQLWsLink(
 const httpLink = createHttpLink({
   uri: tunnel
     ? "http://178.128.224.133/graphql/"
-    : "http:/192.168.1.70:8000/graphql",
+    : "http://192.168.1.70:8000/graphql/",
 });
 
 const authLink = setContext(async (request, { headers }) => {
@@ -95,29 +91,37 @@ export default function App() {
     "Neue-black": require("./assets/fonts/neue-haas-grotesk-display-pro-cufonfonts/NeueHaasDisplayBlack.ttf"),
   });
 
+  const onLayout = useCallback(async () => {
+    if (loaded) {
+
+      await ExpoSplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
   if (!loaded) {
     return null;
   }
 
-
   return (
-    <ApolloProvider client={client}>
-      <ThemeProvider theme={theme}>
-        <SafeAreaComponent>
-          <AuthProvider>
-            <DriverProvider>
-              <ConfirmationProvider>
-                <OrdersProvider>
-                  <ValetProvider>
-                    <Navigator />
-                  </ValetProvider>
-                </OrdersProvider>
-              </ConfirmationProvider>
-            </DriverProvider>
-          </AuthProvider>
-        </SafeAreaComponent>
-      </ThemeProvider>
-    </ApolloProvider>
+    <View onLayout={onLayout} style={{ flex: 1 }}>
+      <ApolloProvider client={client}>
+        <ThemeProvider theme={theme}>
+          <SafeAreaComponent>
+            <AuthProvider>
+              <DriverProvider>
+                <ConfirmationProvider>
+                  <OrdersProvider>
+                    <ValetProvider>
+                      <Navigator />
+                    </ValetProvider>
+                  </OrdersProvider>
+                </ConfirmationProvider>
+              </DriverProvider>
+            </AuthProvider>
+          </SafeAreaComponent>
+        </ThemeProvider>
+      </ApolloProvider >
+    </View >
   );
 }
 

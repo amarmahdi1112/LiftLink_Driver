@@ -1,5 +1,5 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import styled from "styled-components/native";
 import { OrderConfirmationProvider } from "../service/confirmation/context/order.confirmation.context";
 import { HomeScreen } from "../../features/main/screen/home.screen";
@@ -22,7 +22,7 @@ type StackNavigatorParams = {
   Map: any;
 };
 
-const Stack = createStackNavigator<StackNavigatorParams>();
+const Stack = createNativeStackNavigator();
 
 const Txt = styled.Text`
   color: red;
@@ -30,7 +30,7 @@ const Txt = styled.Text`
 
 export const MainNavigator: React.FC = () => {
   return (
-    <OrderConfirmationProvider>
+      <OrderConfirmationProvider>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <>
           <Stack.Screen name="Main" component={MainScreen} />

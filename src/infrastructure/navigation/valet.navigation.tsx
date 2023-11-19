@@ -1,5 +1,5 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ValetScreen } from "../../features/valet/screens/valet.screen";
 import { HomeScreen } from "../../features/main/screen/home.screen";
 
@@ -8,7 +8,7 @@ type StackNavigatorParams = {
   Home: undefined;
 };
 
-const Stack = createStackNavigator<StackNavigatorParams>();
+const Stack = createNativeStackNavigator<StackNavigatorParams>();
 
 export const ValetNavigation: React.FC = () => {
   return (

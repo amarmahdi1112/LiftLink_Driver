@@ -1,12 +1,12 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MapScreen } from "../../features/navigation_service/map.screen";
 
 type StackNavigatorParams = {
   MapScreen: undefined;
 };
 
-const Stack = createStackNavigator<StackNavigatorParams>();
+const Stack = createNativeStackNavigator<StackNavigatorParams>();
 
 export const MapNavigator: React.FC = () => {
   return (

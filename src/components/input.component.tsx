@@ -2,8 +2,10 @@
 import styled from "styled-components/native";
 import { TextInput } from "react-native-paper";
 import React, { FC, PropsWithChildren } from "react";
+import { theme } from "../infrastructure/theme";
+import { KeyboardTypeOptions } from "react-native";
 
-const InputField = styled(TextInput)<{ isError?: boolean; height?: string }>`
+const InputField = styled.TextInput<{ isError?: boolean; height?: string }>`
   background-color: ${(props: any) => props.theme.colors.bg.primary};
   border-radius: ${(props) => props.theme.borderRadiuses[3]};
   border-width: 1px;
@@ -14,18 +16,18 @@ const InputField = styled(TextInput)<{ isError?: boolean; height?: string }>`
   width: 100%;
   height: ${(props) => props.height || "60px"};
   max-height: ${(props) => props.height || "60px"};
+  padding-left: 20px;
 `;
 
 interface InputComponentProps {
   secure?: boolean;
-  // Add other props here
   value?: string;
   onChangeText?: (text: any) => void;
   isError?: boolean;
   placeholder?: string;
   autofocus?: boolean;
   autocompleteType?: string;
-  keyboardType?: string;
+  keyboardType?: KeyboardTypeOptions;
   textContentType?: string;
 }
 
@@ -34,15 +36,15 @@ export const InputComponent: FC<PropsWithChildren<InputComponentProps>> = ({
 }) => {
   return (
     <InputField
-      mode="flat"
-      activeUnderlineColor="transparent"
       selectionColor="black"
-      underlineColor="transparent"
-      textColor="black"
       cursorColor="black"
-      placeholderTextColor={(props: any) => props.theme.colors.formColors.border}
+      placeholderTextColor={theme.colors.formColors.border}
       secureTextEntry={props.secure}
-      {...props}
+      onChangeText={props.onChangeText}
+      value={props.value}
+      isError={props.isError}
+      placeholder={props.placeholder}
+      autoFocus={props.autofocus}
     />
   );
 };

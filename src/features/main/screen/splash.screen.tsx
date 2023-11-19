@@ -75,19 +75,19 @@ export const Splash: FC<SplashProps> = ({ navigation }) => {
   useEffect(() => {
     if (!loading) {
       if (!isObjEmpty(profile)) {
-        setTimeout(() => {
+        // setTimeout(() => {
           if (profile.accountType !== "driver") {
             AsyncStorage.clear();
-            navigation.navigate("Auth");
+            // navigation.navigate("Auth");
             return;
           }
-          navigation.navigate("MainNavigation");
-        }, 2000);
+          // navigation.navigate("MainNavigation");
+        // }, 2000);
       }
       if (errorDriver) {
-        setTimeout(() => {
-          navigation.navigate("Auth");
-        }, 2000);
+        // setTimeout(() => {
+          // navigation.navigate("Auth");
+        // }, 2000);
       }
     }
   }, [loading]);
