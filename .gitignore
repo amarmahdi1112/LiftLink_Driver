@@ -71,3 +71,5 @@ yarn-error.*
 
 # @end expo-cli
 ./AppleWWDRCAG3.cer
+./android
+./ios
