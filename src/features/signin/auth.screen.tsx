@@ -132,10 +132,10 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
             title="Sign In"
             onPress={async () => {
               console.log("username", username);
-              // if (username === "") setUsernameError!(true);
-              // if (password === "") setPasswordError!(true);
-              // if (!usernameError && !passwordError && username && password)
-              //   await handleLogin();
+              if (username === "") setUsernameError!(true);
+              if (password === "") setPasswordError!(true);
+              if (!usernameError && !passwordError && username && password)
+                await handleLogin();
             }}
             loading={loadingState}
           >
@@ -148,19 +148,19 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
           <ButtonComponent
             title="Sign Up"
             onPress={async () => {
-              // if (username === "") setUsernameError!(true);
-              // if (password === "") setPasswordError!(true);
-              // if (email === "") setEmailError!(true);
-              // if (
-              //   !usernameError &&
-              //   !passwordError &&
-              //   !emailError &&
-              //   username &&
-              //   password &&
-              //   email
-              // )
-              //   await onSignup!(username, password, email);
-              console.log("username", username);
+              if (username === "") setUsernameError!(true);
+              if (password === "") setPasswordError!(true);
+              if (email === "") setEmailError!(true);
+              if (
+                !usernameError &&
+                !passwordError &&
+                !emailError &&
+                username &&
+                password &&
+                email
+              )
+                await onSignup!(username, password, email);
+              console.log("username$$$$$$$");
             }}
           >
             <LogOutIcon width={24} height={24} />

@@ -120,6 +120,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
       setLoading(loginLoading);
       return data;
     } catch (error: any) {
+      console.log("error", error);
       setError(error);
       setLoading(false);
     }

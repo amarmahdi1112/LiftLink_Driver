@@ -1,4 +1,7 @@
 import 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 import { ThemeProvider } from "styled-components";
 import { Navigator } from "./src/infrastructure/navigation/index.navigation";
 import { theme } from "./src/infrastructure/theme";
@@ -31,7 +34,7 @@ const wsLink: any = new GraphQLWsLink(
   createClient({
     url: tunnel
       ? "ws://178.128.224.133/graphql/"
-      : "ws://192.168.1.70:8000/graphql",
+      : "ws://213c-2001-56a-f994-2300-c181-a2c5-b9a3-5496.ngrok-free.app/graphql",
     connectionParams: async () => {
       const token = await AsyncStorage.getItem("token");
       return {
@@ -47,7 +50,7 @@ const wsLink: any = new GraphQLWsLink(
 const httpLink = createHttpLink({
   uri: tunnel
     ? "http://178.128.224.133/graphql/"
-    : "http://192.168.1.70:8000/graphql/",
+    : "https://213c-2001-56a-f994-2300-c181-a2c5-b9a3-5496.ngrok-free.app/graphql/",
 });
 
 const authLink = setContext(async (request, { headers }) => {
@@ -112,7 +115,9 @@ export default function App() {
                 <ConfirmationProvider>
                   <OrdersProvider>
                     <ValetProvider>
-                      <Navigator />
+                      <GestureHandlerRootView style={{ flex: 1 }}>
+                        <Navigator />
+                      </GestureHandlerRootView>
                     </ValetProvider>
                   </OrdersProvider>
                 </ConfirmationProvider>

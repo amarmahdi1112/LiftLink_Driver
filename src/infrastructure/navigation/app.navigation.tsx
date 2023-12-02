@@ -46,6 +46,7 @@ export const AppNavigator: React.FC = () => {
           headerShown: false
         }}>
           <AuthStack.Screen name="Auth" component={AuthScreen} />
+          <MainStack.Screen name="MainNavigation" component={MainNavigator} />
         </AuthStack.Navigator>
       )}
     </>
