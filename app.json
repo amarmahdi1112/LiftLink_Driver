@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "LiftLin _Driver",
-    "slug": "LiftLink Driver",
-    "version": "1.0.2",
+    "name": "LiftLink Driver",
+    "slug": "LiftLink_Drivers",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.liftlink.driver",
-      "buildNumber": "3"
+      "buildNumber": "4"
     },
     "android": {
       "adaptiveIcon": {
@@ -34,6 +34,15 @@
         "projectId": "26b5e5ab-ba3f-47e1-9d42-c62a4a843913"
       }
     },
-    "owner": "amarmuha1112"
+    "owner": "amarmuha1112",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/26b5e5ab-ba3f-47e1-9d42-c62a4a843913"
+    },
+    "plugins": [
+      "expo-build-properties"
+    ]
   }
 }

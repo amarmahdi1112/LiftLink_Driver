@@ -5,9 +5,6 @@ import { LabelFormComponent } from "../../../components/typography";
 import { Spacer } from "../../../components/utils/spacer.component";
 import { InputComponent } from "../../../components/input.component";
 // import {
-//   FirebaseRecaptchaBanner,
-//   FirebaseRecaptchaVerifier,
-//   FirebaseRecaptcha,
 //   FirebaseRecaptchaVerifierModal,
 // } from "expo-firebase-recaptcha";
 import { fbApp, fbAuth, fbOtp } from "../../../../firebase-config";

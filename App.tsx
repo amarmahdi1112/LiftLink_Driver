@@ -28,12 +28,12 @@ import { OrdersProvider } from "./src/infrastructure/service/orders/context/orde
 import { useCallback } from "react";
 import * as ExpoSplashScreen from "expo-splash-screen";
 
-const tunnel = false;
+const tunnel = true;
 
 const wsLink: any = new GraphQLWsLink(
   createClient({
     url: tunnel
-      ? "ws://178.128.224.133/graphql/"
+      ? "ws://137.184.164.232/graphql/"
       : "ws://213c-2001-56a-f994-2300-c181-a2c5-b9a3-5496.ngrok-free.app/graphql",
     connectionParams: async () => {
       const token = await AsyncStorage.getItem("token");
@@ -49,7 +49,7 @@ const wsLink: any = new GraphQLWsLink(
 
 const httpLink = createHttpLink({
   uri: tunnel
-    ? "http://178.128.224.133/graphql/"
+    ? "http://137.184.164.232/graphql"
     : "https://213c-2001-56a-f994-2300-c181-a2c5-b9a3-5496.ngrok-free.app/graphql/",
 });
 

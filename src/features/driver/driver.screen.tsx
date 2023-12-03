@@ -53,10 +53,10 @@ export const DriverScreen: FC<DriverScreenProps> = ({ children, navigation }) =>
   const isFocused = useIsFocused();
 
   const checker = () => {
-    if (!profile.isVerified) {
-      setScreen(screens.phoneVerification);
-      return;
-    }
+    // if (!profile.isVerified) {
+    //   setScreen(screens.phoneVerification);
+    //   return;
+    // }
     if (!profile.firstName || !profile.lastName) {
       setScreen(screens.names);
       return;
@@ -94,9 +94,9 @@ export const DriverScreen: FC<DriverScreenProps> = ({ children, navigation }) =>
             )}
             {!loading && (
               <>
-                {screen === screens.phoneVerification && (
+                {/* {screen === screens.phoneVerification && (
                   <DriverPhoneVerificationScreen navigation={navigation} />
-                )}
+                )} */}
                 {screen === screens.names && (
                   <DriverInfoScreen navigation={navigation} />
                 )}
