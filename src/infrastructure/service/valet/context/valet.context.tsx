@@ -38,6 +38,7 @@ interface ValetContextProps {
   }) => Promise<void>;
   setSelectedValet: React.Dispatch<React.SetStateAction<any>>; // Replace 'any' with the type of your selectedValet
   onGetStartedValet: () => Promise<void>;
+  resetAllValet: () => void;
 }
 
 export enum ValetStatus {
@@ -163,6 +164,16 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       throw error;
     }
   };
+
+  const resetAllValet = () => {
+    setScreen("details");
+    setStartedValet({});
+    setSelectedValet({});
+    setValetData({});
+    setExists(false);
+    setError("");
+    setUserType("dealership");
+  };
   
   return (
     <ValetContext.Provider
@@ -185,6 +196,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         onChangeLocation,
         setSelectedValet,
         onGetStartedValet,
+        resetAllValet,
       }}
     >
       {children}

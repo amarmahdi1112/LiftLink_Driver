@@ -23,6 +23,7 @@ export interface OrderConfirmationContextProps {
   incrementPage: () => void;
   error: Error | null;
   // onRefresh: () => Promise<void>;
+  resetAllOrderConfirmation: () => void;
 }
 
 export const OrderConfirmationContext =
@@ -167,6 +168,18 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
     }
   };
 
+  const resetAllOrderConfirmation = () => {
+    setOrder(null);
+    setConfirmedOrders([]);
+    setSelectedOrder(null);
+    setLoading(false);
+    setPagination({
+      page: 1,
+      perPage: 3,
+    });
+    setError(null);
+  };
+
   return (
     <OrderConfirmationContext.Provider
       value={{
@@ -181,6 +194,7 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
         incrementPage,
         error,
         // onRefresh,
+        resetAllOrderConfirmation,
       }}
     >
       {children}

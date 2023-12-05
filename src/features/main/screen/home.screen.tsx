@@ -129,7 +129,7 @@ interface StyledPagerViewProps {
 const StyledPagerView = styled(PagerView)<StyledPagerViewProps>`
   flex: 1;
   position: absolute;
-  top: ${(props) => (!props.pushDown ? "100" : "400")}px;
+  top: ${(props) => (!props.pushDown ? "100" : "420")}px;
   left: 0;
   right: 0;
   background-color: ${(props) => props.theme.colors.bg.primary};
@@ -157,7 +157,7 @@ const RequestContainer = styled.View<StyledPagerViewProps>`
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
-  margin-top: ${(props) => (props.pushDown ? "120" : "100")}px;
+  margin-top: ${(props) => (props.pushDown ? "160" : "100")}px;
 `;
 
 interface OrderContainerProps {
@@ -247,14 +247,20 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const onRefresh = async () => {
-    setSelectedValet({});
-    setStartedValet({});
-    setRefreshing(true);
-    await onGetStartedValet();
-    await getDatas();
-    await refreshConfirmation!();
-    await getAllOrders();
-    setRefreshing(false);
+    try {
+      setSelectedValet({});
+      setStartedValet({});
+      setRefreshing(true);
+      await onGetStartedValet();
+      await getDatas();
+      await refreshConfirmation!();
+      await getAllOrders();
+    } catch (error) {
+      console.error(error);
+      // handle the error as needed
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   useEffect(() => {

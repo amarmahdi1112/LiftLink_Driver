@@ -48,6 +48,7 @@ interface AuthContextProps {
   lastNameError: boolean;
   setlastNameError: React.Dispatch<React.SetStateAction<boolean>>;
   updatePhoneMutation: (phone: string) => Promise<void>;
+  resetAll: () => void;
 }
 
 export const AuthContext = createContext<Partial<AuthContextProps>>({});
@@ -56,7 +57,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
   const [login, { loading: loginLoading }] = useMutation(Login);
   const isAuthenticatedQuery = useQuery(IS_AUTHENTICATED);
   const [updatePhone] = useMutation(UPDATE_PHONE);
@@ -93,7 +94,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
       setLoading(loginLoading);
       return data;
     } catch (error: any) {
-      setError(error);
+      setError("Invalid username or password");
       setLoading(false);
       throw error;
     }
@@ -174,6 +175,21 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
     }
   };
 
+  const resetAll = () => {
+    setUsername("");
+    setPassword("");
+    setEmail("");
+    setPhone("");
+    setfirstName("");
+    setlastName("");
+    setUsernameError(false);
+    setPasswordError(false);
+    setEmailError(false);
+    setPhoneError(false);
+    setfirstNameError(false);
+    setlastNameError(false);
+  }
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -216,6 +232,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
         lastNameError,
         setlastNameError,
         updatePhoneMutation,
+        resetAll,
       }}
     >
       {children}

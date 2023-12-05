@@ -22,6 +22,7 @@ interface OrdersContextProps {
   getAllOrders: () => Promise<void>;
   setError: React.Dispatch<React.SetStateAction<any | null>>;
   onRemoveOrder: (orderId: string) => Promise<void>;
+  resetAllOrders: () => void;
 }
 
 export const OrdersContext = createContext<OrdersContextProps>(null as any);
@@ -85,6 +86,10 @@ export const OrdersProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         getAllOrders,
         setError,
         onRemoveOrder,
+        resetAllOrders: () => {
+          setOrders([]);
+          setError(null);
+        },
       }}
     >
       {children}

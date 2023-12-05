@@ -11,6 +11,8 @@ import { Spacer } from "../../components/utils/spacer.component";
 import { SignupScreen } from "./screen/signup.screen";
 import { isObjEmpty } from "../main/screen/main.screen";
 import { Text } from "react-native-paper";
+import { ErrorComponent } from "../../components/error.component";
+import { Animated } from "react-native";
 
 const ScrollView = styled.ScrollView`
   flex: 1;
@@ -63,13 +65,9 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
   const [loadingState, setLoadingState] = useState(true);
 
   const handleLogin = async () => {
-    console.log("username", username);
     try {
       await onLogin!(username as any, password as any);
-    } catch (error) {
-      console.log("error", error);
-      setError!(error);
-    }
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -95,8 +93,11 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     if (error) {
-      Alert.alert("Alert!", "Failed to login. Please try again.");
+      console.log("error", error);
       setLoadingState(false);
+      setTimeout(() => {
+        setError!("");
+      }, 3000);
     }
   }, [error]);
 
@@ -131,7 +132,6 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
           <ButtonComponent
             title="Sign In"
             onPress={async () => {
-              console.log("username", username);
               if (username === "") setUsernameError!(true);
               if (password === "") setPasswordError!(true);
               if (!usernameError && !passwordError && username && password)
@@ -160,13 +160,15 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
                 email
               )
                 await onSignup!(username, password, email);
-              console.log("username$$$$$$$");
             }}
           >
             <LogOutIcon width={24} height={24} />
           </ButtonComponent>
         </ButtonContainer>
       )}
+      {error &&
+        (<ErrorComponent errorMessage={error} show={error ? true : false} />)
+      }
     </MainContainer>
   );
 };

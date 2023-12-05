@@ -17,6 +17,12 @@ import { LabelComponent } from "./typography";
 import BackIcon from "../../assets/svgs/back";
 import { DriverContext } from "../infrastructure/service/driver/context/driver.context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CommonActions } from "@react-navigation/native";
+import { ConfirmationContext } from "../infrastructure/service/confirmation/context/confirmation.context";
+import { OrderConfirmationContext } from "../infrastructure/service/confirmation/context/order.confirmation.context";
+import { AuthContext } from "../infrastructure/service/authentication/context/auth.context";
+import { OrdersContext } from "../infrastructure/service/orders/context/orders.context";
+import { ValetContext } from "../infrastructure/service/valet/context/valet.context";
 
 const BodyTitleSection = styled.View`
   flex-direction: column;
@@ -107,7 +113,11 @@ export const MainContainer: FC<PropsWithChildren<MainContainerProps>> = ({
   secondaryPage = false,
   navigation,
 }) => {
-  const { profile } = useContext(DriverContext);
+  const { profile, resetAllDriver } = useContext(DriverContext);
+  const { resetAllConfirmation } = useContext(ConfirmationContext);
+  const { resetAll } = useContext(AuthContext);
+  const { resetAllOrders } = useContext(OrdersContext);
+  const { resetAllValet } = useContext(ValetContext);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -153,9 +163,14 @@ export const MainContainer: FC<PropsWithChildren<MainContainerProps>> = ({
         )}
         {showMenu && (
           <Pressable
-            onPress={() => {
-              AsyncStorage.clear();
+            onPress={async () => {
+              await AsyncStorage.clear();
               navigation.navigate("Auth");
+              resetAll!();
+              resetAllConfirmation!();
+              resetAllDriver();
+              resetAllOrders();
+              resetAllValet();
             }}
           >
             <Menu width={32} height={32} />

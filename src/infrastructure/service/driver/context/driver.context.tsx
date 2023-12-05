@@ -21,6 +21,7 @@ export interface DriverContextProps {
   updateNames: () => Promise<any>; // Replace 'any' with the type of the return value of updateNames
   errorDriver: Error | null;
   setErrorDriver: React.Dispatch<React.SetStateAction<any | null>>;
+  resetAllDriver: () => void;
 }
 
 export const DriverContext = createContext<DriverContextProps>(null as any);
@@ -87,6 +88,12 @@ export const DriverProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
     }
   };
 
+  const resetAllDriver = () => {
+    setProfile({});
+    setLoading(true);
+    setErrorDriver(null);
+  };
+
   // useEffect(() => {
   //   if (data) {
   //     importUserData();
@@ -115,6 +122,7 @@ export const DriverProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         updateNames,
         errorDriver,
         setErrorDriver,
+        resetAllDriver,
       }}
     >
       {children}

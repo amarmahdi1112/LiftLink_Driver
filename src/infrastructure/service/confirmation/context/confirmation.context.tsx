@@ -24,6 +24,7 @@ interface ConfirmationContextProps {
   acceptRequest: (args: { variables: { confirmationId: string } }) => Promise<any>;
   refreshing: boolean;
   onRefresh: () => Promise<void>;
+  resetAllConfirmation: () => void;
 }
 
 export const ConfirmationContext = createContext<
@@ -64,6 +65,12 @@ export const ConfirmationProvider: FC<PropsWithChildren<{}>> = ({
     }
   };
 
+  const resetAllConfirmation = () => {
+    setConfirmation(null);
+    setError(null);
+    setLoading(false);
+  }
+
   return (
     <ConfirmationContext.Provider
       value={{
@@ -75,6 +82,7 @@ export const ConfirmationProvider: FC<PropsWithChildren<{}>> = ({
         rejectRequest: rejectRequest as any,
         refreshing,
         onRefresh,
+        resetAllConfirmation,
       }}
     >
       {children}
