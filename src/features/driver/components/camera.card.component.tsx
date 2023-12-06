@@ -4,6 +4,7 @@ import { CardComponent } from "../../../components/utils/card.component";
 import UploadBtnIcon from "../../../../assets/svgs/upload_btn";
 import * as ImagePicker from "expo-image-picker";
 import { ImageContainerContext } from "../utils/imageObjectContainer";
+import { ErrorContext } from "../../../infrastructure/service/error/error.context";
 
 // const Caption = styled.Text`
 //   font-size: ${(props) => props.theme.fontSizes.body};
@@ -18,8 +19,10 @@ const CustomCard = styled.View`
 `;
 
 const Picture = styled.Image`
-  height: 100%;
+  height: 160px;
+  width: 150px;
   border-radius: 20px;
+  resize-mode: cover;
 `;
 
 const ButtonContainer = styled.View`
@@ -58,11 +61,12 @@ export const CamCardComponent: FC<CamCardProps> = ({
 }) => {
   const [image, setImage] = useState(null);
   const { imageObject, setImageObject } = useContext(ImageContainerContext);
+  const { setError } = useContext(ErrorContext);
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      alert("Sorry, we need camera roll permissions to make this work!");
+      setError!("Sorry, we need camera roll permissions to make this work!");
     }
     let result: any = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -72,17 +76,14 @@ export const CamCardComponent: FC<CamCardProps> = ({
     });
     if (!result.canceled) {
       setImage(result.assets[0].uri);
-      setImageObject({
-        ...imageObject,
-        [`object_${Object.keys(imageObject).length}`]: result.assets[0].uri,
-      });
+      setImageObject(result.assets[0].uri);
     }
   };
 
   const takeImage = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
-      alert("Sorry, we need camera roll permissions to make this work!");
+      setError!("Sorry, we need camera roll permissions to make this work!");
     }
     try {
       let result: any = await ImagePicker.launchCameraAsync({
@@ -100,18 +101,16 @@ export const CamCardComponent: FC<CamCardProps> = ({
     }
   };
   return (
-    <CardComponent key={_key as any} overrideChildren={true}>
+    <CardComponent key={_key as any} overrideChildren={true} bordered={true}>
       <CustomCard>
         {image && !imageLink ? (
           <Picture
             source={{ uri: image }}
-            style={{ width: 180, height: 180, marginBottom: 10 }}
           />
         ) : null}
         {!image && imageLink && (
           <Picture
             source={{ uri: imageLink }}
-            style={{ width: 180, height: 180, marginBottom: 10 }}
           />
         )}
         {!image &&
@@ -124,15 +123,13 @@ export const CamCardComponent: FC<CamCardProps> = ({
                   `object_${Object.keys(imageObject).length - 1}`
                 ],
               }}
-              style={{ width: 180, height: 180, marginBottom: 10 }}
             />
           )}
-        <ButtonContainer>
+        {!image && !imageLink && <ButtonContainer>
           <Button onPress={pickImage}>
-            <ButtonLabel>{image ? "Change Image" : "Upload Image"}</ButtonLabel>
-            <UploadBtnIcon width={20} height={20} />
+            <UploadBtnIcon />
           </Button>
-        </ButtonContainer>
+        </ButtonContainer>}
       </CustomCard>
     </CardComponent>
   );

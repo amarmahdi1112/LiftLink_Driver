@@ -3,10 +3,10 @@ import styled from "styled-components/native";
 import { LabelComponent } from "./typography";
 import ErrorSvg from "../../assets/svgs/error";
 import { Animated } from "react-native";
+import { isObjEmpty } from "../features/main/screen/main.screen";
 
 interface ErrorProps {
-  errorMessage: any;
-  show: boolean;
+  errorMessage?: string;
 }
 
 const ErrorContainer = styled.View`
@@ -35,9 +35,17 @@ const ErrorTextContatiner = styled.View`
 `;
 
 export const ErrorComponent: FC<PropsWithChildren<ErrorProps>> = ({
-  children,
   errorMessage,
 }) => {
+  // if (!errorMessage || errorMessage === "" || !isObjEmpty(errorMessage)) {
+  //   return null;
+  // }
+  const message =
+    typeof errorMessage === "object"
+      ? JSON.stringify(errorMessage)
+      : typeof errorMessage === "string"
+      ? errorMessage
+      : "";
   const [fadeAnim] = useState(new Animated.Value(0));
 
   const fadeIn = () => {
@@ -46,7 +54,7 @@ export const ErrorComponent: FC<PropsWithChildren<ErrorProps>> = ({
       duration: 2000,
       useNativeDriver: true,
     }).start();
-  }
+  };
 
   const fadeOut = () => {
     Animated.timing(fadeAnim, {
@@ -54,23 +62,20 @@ export const ErrorComponent: FC<PropsWithChildren<ErrorProps>> = ({
       duration: 2000,
       useNativeDriver: true,
     }).start();
-  }
+  };
 
   useEffect(() => {
-    if (errorMessage !== "") {
+    if (errorMessage) {
       fadeIn();
-    } else {
-      fadeOut();
     }
   }, [errorMessage]);
-
 
   return (
     <ErrorContainer>
       <ErrorTextContatiner>
         <ErrorSvg />
-        <LabelComponent>{errorMessage}</LabelComponent>
+        <LabelComponent>{message}</LabelComponent>
       </ErrorTextContatiner>
     </ErrorContainer>
   );
-}
+};

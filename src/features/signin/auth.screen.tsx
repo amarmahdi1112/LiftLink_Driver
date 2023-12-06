@@ -1,18 +1,18 @@
 import React, { useState, useContext, useEffect, FC } from "react";
 import styled from "styled-components/native";
-import { Alert, KeyboardAvoidingView, Platform, Pressable, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, View } from "react-native";
 import { AuthContext } from "../../infrastructure/service/authentication/context/auth.context";
 import { MainContainer } from "../../components/main.component";
 import { SigninScreen } from "./screen/signin.screen";
 import { LabelComponent } from "../../components/typography";
 import { ButtonComponent } from "../../components/button.component";
-import LogOutIcon from "../../../assets/svgs/logout";
+import LoginSvg from "../../../assets/svgs/login";
 import { Spacer } from "../../components/utils/spacer.component";
 import { SignupScreen } from "./screen/signup.screen";
 import { isObjEmpty } from "../main/screen/main.screen";
-import { Text } from "react-native-paper";
 import { ErrorComponent } from "../../components/error.component";
-import { Animated } from "react-native";
+import SignUpSvg from "../../../assets/svgs/signup";
+import { ErrorContext } from "../../infrastructure/service/error/error.context";
 
 const ScrollView = styled.ScrollView`
   flex: 1;
@@ -45,9 +45,6 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
   const {
     user,
     loading,
-    error,
-    setError,
-    isAuthenticated,
     onLogin,
     screen,
     setScreen,
@@ -61,7 +58,9 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
     emailError,
     setEmailError,
     onSignup,
+    resetAll,
   } = useContext(AuthContext);
+  const { error, setError } = useContext(ErrorContext);
   const [loadingState, setLoadingState] = useState(true);
 
   const handleLogin = async () => {
@@ -75,6 +74,10 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
       navigation.navigate("MainNavigation");
     }
   }, [user]);
+
+  useEffect(() => {
+    resetAll!();
+  }, []);
 
   useEffect(() => {
     if (!loading) {
@@ -139,7 +142,7 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
             }}
             loading={loadingState}
           >
-            <LogOutIcon width={24} height={24} />
+            <LoginSvg width={24} height={24} />
           </ButtonComponent>
         </ButtonContainer>
       )}
@@ -162,12 +165,12 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
                 await onSignup!(username, password, email);
             }}
           >
-            <LogOutIcon width={24} height={24} />
+            <SignUpSvg width={24} height={24} />
           </ButtonComponent>
         </ButtonContainer>
       )}
       {error &&
-        (<ErrorComponent errorMessage={error} show={error ? true : false} />)
+        (<ErrorComponent errorMessage={error} />)
       }
     </MainContainer>
   );

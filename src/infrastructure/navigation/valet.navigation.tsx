@@ -12,7 +12,7 @@ const Stack = createNativeStackNavigator<StackNavigatorParams>();
 
 export const ValetNavigation: React.FC = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: false }}>
       <Stack.Screen name="ValetScreen" component={ValetScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
     </Stack.Navigator>

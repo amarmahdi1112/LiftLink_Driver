@@ -4,8 +4,8 @@ import React, { FC, PropsWithChildren } from "react";
 // import { Image } from "react-native";
 import { Button, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
-import LogOutIcon from "../../assets/svgs/logout";
 import { Spacer } from "./utils/spacer.component";
+import { ActivityIndicator } from "react-native-paper";
 
 const StyledButton = styled(TouchableOpacity)<{ background?: string }>`
   background-color: ${(props) =>
@@ -55,7 +55,10 @@ export const ButtonComponent: FC<PropsWithChildren<ButtonComponentProps>> = ({
       <Spacer variant={"left.large"} />
       <HorizontalLine />
       <Spacer variant={"left.large"} />
-      {children}
+      { props.loading &&
+        <ActivityIndicator size="small" color="#fff" />
+      }
+      { !props.loading && (children)}
     </StyledButton>
   );
 };

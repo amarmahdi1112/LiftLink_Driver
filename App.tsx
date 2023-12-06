@@ -1,7 +1,5 @@
-import 'react-native-gesture-handler';
-import {
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemeProvider } from "styled-components";
 import { Navigator } from "./src/infrastructure/navigation/index.navigation";
 import { theme } from "./src/infrastructure/theme";
@@ -27,14 +25,15 @@ import { ConfirmationProvider } from "./src/infrastructure/service/confirmation/
 import { OrdersProvider } from "./src/infrastructure/service/orders/context/orders.context";
 import { useCallback } from "react";
 import * as ExpoSplashScreen from "expo-splash-screen";
+import { ErrorProvider } from "./src/infrastructure/service/error/error.context";
 
-const tunnel = true;
+const tunnel = false;
 
 const wsLink: any = new GraphQLWsLink(
   createClient({
     url: tunnel
       ? "ws://137.184.164.232/graphql/"
-      : "ws://213c-2001-56a-f994-2300-c181-a2c5-b9a3-5496.ngrok-free.app/graphql",
+      : "ws://d067-198-161-203-4.ngrok-free.app/graphql",
     connectionParams: async () => {
       const token = await AsyncStorage.getItem("token");
       return {
@@ -50,7 +49,7 @@ const wsLink: any = new GraphQLWsLink(
 const httpLink = createHttpLink({
   uri: tunnel
     ? "http://137.184.164.232/graphql"
-    : "https://213c-2001-56a-f994-2300-c181-a2c5-b9a3-5496.ngrok-free.app/graphql/",
+    : "https://d067-198-161-203-4.ngrok-free.app/graphql/",
 });
 
 const authLink = setContext(async (request, { headers }) => {
@@ -96,7 +95,6 @@ export default function App() {
 
   const onLayout = useCallback(async () => {
     if (loaded) {
-
       await ExpoSplashScreen.hideAsync();
     }
   }, [loaded]);
@@ -110,23 +108,25 @@ export default function App() {
       <ApolloProvider client={client}>
         <ThemeProvider theme={theme}>
           <SafeAreaComponent>
-            <AuthProvider>
+            <ErrorProvider>
               <DriverProvider>
-                <ConfirmationProvider>
-                  <OrdersProvider>
-                    <ValetProvider>
-                      <GestureHandlerRootView style={{ flex: 1 }}>
-                        <Navigator />
-                      </GestureHandlerRootView>
-                    </ValetProvider>
-                  </OrdersProvider>
-                </ConfirmationProvider>
+                <AuthProvider>
+                  <ConfirmationProvider>
+                    <OrdersProvider>
+                      <ValetProvider>
+                        <GestureHandlerRootView style={{ flex: 1 }}>
+                          <Navigator />
+                        </GestureHandlerRootView>
+                      </ValetProvider>
+                    </OrdersProvider>
+                  </ConfirmationProvider>
+                </AuthProvider>
               </DriverProvider>
-            </AuthProvider>
+            </ErrorProvider>
           </SafeAreaComponent>
         </ThemeProvider>
-      </ApolloProvider >
-    </View >
+      </ApolloProvider>
+    </View>
   );
 }
 

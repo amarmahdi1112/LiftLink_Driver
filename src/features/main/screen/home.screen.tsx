@@ -28,6 +28,7 @@ import {
   ValetStatus,
 } from "../../../infrastructure/service/valet/context/valet.context";
 import { DriverContext } from "../../../infrastructure/service/driver/context/driver.context";
+import ProceedSvg from "../../../../assets/svgs/proceed";
 
 const HomeContainer = styled.ScrollView`
   width: 100%;
@@ -295,7 +296,6 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       showGreetings={true}
       showAvatar={true}
       showMenu={true}
-      // imageUrl={profile.profilePicture.pictureLink}
       navigation={navigation}
     >
       <HomeContainer
@@ -442,11 +442,7 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             })}
           </RequestContainer>
         )}
-        {orders.length === 0 &&
-          !dataLoading &&
-          !refreshing &&
-          !orderRefreshing &&
-          orderError && (
+        {orders.length === 0 && (
             <NoOrderContainer>
               <NoOrderImg
                 source={{
@@ -495,10 +491,12 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       </HomeContainer>
       <ButtonContainer>
         <ButtonComponent
-          title="View Confirmed Orders"
+          title="Confirmed Orders"
           onPress={() => navigation.navigate("ConfirmedOrders")}
           background={colors.buttonColors.tertiary}
-        />
+        >
+          <ProceedSvg width={24} height={24} />
+        </ButtonComponent>
       </ButtonContainer>
     </MainContainer>
   );

@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator<StackNavigatorParams>();
 
 export const DriverNavigation: React.FC = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: false }}>
       <Stack.Screen name="DriverProfile" component={DriverScreen as any} />
     </Stack.Navigator>
   );

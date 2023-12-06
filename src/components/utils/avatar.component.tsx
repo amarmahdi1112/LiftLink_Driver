@@ -1,6 +1,8 @@
 import React, { FC } from "react";
 import styled from "styled-components/native";
 import { ImageBackground } from "react-native";
+import EmptyAvatarSvg from "../../../assets/svgs/empty_avatar";
+import { Spacer } from "./spacer.component";
 
 const Avatar = styled.View<{ width?: number; height?: number }>`
   width: ${(props) => props.width ?? 54}px;
@@ -38,38 +40,52 @@ interface AvatarComponentProps {
   showGreetings?: boolean;
   imageUrl?: string;
   fullName?: string;
+  greetingMessage?: string;
   width?: number;
   height?: number;
+  fullNameStyle?: any;
+  greetingStyle?: any;
+  spacer?: boolean;
 }
 
 export const AvatarComponent: FC<AvatarComponentProps> = ({
   showGreetings = false,
   imageUrl = "",
   fullName = "",
+  greetingMessage = "Hello,",
+  fullNameStyle,
+  greetingStyle,
+  spacer,
   width,
   height,
 }) => {
   return (
     <AvatarContainer>
-      <Avatar width={width} height={height}>
-        <ImageBackground
-          source={{
-            uri: imageUrl,
-          }}
-          style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: 20,
-            overflow: "hidden",
-          }}
-          resizeMode="cover"
-        />
-      </Avatar>
+      {imageUrl !== "" && (
+        <Avatar width={width} height={height}>
+          <ImageBackground
+            source={{
+              uri: imageUrl,
+            }}
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: 20,
+              overflow: "hidden",
+            }}
+            resizeMode="cover"
+          />
+        </Avatar>
+      )}
+      {imageUrl === "" && <EmptyAvatarSvg width={50} height={50} />}
       {showGreetings && (
         <>
           <GreetingContainer>
-            <GreetingsText>Hello,</GreetingsText>
-            <LogoSubText>{fullName}</LogoSubText>
+            <GreetingsText style={greetingStyle}>
+              {greetingMessage}
+            </GreetingsText>
+            {spacer && <Spacer variant="top.small" />}
+            <LogoSubText style={fullNameStyle}>{fullName}</LogoSubText>
           </GreetingContainer>
         </>
       )}

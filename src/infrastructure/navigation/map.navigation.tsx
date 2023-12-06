@@ -10,7 +10,7 @@ const Stack = createNativeStackNavigator<StackNavigatorParams>();
 
 export const MapNavigator: React.FC = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: false }}>
       <Stack.Screen name="MapScreen" component={MapScreen} />
     </Stack.Navigator>
   );

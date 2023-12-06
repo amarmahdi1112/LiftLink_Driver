@@ -368,6 +368,8 @@ export const GET_STARTED_VALET = gql`
         profilePicture {
           pictureLink
         }
+        firstName
+        lastName
       }
       customerDropOffTime
       customerPickUpTime

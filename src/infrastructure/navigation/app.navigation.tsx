@@ -20,6 +20,7 @@ const MainStack = createNativeStackNavigator();
 export const AppNavigator: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true);
   const { isAuthenticated } = useContext(AuthContext);
+  
 
   // Replace these with actual loading and auth status
   React.useEffect(() => {
@@ -36,14 +37,16 @@ export const AppNavigator: React.FC = () => {
     <>
       {isAuthenticated ? (
         <MainStack.Navigator initialRouteName='MainNavigation' screenOptions={{
-          headerShown: false
+          headerShown: false,
+          gestureEnabled: false
         }}>
           <MainStack.Screen name="MainNavigation" component={MainNavigator} />
           <AuthStack.Screen name="Auth" component={AuthScreen} />
         </MainStack.Navigator>
       ) : (
         <AuthStack.Navigator initialRouteName='Auth' screenOptions={{
-          headerShown: false
+          headerShown: false,
+          gestureEnabled: false
         }}>
           <AuthStack.Screen name="Auth" component={AuthScreen} />
           <MainStack.Screen name="MainNavigation" component={MainNavigator} />

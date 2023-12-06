@@ -185,10 +185,11 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
   } | null>(null);
   const [count, setCount] = useState(0);
   const [currentLocationTracker, setCurrentLocationTracker] = useState<any>({});
+  const [loaded, setLoaded] = useState(false);
 
   const decodePolyline = (pl: any) => {
     const decoded = decode(pl);
-    return decoded.map((d) => {
+    return decoded.map((d: any) => {
       return {
         latitude: d[0] || 0,
         longitude: d[1] || 0,
@@ -208,7 +209,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
   useEffect(() => {
     setPoly();
   }, []);
-  
+
   const mapCamView = async (coords: any) => {
     if (
       mapRef.current &&
@@ -263,7 +264,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
       longitudeDelta: 0.01,
     });
 
-    (mapRef.current as any).setCamera({
+    if (loaded) await (mapRef.current as any).setCamera({
       center: {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
@@ -281,7 +282,11 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
       getLocation();
     }
     if (userType === "dealership")
-      setDestinationLocation(Array.isArray(selectedValet.order) ? (selectedValet as any).order[0].pickupLocation : selectedValet.order.pickupLocation + ", Edmonton");
+      setDestinationLocation(
+        Array.isArray(selectedValet.order)
+          ? (selectedValet as any).order[0].pickupLocation
+          : selectedValet.order.pickupLocation + ", Edmonton"
+      );
     else if (userType === "customer")
       setDestinationLocation(selectedValet.dealership.dealershipAddress);
     else Alert.alert("Error", "Invalid user type");
@@ -303,7 +308,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
       (startedValet.valetStatus ===
         ValetStatus.DEALERSHIP_TO_CUSTOMER_STARTED ||
         startedValet.valetStatus ===
-        ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED ||
+          ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED ||
         startedValet.valetStatus === ValetStatus.CUSTOMER_RETURN_STARTED)
     ) {
       setStarted(true);
@@ -329,6 +334,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
               strokeColor={colors.buttonColors.quaternary}
               optimizeWaypoints={true}
               onReady={async (result: any) => {
+                setLoaded(false);
                 setCameraPosition({
                   center: {
                     latitude: result.coordinates[0].latitude,
@@ -349,6 +355,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                   longitudeDelta: 0.01,
                 });
                 await mapCamView(result.coordinates);
+                setLoaded(true);
               }}
             />
           )}
@@ -388,7 +395,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
       <SlidingUpPanel
         ref={(c) => (_panel = c)}
         draggableRange={{
-          top: 470,
+          top: 500,
           bottom: 180,
         }}
         backdropOpacity={0.2}
@@ -396,10 +403,10 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
         onMomentumDragEnd={(position) => {
           if (position < 400) {
             setSwipeText("Swipe up to view details");
-            // setViewData(false);
+            setViewData(false);
           } else {
             setSwipeText("Swipe down to close");
-            // setViewData(true);
+            setViewData(true);
           }
         }}
       >
@@ -420,14 +427,16 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                   <Avatar>
                     <AvatarImage
                       source={{
-                        uri: profile.profilePicture.pictureLink,
+                        uri: selectedValet.customer.profilePicture[0]
+                          .pictureLink,
                       }}
                     />
                   </Avatar>
                   <Spacer variant="left.medium" />
                   <UserInfoContainer>
                     <LabelComponent inverted={true}>
-                      {profile.firstName} {profile.lastName}
+                      {selectedValet.customer.firstName}{" "}
+                      {selectedValet.customer.lastName}
                     </LabelComponent>
                     <Spacer variant="top.small" />
                     <Chip>
@@ -438,7 +447,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                         }}
                         title2={true}
                       >
-                        {profile.accountType.toUpperCase()}
+                        {selectedValet.customer.accountType.toUpperCase()}
                       </LabelComponent>
                     </Chip>
                   </UserInfoContainer>
@@ -475,7 +484,9 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                   <Spacer variant="top.xsmall" />
                   {!isObjEmpty(selectedValet) && (
                     <LabelComponent inverted={true} title2={true}>
-                      {Array.isArray(selectedValet.order) ? (selectedValet as any).order[0].pickupLocation : selectedValet.order.pickupLocation || "N/A"}
+                      {Array.isArray(selectedValet.order)
+                        ? (selectedValet as any).order[0].pickupLocation
+                        : selectedValet.order.pickupLocation || "N/A"}
                     </LabelComponent>
                   )}
                 </ContentView>
@@ -490,7 +501,11 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                   <Spacer variant="top.xsmall" />
                   <LabelComponent inverted={true} title2={true}>
                     {format(
-                      new Date(Array.isArray(selectedValet.order) ? (selectedValet as any).order[0].orderDeliveryDate : selectedValet.order.orderDeliveryDate),
+                      new Date(
+                        Array.isArray(selectedValet.order)
+                          ? (selectedValet as any).order[0].orderDeliveryDate
+                          : selectedValet.order.orderDeliveryDate
+                      ),
                       "MM/dd/yyyy"
                     )}
                   </LabelComponent>
@@ -506,13 +521,13 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
           borderRadius={20}
           padding={0}
           reverseSlideEnabled={true}
-          // containerStyle={{
-          //   backgroundColor: started
-          //     ? colors.buttonColors.error
-          //     : colors.buttonColors.primary,
-          //   padding: 0,
-          //   margin: 0,
-          // }}
+          containerStyle={{
+            backgroundColor: started
+              ? colors.buttonColors.error
+              : colors.buttonColors.primary,
+            padding: 0,
+            margin: 0,
+          }}
           underlayStyle={{
             backgroundColor: started
               ? colors.buttonColors.error

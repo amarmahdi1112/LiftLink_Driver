@@ -57,6 +57,7 @@ export const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("MainScreen: useEffect");
     const fetchUserData = async () => {
       if (isObjEmpty(profile)) {
         await onGetUserData();

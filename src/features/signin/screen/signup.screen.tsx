@@ -106,6 +106,11 @@ export const SignupScreen: FC<SignupScreenProps> = ({ navigation }) => {
           isError={passwordError}
         />
         {passwordError && <ErrorText>Password Required</ErrorText>}
+        <Spacer variant="top.medium" />
+        <LabelComponent dateTitle={true}>
+          Password must be at least 8 characters, contain at least 1 number,
+          1 uppercase letter, 1 lowercase letter, and 1 special character
+        </LabelComponent>
         <Spacer variant="top.xsmall" />
       </Container>
       <Spacer variant="top.large" />

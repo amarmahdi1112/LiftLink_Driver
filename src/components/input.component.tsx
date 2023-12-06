@@ -29,6 +29,7 @@ interface InputComponentProps {
   autocompleteType?: string;
   keyboardType?: KeyboardTypeOptions;
   textContentType?: string;
+  disabled?: boolean;
 }
 
 export const InputComponent: FC<PropsWithChildren<InputComponentProps>> = ({
@@ -45,6 +46,7 @@ export const InputComponent: FC<PropsWithChildren<InputComponentProps>> = ({
       isError={props.isError}
       placeholder={props.placeholder}
       autoFocus={props.autofocus}
+      editable={props.disabled ? false : true}
     />
   );
 };

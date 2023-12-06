@@ -15,7 +15,7 @@ const Stack = createNativeStackNavigator<StackNavigatorParams>();
 export const SplashNavigator: React.FC = () => {
   return (
     <Stack.Navigator
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: false, gestureEnabled: false }}
       initialRouteName="Splash"
     >
       <Stack.Screen name="Splash" component={Splash} />

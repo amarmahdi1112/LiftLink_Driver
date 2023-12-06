@@ -98,6 +98,7 @@ interface MainContainerProps {
   initial?: boolean;
   secondaryPage?: boolean;
   navigation: any; // Replace 'any' with the type of your navigation
+  showSecondaryAvatar?: boolean;
 }
 
 export const MainContainer: FC<PropsWithChildren<MainContainerProps>> = ({
@@ -108,16 +109,12 @@ export const MainContainer: FC<PropsWithChildren<MainContainerProps>> = ({
   showGreetings = false,
   showAvatar = false,
   styles,
-  isLoading = true,
   initial = true,
   secondaryPage = false,
+  showSecondaryAvatar = false,
   navigation,
 }) => {
-  const { profile, resetAllDriver } = useContext(DriverContext);
-  const { resetAllConfirmation } = useContext(ConfirmationContext);
-  const { resetAll } = useContext(AuthContext);
-  const { resetAllOrders } = useContext(OrdersContext);
-  const { resetAllValet } = useContext(ValetContext);
+  const { profile } = useContext(DriverContext);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -154,23 +151,27 @@ export const MainContainer: FC<PropsWithChildren<MainContainerProps>> = ({
           </Pressable>
         )}
 
-        {showAvatar && !loading && (
-          <AvatarComponent
-            showGreetings={showGreetings}
-            fullName={title || `${profile.firstName} ${profile.lastName}`}
-            imageUrl={profile.profilePicture.pictureLink}
-          />
+        {showAvatar && !loading && !isObjEmpty(profile) && (
+          <Pressable onPress={() => navigation.navigate("ProfileSettings")}>
+            <AvatarComponent
+              showGreetings={showGreetings}
+              fullName={title || `${profile.firstName} ${profile.lastName}`}
+              imageUrl={profile.profilePicture[0].pictureLink}
+            />
+          </Pressable>
+        )}
+
+        {showSecondaryAvatar && (
+          <Pressable onPress={() => navigation.navigate("Profile")}>
+            <AvatarComponent
+              imageUrl={profile.profilePicture[0].pictureLink}
+            />
+          </Pressable>
         )}
         {showMenu && (
           <Pressable
             onPress={async () => {
-              await AsyncStorage.clear();
-              navigation.navigate("Auth");
-              resetAll!();
-              resetAllConfirmation!();
-              resetAllDriver();
-              resetAllOrders();
-              resetAllValet();
+              navigation.navigate("Settings");
             }}
           >
             <Menu width={32} height={32} />

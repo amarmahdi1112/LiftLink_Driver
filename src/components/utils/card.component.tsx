@@ -20,7 +20,7 @@ const CardItem = styled.TouchableOpacity<CardProp>`
   justify-content: ${(props: any) => props.justifyContent || "center"};
   align-items: ${(props: any) => props.alignItems || "center"};
   width: ${(props: any) => props.width || "100%"};
-  max-height: ${(props: any) => props.height || "100%"};
+  height: ${(props: any) => props.height || "auto"};
   border: 1px solid
     ${(props: any) =>
       props.bordered ? props.theme.colors.formColors.border : "transparent"};
@@ -78,7 +78,6 @@ const DarkBgImg = styled.Image`
 `;
 
 const CardPadding = styled.View`
-  padding: 20px;
 `;
 
 const LabelContainer = styled.View`

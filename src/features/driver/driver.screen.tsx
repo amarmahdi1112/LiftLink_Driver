@@ -4,7 +4,10 @@ import { useIsFocused } from "@react-navigation/native";
 import { MainContainer } from "../../components/main.component";
 import { DriverProfileScreen } from "./screens/driver.profile.screen";
 import { ImageContainerProvider } from "./utils/imageObjectContainer";
-import { DriverContext, screens } from "../../infrastructure/service/driver/context/driver.context";
+import {
+  DriverContext,
+  screens,
+} from "../../infrastructure/service/driver/context/driver.context";
 import { DriverPhoneVerificationScreen } from "./screens/driver.phone.verification.screen";
 import { DriverInfoScreen } from "./screens/driver.info.screen";
 // import LogoLoadingIndicator from "../../../assets/svgs/logoLoadingIndicator";
@@ -12,9 +15,12 @@ import styled from "styled-components/native";
 import { isObjEmpty } from "../main/screen/main.screen";
 import { LabelComponent } from "../../components/typography";
 import { ButtonComponent } from "../../components/button.component";
-import LogOutIcon from "../../../assets/svgs/logout";
-import { Alert, KeyboardAvoidingView, Platform } from "react-native";
+import ProceedSvg from "../../../assets/svgs/proceed";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { ErrorContext } from "../../infrastructure/service/error/error.context";
+import { AuthContext } from "../../infrastructure/service/authentication/context/auth.context";
+import { ErrorComponent } from "../../components/error.component";
 
 const LoaderContainer = styled.View`
   position: absolute;
@@ -47,8 +53,13 @@ interface DriverScreenProps {
   navigation: any;
 }
 
-export const DriverScreen: FC<DriverScreenProps> = ({ children, navigation }) => {
-  const { screen, setScreen, profile, updateNames } = useContext(DriverContext);
+export const DriverScreen: FC<DriverScreenProps> = ({
+  children,
+  navigation,
+}) => {
+  const { screen, setScreen, profile } = useContext(DriverContext);
+  const { updateNames, firstName, lastName } = useContext(AuthContext);
+  const { error, setError } = useContext(ErrorContext);
   const [loading, setLoading] = useState(true);
   const isFocused = useIsFocused();
 
@@ -68,6 +79,14 @@ export const DriverScreen: FC<DriverScreenProps> = ({ children, navigation }) =>
   };
 
   useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        setError("");
+      }, 3000);
+    }
+  }, [error]);
+
+  useEffect(() => {
     if (isFocused) {
       checker();
     }
@@ -79,7 +98,7 @@ export const DriverScreen: FC<DriverScreenProps> = ({ children, navigation }) =>
       <MainContainer navigation={navigation} showAvatar={false} showLogo={true}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1, width: "100%" }}
+          style={{ flex: 1, width: "100%", height: "100%" }}
         >
           <ScrollView>
             <LabelContainer>
@@ -113,23 +132,25 @@ export const DriverScreen: FC<DriverScreenProps> = ({ children, navigation }) =>
           <ButtonComponent
             title="Next"
             onPress={async () => {
-              const updateName = await updateNames();
+              if (!firstName || !lastName) {
+                setError("Please enter your names");
+                return;
+              }
+              const updateName = await updateNames!(firstName, lastName);
               if (updateName) {
                 if (isObjEmpty(profile.profilePicture))
                   setScreen(screens.profile);
                 else navigation.navigate("Home");
               } else {
-                Alert.alert(
-                  "Alert!",
-                  "Failed to update names. Please try again."
-                );
+                setError("Something went wrong");
               }
             }}
           >
-            <LogOutIcon width={24} height={24} />
+            <ProceedSvg width={24} height={24} />
           </ButtonComponent>
         </ButtonContainer>
       )}
+      {error && <ErrorComponent errorMessage={error} />}
     </ImageContainerProvider>
   );
 };

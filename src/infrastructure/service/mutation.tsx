@@ -17,8 +17,8 @@ export const Signup = gql`
 `;
 
 export const Login = gql`
-  mutation ($password: String!, $username: String!) {
-    login(password: $password, username: $username) {
+  mutation ($password: String!, $username: String, $email: String) {
+    login(password: $password, username: $username, email: $email) {
       token
       user {
         accountType
@@ -412,5 +412,23 @@ export const SEND_LOCATION = gql`
       latitude
       longitude
     }
+  }
+`;
+
+export const CHANGE_PASSWORD = gql`
+  mutation ($newPassword: String!, $oldPassword: String!) {
+    changePassword(newPassword: $newPassword, oldPassword: $oldPassword)
+  }
+`;
+
+export const UPDATE_EMAIL = gql`
+  mutation ($newEmail: String!) {
+    changeEmail(newEmail: $newEmail)
+  }
+`;
+
+export const UPDATE_USERNAME = gql`
+  mutation ($newUsername: String!) {
+    changeUsername(newUsername: $newUsername)
   }
 `;

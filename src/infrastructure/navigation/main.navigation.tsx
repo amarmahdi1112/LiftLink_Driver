@@ -10,6 +10,10 @@ import { OrderConfirmationScreen } from "../../features/main/screen/order.confir
 import { ConfirmedOrdersScreen } from "../../features/main/screen/confirmed.orders.screen";
 import { ValetNavigation } from "./valet.navigation";
 import { MapNavigator } from "./map.navigation";
+import { SettingsScreen } from "../../features/main/screen/settings.screen";
+import { TermsScreen } from "../../features/main/screen/terms.screen";
+import { SecurityScreen } from "../../features/main/screen/security.screen";
+import { ProfileScreen } from "../../features/main/screen/profile.screen";
 
 type StackNavigatorParams = {
   Main: any;
@@ -31,7 +35,7 @@ const Txt = styled.Text`
 export const MainNavigator: React.FC = () => {
   return (
       <OrderConfirmationProvider>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: false }}>
         <>
           <Stack.Screen name="Main" component={MainScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
@@ -47,6 +51,10 @@ export const MainNavigator: React.FC = () => {
           />
           <Stack.Screen name="Valet" component={ValetNavigation} />
           <Stack.Screen name="Map" component={MapNavigator} />
+          <Stack.Screen name="Settings" component={SettingsScreen} />
+          <Stack.Screen name="Terms" component={TermsScreen} />
+          <Stack.Screen name="Security" component={SecurityScreen} />
+          <Stack.Screen name="ProfileSettings" component={ProfileScreen} />
         </>
       </Stack.Navigator>
     </OrderConfirmationProvider>

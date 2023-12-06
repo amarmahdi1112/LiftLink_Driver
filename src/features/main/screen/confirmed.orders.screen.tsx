@@ -42,6 +42,8 @@ const NoOrderContainer = styled.View`
 
 const NoOrderImg = styled.Image`
   resize-mode: contain;
+  width: 100px;
+  height: 100px;
 `;
 
 interface OrderProps {

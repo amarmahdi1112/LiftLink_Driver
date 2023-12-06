@@ -1,13 +1,7 @@
-import React, { FC, useContext, useEffect, useState } from "react";
-import { DriverContext } from "../../../infrastructure/service/driver/context/driver.context";
+import React, { FC } from "react";
 import styled from "styled-components/native";
 import { LabelComponent } from "../../../components/typography/label.component";
 import { Spacer } from "../../../components/utils/spacer.component";
-import { ButtonComponent } from "../../../components/button.component";
-import { AuthContext } from "../../../infrastructure/service/authentication/context/auth.context";
-import { Alert } from "react-native";
-import { isObjEmpty } from "./main.screen";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Container = styled.View`
   flex: 1;
@@ -56,42 +50,6 @@ interface SplashProps {
 }
 
 export const Splash: FC<SplashProps> = ({ navigation }) => {
-  // const {
-  //   isAuthenticated,
-  //   loading: authLoading,
-  //   err,
-  // } = useContext(AuthContext);
-  const { profile, loading, onGetUserData, errorDriver } =
-    useContext(DriverContext);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await onGetUserData();
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (!loading) {
-      if (!isObjEmpty(profile)) {
-        // setTimeout(() => {
-          if (profile.accountType !== "driver") {
-            AsyncStorage.clear();
-            // navigation.navigate("Auth");
-            return;
-          }
-          // navigation.navigate("MainNavigation");
-        // }, 2000);
-      }
-      if (errorDriver) {
-        // setTimeout(() => {
-          // navigation.navigate("Auth");
-        // }, 2000);
-      }
-    }
-  }, [loading]);
-
   return (
     <Container>
       <OverlayImg

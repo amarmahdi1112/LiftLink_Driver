@@ -1,8 +1,12 @@
-import React, { useState, createContext, useEffect, FC } from "react";
+import React, { useState, createContext, useEffect, FC, useContext } from "react";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
-import { Login, Logout, Signup, UPDATE_PHONE } from "../../mutation";
+import { CHANGE_PASSWORD, Login, Logout, Signup, UPDATE_EMAIL, UPDATE_NAME, UPDATE_PHONE, UPDATE_USERNAME, UPLOAD_PROFILE_PICTURE } from "../../mutation";
 import { IS_AUTHENTICATED } from "../../query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { uploadToFirebase } from "../../../../../firebase-config";
+import { DriverContext } from "../../driver/context/driver.context";
+import { ErrorContext } from "../../error/error.context";
+import { isObjEmpty } from "../../../../features/main/screen/main.screen";
 
 interface User {
   // Define the properties of the User object here
@@ -10,12 +14,15 @@ interface User {
 
 interface AuthContextProps {
   loading: boolean;
-  error: Error | null;
-  setError: React.Dispatch<React.SetStateAction<any | null>>;
   user: User | null;
   isAuthenticated: boolean;
   onLogin: (username: string, password: string) => Promise<void>;
   onLogout: () => Promise<void>;
+  onChangePassword: (oldPassword: string, newPassword: string) => Promise<void>;
+  onChangeEmail: (email: string) => Promise<void>;
+  onChangeUsername: (username: string) => Promise<void>;
+  onUpdateProfilePicture: (pictureLink: string) => Promise<void>;
+  updateNames: (firstName: any, lastName: any) => Promise<any>;
   screen: string;
   setScreen: React.Dispatch<React.SetStateAction<string>>;
   username: string;
@@ -57,13 +64,18 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
+  // const [error, setError] = useState<any>("");
   const [login, { loading: loginLoading }] = useMutation(Login);
   const isAuthenticatedQuery = useQuery(IS_AUTHENTICATED);
   const [updatePhone] = useMutation(UPDATE_PHONE);
   const [logout] = useMutation(Logout);
   const [signup] = useMutation(Signup);
+  const [changePassword] = useMutation(CHANGE_PASSWORD);
+  const [changeEmail] = useMutation(UPDATE_EMAIL);
+  const [changeUsername] = useMutation(UPDATE_USERNAME);
+  const [uploadProfilePicture] = useMutation(UPLOAD_PROFILE_PICTURE);
   const [screen, setScreen] = useState("signin");
+  const [progress, setProgress] = useState(0);
 
   // Signup/Signin states and functions
   const [username, setUsername] = useState("");
@@ -80,6 +92,9 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const [firstNameError, setfirstNameError] = useState(false);
   const [lastName, setlastName] = useState("");
   const [lastNameError, setlastNameError] = useState(false);
+  const [updateName] = useMutation(UPDATE_NAME);
+  const { profile, setProfile, onGetUserData } = useContext(DriverContext)
+  const { setError } = useContext(ErrorContext);
 
   const onLogin = async (username: string, password: string) => {
     if (usernameError || passwordError) {
@@ -87,7 +102,20 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
     }
     setLoading(true);
     try {
-      const { data } = await login({ variables: { username, password } });
+      let _username;
+      let _email;
+      if (username!.includes("@")) {
+        _email = username;
+      } else {
+        _username = username;
+      }
+      const { data } = await login({
+        variables: { 
+          username: _username,
+          email: _email,
+          password, 
+        },
+      });
       setUser(data.login.user);
       await AsyncStorage.setItem("token", data.login.token);
       setIsAuthenticated(true);
@@ -121,8 +149,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
       setLoading(loginLoading);
       return data;
     } catch (error: any) {
-      console.log("error", error);
-      setError(error);
+      setError(error.message);
       setLoading(false);
     }
   };
@@ -145,33 +172,123 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
         } = await isAuthenticatedQuery.refetch();
         if (isLoggedIn) {
           setIsAuthenticated(true);
-          setError(null);
+          if (isObjEmpty(profile)) {
+            await onGetUserData();
+          }
+          setError("");
         } else {
           setIsAuthenticated(false);
-          setError(null);
+          setError("");
           AsyncStorage.clear();
         }
         if (error) {
           setIsAuthenticated(false);
-          setError(error as any);
+          setError(error.message);
         }
       }
     } catch (error: any) {
       setIsAuthenticated(false);
-      setError(error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
   const updatePhoneMutation = async (phone: string) => {
+    setLoading(true);
     try {
       const { data } = await updatePhone({
         variables: { phoneNumber: phone },
       });
       return data;
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onChangePassword = async (oldPassword: string, newPassword: string) => {
+    setLoading(true);
+    try {
+      const { data } = await changePassword({
+        variables: { oldPassword, newPassword },
+      });
+      return data;
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const onChangeEmail = async (email: string) => {
+    setLoading(true);
+    try {
+      const { data } = await changeEmail({
+        variables: { newEmail: email },
+      });
+      return data;
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const onChangeUsername = async (username: string) => {
+    setLoading(true);
+    try {
+      const { data } = await changeUsername({
+        variables: { newUsername: username },
+      });
+      return data;
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const onUpdateProfilePicture = async (imageObject: any) => {
+    setLoading(true);
+    const imageKey = `object_${Object.keys(imageObject).length - 1}`;
+    const fileName = imageObject.substring(
+      imageObject.lastIndexOf("/") + 1
+    );
+    try {
+      const data = await uploadToFirebase(
+        imageObject,
+        `profiles/${fileName}`,
+        (progress: any) => {
+          setProgress(progress);
+        }
+      );
+
+      const {data: { updateProfilePicture }} = await uploadProfilePicture({
+        variables: {
+          pictureLink: data.url,
+        },
+      })
+        await onGetUserData();
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateNames = async (firstName: any, lastName: any) => {
+    try {
+      const { data } = await updateName({
+        variables: { firstName, lastName },
+      });
+      let _profile = { ...profile } as any;
+      _profile.firstName = firstName;
+      _profile.lastName = lastName;
+      setProfile(_profile);
+      return data.updateName;
     } catch (error) {
-      throw error;
     }
   };
 
@@ -188,7 +305,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
     setPhoneError(false);
     setfirstNameError(false);
     setlastNameError(false);
-  }
+  };
 
   useEffect(() => {
     checkAuth();
@@ -198,12 +315,15 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
     <AuthContext.Provider
       value={{
         loading,
-        error,
-        setError,
         user,
         isAuthenticated,
         onLogin,
         onLogout,
+        onChangePassword,
+        onChangeEmail,
+        onChangeUsername,
+        onUpdateProfilePicture,
+        updateNames,
         screen,
         setScreen,
         username,
@@ -237,5 +357,5 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
     >
       {children}
     </AuthContext.Provider>
-  )
+  );
 };
