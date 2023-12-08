@@ -129,7 +129,6 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
   const [rightImgUrl, setRightImgUrl] = useState("");
   const [inProgress, setInProgress] = useState(false);
   const [totalUploadProgress, setTotalUploadProgress] = useState(0);
-  const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [fimgError, setFimgError] = useState(false);
   const [bimgError, setBimgError] = useState(false);
@@ -152,6 +151,8 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
     exists,
     onStartValet,
     startedValet,
+    isError,
+    setIsError,
   } = useContext(ValetContext);
   const { error } = useContext(ErrorContext);
 
@@ -177,7 +178,6 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
   };
 
   const uploadImages = async () => {
-    console.log("userType", userType);
     setLoading(true);
     setIsError(false);
     setErrorMessage("");
@@ -225,7 +225,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
       setGasLevelError(true);
       setIsError(true);
     }
-    if (error) {
+    if (error || isError) {
       setInProgress(false);
       return;
     }
@@ -255,90 +255,97 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
           setProgressLeft(Number.parseInt(progress));
         }));
       setLeftImgUrl(leftUrl);
-      // console.log(userType);
+    } catch (error: any) {
+    }
+    // console.log(userType);
 
-      // const datas = {
-      //   frontImage: frontUrl,
-      //   backImage: backUrl,
-      //   leftImage: leftUrl,
-      //   rightImage: rightUrl,
-      //   mileage: Number.parseInt(mileage),
-      //   gasLevel: Number.parseInt(gasLevel),
-      //   comments: comments,
-      //   customerId: selectedValet.customerId ?? startedValet.customer.userId,
-      //   dealershipId: selectedValet.dealership.dealershipId,
-      //   orderId: selectedValet.order[0].orderId ?? startedValet.order.orderId,
-      //   userType: userType,
-      // };
-      // console.log("datas", datas);
+    // const datas = {
+    //   frontImage: frontUrl,
+    //   backImage: backUrl,
+    //   leftImage: leftUrl,
+    //   rightImage: rightUrl,
+    //   mileage: Number.parseInt(mileage),
+    //   gasLevel: Number.parseInt(gasLevel),
+    //   comments: comments,
+    //   customerId: selectedValet.customerId ?? startedValet.customer.userId,
+    //   dealershipId: selectedValet.dealership.dealershipId,
+    //   orderId: selectedValet.order[0].orderId ?? startedValet.order.orderId,
+    //   userType: userType,
+    // };
+    // console.log("datas", datas);
 
-      // console.log("selectedValet", startedValet);
+    // console.log("selectedValet", startedValet);
 
-      // const datas = {
-      //   userType: userType,
-      //   customerId: selectedValet.customerId || startedValet.customer.userId,
-      //   dealershipId:
-      //     selectedValet.dealership.dealershipId || startedValet.dealershipId,
-      //   orderId: selectedValet.order.orderId || startedValet.order.orderId,
-      //   backImage:
-      //     "https://media.istockphoto.com/id/854923054/photo/three-dimensional-modern-white-car.jpg?s=2048x2048&w=is&k=20&c=FIGHMkABg9xpB4vHMEOcCjVRZzw3ogGbLJVpSAryJmw=",
-      //   rightImage:
-      //     "https://media.istockphoto.com/id/1157655660/photo/generic-red-suv-on-a-white-background-side-view.jpg?s=2048x2048&w=is&k=20&c=u_vqLBX3koM67osQVXrWogzYtvgpx__mORzyfBLXo6U=",
-      //   frontImage:
-      //     "https://media.istockphoto.com/id/1154617648/photo/3d-illustration-of-generic-compact-car-front-view.jpg?s=2048x2048&w=is&k=20&c=scw578Hsr_L2-857IQz9oiiTBJIdovTMlLuISOrKuF4=",
-      //   leftImage:
-      //     "https://media.istockphoto.com/id/1135255668/photo/blue-hatchback-car.jpg?s=1024x1024&w=is&k=20&c=KDl9n7tu0f73NiymNk_G_KOzIvtijZSJkVWLZ7s8L1Y=",
-      //   comments: "something something......",
-      //   gasLevel: 100,
-      //   mileage: 1000,
-      // };
-
-      if (userType === "dealership") {
-        await onCreateValet({
-          frontImage: frontUrl,
-          backImage: backUrl,
-          leftImage: leftUrl,
-          rightImage: rightUrl,
+    // const datas = {
+    //   userType: userType,
+    //   customerId: selectedValet.customerId || startedValet.customer.userId,
+    //   dealershipId:
+    //     selectedValet.dealership.dealershipId || startedValet.dealershipId,
+    //   orderId: selectedValet.order.orderId || startedValet.order.orderId,
+    //   backImage:
+    //     "https://media.istockphoto.com/id/854923054/photo/three-dimensional-modern-white-car.jpg?s=2048x2048&w=is&k=20&c=FIGHMkABg9xpB4vHMEOcCjVRZzw3ogGbLJVpSAryJmw=",
+    //   rightImage:
+    //     "https://media.istockphoto.com/id/1157655660/photo/generic-red-suv-on-a-white-background-side-view.jpg?s=2048x2048&w=is&k=20&c=u_vqLBX3koM67osQVXrWogzYtvgpx__mORzyfBLXo6U=",
+    //   frontImage:
+    //     "https://media.istockphoto.com/id/1154617648/photo/3d-illustration-of-generic-compact-car-front-view.jpg?s=2048x2048&w=is&k=20&c=scw578Hsr_L2-857IQz9oiiTBJIdovTMlLuISOrKuF4=",
+    //   leftImage:
+    //     "https://media.istockphoto.com/id/1135255668/photo/blue-hatchback-car.jpg?s=1024x1024&w=is&k=20&c=KDl9n7tu0f73NiymNk_G_KOzIvtijZSJkVWLZ7s8L1Y=",
+    //   comments: "something something......",
+    //   gasLevel: 100,
+    //   mileage: 1000,
+    // };
+    // chek if the order id is in the selected valet or started valet and check if the order is an object or an array and get the id
+    const orderId = !isObjEmpty(selectedValet) ? Array.isArray(selectedValet.order) ? selectedValet.order[0].orderId : selectedValet.order.orderId : !isObjEmpty(startedValet) ? Array.isArray(startedValet.order) ? startedValet.order[0].orderId : startedValet.order.orderId : "";
+    // check if the customer id is in the selected valet or started valet and get the id
+    const customerId = selectedValet.customerId || startedValet.customer.userId;
+    if (userType === "dealership") {
+      console.log(orderId)
+      try {
+        const create = await onCreateValet({
+          frontImage: frontImgUrl,
+          backImage: backImgUrl,
+          leftImage: leftImgUrl,
+          rightImage: rightImgUrl,
           mileage: Number.parseInt(mileage),
           gasLevel: Number.parseInt(gasLevel),
           comments: comments,
-          customerId: selectedValet.customerId || startedValet.customer.userId,
+          customerId: customerId,
           dealershipId: selectedValet.dealership.dealershipId,
-          orderId: selectedValet.order[0].orderId || startedValet.order.orderId,
+          orderId: orderId,
           userType: userType,
         });
-      } else if (userType === "customer") {
-        await onStartValet(
+        if (create) navigation.navigate("Map");
+      } catch (error: any) {
+      } finally {
+        setInProgress(false);
+        setLoading(false);
+      }
+    } else if (userType === "customer") {
+      try {
+        const start = await onStartValet(
           ValetStatus.CUSTOMER_VEHICLE_PICK_UP,
           valetData.valetId || startedValet.valetId,
           {
-            frontImage: frontUrl,
-            backImage: backUrl,
-            leftImage: leftUrl,
-            rightImage: rightUrl,
+            frontImage: frontImgUrl,
+            backImage: backImgUrl,
+            leftImage: leftImgUrl,
+            rightImage: rightImgUrl,
             mileage: Number.parseInt(mileage),
             gasLevel: Number.parseInt(gasLevel),
             comments: comments,
-            customerId:
-              selectedValet.customerId || startedValet.customer.userId,
+            customerId: customerId,
             dealershipId: selectedValet.dealership.dealershipId,
-            orderId:
-              selectedValet.order[0].orderId || startedValet.order.orderId,
+            orderId: orderId,
             userType: userType,
           }
         );
-      }
-
-      if (valetData) {
+        if (start) navigation.navigate("Map");
+      } catch (error: any) {
+        setIsError(true);
+      } finally {
         setInProgress(false);
-        navigation.navigate("Map");
-        return;
+        setLoading(false);
       }
-    } catch (error: any) {
-      setInProgress(false);
-      setIsError(true);
-    } finally {
-      setLoading(false);
     }
   };
 

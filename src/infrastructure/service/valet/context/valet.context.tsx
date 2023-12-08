@@ -60,6 +60,8 @@ interface ValetContextProps {
   setPendingConfirmations: React.Dispatch<React.SetStateAction<any[]>>;
   selectedPendingConfirmation: any;
   setSelectedPendingConfirmation: React.Dispatch<React.SetStateAction<any>>;
+  isError: boolean;
+  setIsError: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export enum ValetStatus {
@@ -102,6 +104,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const [valetData, setValetData] = useState({});
   const valetExists = useQuery(VALET_EXISTS);
   const [exists, setExists] = useState(false);
+  const [isError, setIsError] = useState(false);
   const { error, setError } = useContext(ErrorContext);
   const [userType, setUserType] = useState("dealership");
   const getPendingConfirmation = useQuery(GET_PENDING_CONFIRMATION);
@@ -124,6 +127,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   };
 
   const onCreateValet = async (inputs: any) => {
+    isError && setIsError(false);
     try {
       await onValetExists(inputs.orderId);
       if (exists) {
@@ -134,25 +138,27 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       setValetData(data.createValet);
       return data;
     } catch (error: any) {
+      console.log(error);
       setError(error.message);
+      setIsError(true);
     }
   };
 
   const onStartValet = async (state: any, valetId: any, inputs: any) => {
+    setStartLoading(true);
+    isError && setIsError(false);
     try {
-      console.log("inputs", inputs);
       const { data } = await startValet({
         variables: { state, valetId, inputs },
       });
 
       if (!isObjEmpty(data) && !isObjEmpty(data.updateValet)) {
         setStartedValet(data.updateValet);
-      } else {
-        setError("Failed to start valet");
       }
       return data;
     } catch (error: any) {
-      setError(`${error.message}`);
+      setError(error.message);
+      setIsError(true);
     }
   };
 
@@ -247,6 +253,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         screen,
         exists,
         loading,
+        isError,
         userType,
         valetData,
         valetExists,
@@ -257,6 +264,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         pendingConfirmations,
         selectedPendingConfirmation,
         setScreen,
+        setIsError,
         setUserType,
         onStartValet,
         onCreateValet,

@@ -186,6 +186,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
   const [count, setCount] = useState(0);
   const [currentLocationTracker, setCurrentLocationTracker] = useState<any>({});
   const [loaded, setLoaded] = useState(false);
+  const [customerProfilePicture, setCustomerProfilePicture] = useState("");
 
   const decodePolyline = (pl: any) => {
     const decoded = decode(pl);
@@ -208,6 +209,31 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     setPoly();
+    // check if the customerProfilePicture is on the selectedValet or startedValet and if its an array or an object and set the customerProfilePicture
+    if (selectedValet.customer && selectedValet.customer.profilePicture) {
+      if (Array.isArray(selectedValet.customer.profilePicture)) {
+        setCustomerProfilePicture(
+          selectedValet.customer.profilePicture[0].pictureLink
+        );
+      } else {
+        setCustomerProfilePicture(
+          selectedValet.customer.profilePicture.pictureLink
+        );
+      }
+    } else if (
+      startedValet.customer &&
+      startedValet.customer.profilePicture
+    ) {
+      if (Array.isArray(startedValet.customer.profilePicture)) {
+        setCustomerProfilePicture(
+          startedValet.customer.profilePicture[0].pictureLink
+        );
+      } else {
+        setCustomerProfilePicture(
+          startedValet.customer.profilePicture.pictureLink
+        );
+      }
+    }
   }, []);
 
   const mapCamView = async (coords: any) => {
@@ -427,7 +453,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                   <Avatar>
                     <AvatarImage
                       source={{
-                        uri: selectedValet.customer.profilePicture[0].pictureLink,
+                        uri: customerProfilePicture,
                       }}
                     />
                   </Avatar>
@@ -451,7 +477,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                     </Chip>
                   </UserInfoContainer>
                 </UserProfileContainer>
-                <UserInfoContainer>
+                {/* <UserInfoContainer>
                   <LabelComponent
                     inverted={true}
                     styles={{
@@ -471,7 +497,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                   >
                     5 Reviews
                   </LabelComponent>
-                </UserInfoContainer>
+                </UserInfoContainer> */}
               </AvatarContainer>
               <Spacer variant="top.large" />
               <ContentContainer>
