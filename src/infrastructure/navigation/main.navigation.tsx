@@ -14,6 +14,10 @@ import { SettingsScreen } from "../../features/main/screen/settings.screen";
 import { TermsScreen } from "../../features/main/screen/terms.screen";
 import { SecurityScreen } from "../../features/main/screen/security.screen";
 import { ProfileScreen } from "../../features/main/screen/profile.screen";
+import { DealershipScreen } from "../../features/main/screen/dealership.screen";
+import { PendingRequestDetails } from "../../features/main/screen/pending.request.details.screen";
+import { PendingRequestsScreen } from "../../features/main/screen/pending.requests.screen";
+import { AuthScreen } from "../../features/signin/auth.screen";
 
 type StackNavigatorParams = {
   Main: any;
@@ -27,10 +31,6 @@ type StackNavigatorParams = {
 };
 
 const Stack = createNativeStackNavigator();
-
-const Txt = styled.Text`
-  color: red;
-`;
 
 export const MainNavigator: React.FC = () => {
   return (
@@ -55,6 +55,10 @@ export const MainNavigator: React.FC = () => {
           <Stack.Screen name="Terms" component={TermsScreen} />
           <Stack.Screen name="Security" component={SecurityScreen} />
           <Stack.Screen name="ProfileSettings" component={ProfileScreen} />
+          <Stack.Screen name="FindDealerships" component={DealershipScreen} />
+          <Stack.Screen name="PendingRequests" component={PendingRequestsScreen} />
+          <Stack.Screen name="PendingRequestDetails" component={PendingRequestDetails} />
+          <Stack.Screen name="Auth" component={AuthScreen} />
         </>
       </Stack.Navigator>
     </OrderConfirmationProvider>

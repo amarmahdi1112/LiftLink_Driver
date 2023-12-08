@@ -4,7 +4,7 @@ import { Spacer } from "../../../components/utils/spacer.component";
 import styled from "styled-components/native";
 import { ButtonComponent } from "../../../components/button.component";
 import { CamCardComponent } from "../components/camera.card.component";
-import { ImageContainerContext } from "../utils/imageObjectContainer";
+import { ImageContainerContext } from "../../../infrastructure/service/driver/context/utils/imageObjectContainer";
 import { ErrorContext } from "../../../infrastructure/service/error/error.context";
 import { AuthContext } from "../../../infrastructure/service/authentication/context/auth.context";
 import ProceedSvg from "../../../../assets/svgs/proceed";

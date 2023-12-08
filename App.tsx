@@ -26,6 +26,7 @@ import { OrdersProvider } from "./src/infrastructure/service/orders/context/orde
 import { useCallback } from "react";
 import * as ExpoSplashScreen from "expo-splash-screen";
 import { ErrorProvider } from "./src/infrastructure/service/error/error.context";
+import { ImageContainerProvider } from "./src/infrastructure/service/driver/context/utils/imageObjectContainer";
 
 const tunnel = false;
 
@@ -33,7 +34,15 @@ const wsLink: any = new GraphQLWsLink(
   createClient({
     url: tunnel
       ? "ws://137.184.164.232/graphql/"
-      : "ws://d067-198-161-203-4.ngrok-free.app/graphql",
+      : "wss://f8e2-74-49-167-206.ngrok-free.app/graphql",
+    on: {
+      // connected: () => console.log("ws connected"),
+      // error: (e) => console.log("ws error", e),
+      // closed: () => console.log("ws closed"),
+      // connecting: () => console.log("ws connecting"),
+      // ping: () => console.log("ws ping"),
+      // pong: () => console.log("ws pong"),
+    },
     connectionParams: async () => {
       const token = await AsyncStorage.getItem("token");
       return {
@@ -49,7 +58,7 @@ const wsLink: any = new GraphQLWsLink(
 const httpLink = createHttpLink({
   uri: tunnel
     ? "http://137.184.164.232/graphql"
-    : "https://d067-198-161-203-4.ngrok-free.app/graphql/",
+    : "https://f8e2-74-49-167-206.ngrok-free.app/graphql/",
 });
 
 const authLink = setContext(async (request, { headers }) => {
@@ -109,19 +118,21 @@ export default function App() {
         <ThemeProvider theme={theme}>
           <SafeAreaComponent>
             <ErrorProvider>
-              <DriverProvider>
-                <AuthProvider>
-                  <ConfirmationProvider>
-                    <OrdersProvider>
-                      <ValetProvider>
-                        <GestureHandlerRootView style={{ flex: 1 }}>
-                          <Navigator />
-                        </GestureHandlerRootView>
-                      </ValetProvider>
-                    </OrdersProvider>
-                  </ConfirmationProvider>
-                </AuthProvider>
-              </DriverProvider>
+              <ImageContainerProvider>
+                <DriverProvider>
+                  <AuthProvider>
+                    <ConfirmationProvider>
+                      <OrdersProvider>
+                        <ValetProvider>
+                          <GestureHandlerRootView style={{ flex: 1 }}>
+                            <Navigator />
+                          </GestureHandlerRootView>
+                        </ValetProvider>
+                      </OrdersProvider>
+                    </ConfirmationProvider>
+                  </AuthProvider>
+                </DriverProvider>
+              </ImageContainerProvider>
             </ErrorProvider>
           </SafeAreaComponent>
         </ThemeProvider>

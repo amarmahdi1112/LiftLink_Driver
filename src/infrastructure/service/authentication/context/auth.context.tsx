@@ -1,6 +1,23 @@
-import React, { useState, createContext, useEffect, FC, useContext } from "react";
+import React, {
+  useState,
+  createContext,
+  useEffect,
+  FC,
+  useContext,
+} from "react";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
-import { CHANGE_PASSWORD, Login, Logout, Signup, UPDATE_EMAIL, UPDATE_NAME, UPDATE_PHONE, UPDATE_USERNAME, UPLOAD_PROFILE_PICTURE } from "../../mutation";
+import {
+  ADD_LICENSE,
+  CHANGE_PASSWORD,
+  Login,
+  Logout,
+  Signup,
+  UPDATE_EMAIL,
+  UPDATE_NAME,
+  UPDATE_PHONE,
+  UPDATE_USERNAME,
+  UPLOAD_PROFILE_PICTURE,
+} from "../../mutation";
 import { IS_AUTHENTICATED } from "../../query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { uploadToFirebase } from "../../../../../firebase-config";
@@ -17,12 +34,19 @@ interface AuthContextProps {
   user: User | null;
   isAuthenticated: boolean;
   onLogin: (username: string, password: string) => Promise<void>;
-  onLogout: () => Promise<void>;
+  onLogout: () => Promise<any>;
   onChangePassword: (oldPassword: string, newPassword: string) => Promise<void>;
   onChangeEmail: (email: string) => Promise<void>;
   onChangeUsername: (username: string) => Promise<void>;
   onUpdateProfilePicture: (pictureLink: string) => Promise<void>;
   updateNames: (firstName: any, lastName: any) => Promise<any>;
+  addLicense: ({
+    licenseImageBack,
+    licenseImageFront,
+    licenseExpiration,
+    licenseState,
+    licenseNumber,
+  }: any) => Promise<any>;
   screen: string;
   setScreen: React.Dispatch<React.SetStateAction<string>>;
   username: string;
@@ -68,12 +92,12 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const [login, { loading: loginLoading }] = useMutation(Login);
   const isAuthenticatedQuery = useQuery(IS_AUTHENTICATED);
   const [updatePhone] = useMutation(UPDATE_PHONE);
-  const [logout] = useMutation(Logout);
   const [signup] = useMutation(Signup);
   const [changePassword] = useMutation(CHANGE_PASSWORD);
   const [changeEmail] = useMutation(UPDATE_EMAIL);
   const [changeUsername] = useMutation(UPDATE_USERNAME);
   const [uploadProfilePicture] = useMutation(UPLOAD_PROFILE_PICTURE);
+  const [createLicense] = useMutation(ADD_LICENSE);
   const [screen, setScreen] = useState("signin");
   const [progress, setProgress] = useState(0);
 
@@ -93,7 +117,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const [lastName, setlastName] = useState("");
   const [lastNameError, setlastNameError] = useState(false);
   const [updateName] = useMutation(UPDATE_NAME);
-  const { profile, setProfile, onGetUserData } = useContext(DriverContext)
+  const { profile, setProfile, onGetUserData } = useContext(DriverContext);
   const { setError } = useContext(ErrorContext);
 
   const onLogin = async (username: string, password: string) => {
@@ -110,10 +134,10 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
         _username = username;
       }
       const { data } = await login({
-        variables: { 
+        variables: {
           username: _username,
           email: _email,
-          password, 
+          password,
         },
       });
       setUser(data.login.user);
@@ -155,10 +179,14 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
   };
 
   const onLogout = async () => {
-    await logout();
-    setUser(null);
-    setIsAuthenticated(false);
-    await AsyncStorage.removeItem("token");
+    setLoading(true);
+    try {
+      setIsAuthenticated(false);
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const checkAuth = async () => {
@@ -220,7 +248,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const onChangeEmail = async (email: string) => {
     setLoading(true);
@@ -234,7 +262,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const onChangeUsername = async (username: string) => {
     setLoading(true);
@@ -248,14 +276,12 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const onUpdateProfilePicture = async (imageObject: any) => {
     setLoading(true);
     const imageKey = `object_${Object.keys(imageObject).length - 1}`;
-    const fileName = imageObject.substring(
-      imageObject.lastIndexOf("/") + 1
-    );
+    const fileName = imageObject.substring(imageObject.lastIndexOf("/") + 1);
     try {
       const data = await uploadToFirebase(
         imageObject,
@@ -265,13 +291,65 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
         }
       );
 
-      const {data: { updateProfilePicture }} = await uploadProfilePicture({
+      const {
+        data: { updateProfilePicture },
+      } = await uploadProfilePicture({
         variables: {
           pictureLink: data.url,
         },
-      })
-        await onGetUserData();
+      });
+      await onGetUserData();
     } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addLicense = async ({
+    licenseImageBack,
+    licenseImageFront,
+    licenseExpiration,
+    licenseState,
+    licenseNumber,
+  }: any) => {
+    setLoading(true);
+    try {
+      const fileName = licenseImageFront.substring(
+        licenseImageFront.lastIndexOf("/") + 1
+      );
+      const frontImg = await uploadToFirebase(
+        licenseImageFront,
+        `driverLicense/${fileName}`,
+        (progress: any) => {
+          setProgress(progress);
+        }
+      );
+
+      const fileName2 = licenseImageBack.substring(
+        licenseImageBack.lastIndexOf("/") + 1
+      );
+
+      const backImg = await uploadToFirebase(
+        licenseImageBack,
+        `driverLicense/${fileName2}`,
+        (progress: any) => {
+          setProgress(progress);
+        }
+      );
+
+      const { data } = await createLicense({
+        variables: {
+          licenseImageBack: backImg.url,
+          licenseImageFront: frontImg.url,
+          licenseExpiration,
+          licenseState,
+          licenseNumber,
+        },
+      });
+      console.log("license added");
+    } catch (error: any) {
+      console.log("error", error);
       setError(error.message);
     } finally {
       setLoading(false);
@@ -288,8 +366,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
       _profile.lastName = lastName;
       setProfile(_profile);
       return data.updateName;
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const resetAll = () => {
@@ -324,6 +401,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
         onChangeUsername,
         onUpdateProfilePicture,
         updateNames,
+        addLicense,
         screen,
         setScreen,
         username,

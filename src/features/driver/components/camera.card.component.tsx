@@ -3,7 +3,7 @@ import styled from "styled-components/native";
 import { CardComponent } from "../../../components/utils/card.component";
 import UploadBtnIcon from "../../../../assets/svgs/upload_btn";
 import * as ImagePicker from "expo-image-picker";
-import { ImageContainerContext } from "../utils/imageObjectContainer";
+import { ImageContainerContext } from "../../../infrastructure/service/driver/context/utils/imageObjectContainer";
 import { ErrorContext } from "../../../infrastructure/service/error/error.context";
 
 // const Caption = styled.Text`
@@ -52,10 +52,12 @@ interface CamCardProps {
   imageLink?: string;
   _key?: string;
   clearContainer?: boolean;
+  onPress?: () => void;
 }
 
 export const CamCardComponent: FC<CamCardProps> = ({
   imageLink,
+  onPress,
   _key,
   clearContainer,
 }) => {
@@ -101,7 +103,9 @@ export const CamCardComponent: FC<CamCardProps> = ({
     }
   };
   return (
-    <CardComponent key={_key as any} overrideChildren={true} bordered={true}>
+    <CardComponent key={_key as any} overrideChildren={true} bordered={true} style={{
+      height: 160,
+    }}>
       <CustomCard>
         {image && !imageLink ? (
           <Picture
@@ -126,7 +130,7 @@ export const CamCardComponent: FC<CamCardProps> = ({
             />
           )}
         {!image && !imageLink && <ButtonContainer>
-          <Button onPress={pickImage}>
+          <Button onPress={onPress ?? pickImage}>
             <UploadBtnIcon />
           </Button>
         </ButtonContainer>}

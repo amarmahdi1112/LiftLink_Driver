@@ -78,6 +78,7 @@ const DarkBgImg = styled.Image`
 `;
 
 const CardPadding = styled.View`
+  padding: 20px;
 `;
 
 const LabelContainer = styled.View`

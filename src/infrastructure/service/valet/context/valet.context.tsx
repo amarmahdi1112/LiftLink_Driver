@@ -4,29 +4,40 @@ import React, {
   useEffect,
   FC,
   PropsWithChildren,
+  useContext,
 } from "react";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
-import { CREATE_VALET, SEND_LOCATION, START_VALET } from "../../mutation";
-import { VALET_EXISTS, GET_STARTED_VALET } from "../../query";
+import {
+  CREATE_VALET,
+  REQUEST_MEMBERSHIP,
+  SEND_LOCATION,
+  START_VALET,
+} from "../../mutation";
+import {
+  VALET_EXISTS,
+  GET_STARTED_VALET,
+  FIND_DEALERSHIP,
+  GET_PENDING_CONFIRMATION,
+} from "../../query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { isObjEmpty } from "../../../../features/main/screen/main.screen";
+import { ErrorContext } from "../../error/error.context";
 
 interface ValetContextProps {
-  error: any | null;
   screen: string;
   exists: boolean;
   loading: boolean;
   userType: string;
-  valetData: any; // Replace 'any' with the type of your valetData
-  startedValet: any; // Replace 'any' with the type of your startedValet
-  selectedValet: any; // Replace 'any' with the type of your selectedValet
+  valetData: any;
+  startedValet: any;
+  selectedValet: any;
   setScreen: React.Dispatch<React.SetStateAction<string>>;
-  valetExists: any; // Replace 'any' with the type of your valetExists
+  valetExists: any;
   setUserType: React.Dispatch<React.SetStateAction<string>>;
-  onStartValet: (state: string, valetId: string, inputs?: any) => Promise<void>; // Replace 'any' with the type of your inputs
-  onCreateValet: (inputs: any) => Promise<void>; // Replace 'any' with the type of your inputs
+  onStartValet: (state: string, valetId: string, inputs?: any) => Promise<any>;
+  onCreateValet: (inputs: any) => Promise<any>;
   onValetExists: (orderId: string) => Promise<void>;
-  setStartedValet: React.Dispatch<React.SetStateAction<any>>; // Replace 'any' with the type of your startedValet
+  setStartedValet: React.Dispatch<React.SetStateAction<any>>;
   onChangeLocation: ({
     valetId,
     latitude,
@@ -36,9 +47,19 @@ interface ValetContextProps {
     latitude: number;
     longitude: number;
   }) => Promise<void>;
-  setSelectedValet: React.Dispatch<React.SetStateAction<any>>; // Replace 'any' with the type of your selectedValet
+  setSelectedValet: React.Dispatch<React.SetStateAction<any>>;
   onGetStartedValet: () => Promise<void>;
   resetAllValet: () => void;
+  onSearchDealership: (searchTerm: string) => Promise<void>;
+  searchResults: any[];
+  selectedDealership: any;
+  setSelectedDealership: React.Dispatch<React.SetStateAction<any>>;
+  onRequestMembership: (dealershipName: string) => Promise<void>;
+  onGetPendingConfirmation: () => Promise<void>;
+  pendingConfirmations: any[];
+  setPendingConfirmations: React.Dispatch<React.SetStateAction<any[]>>;
+  selectedPendingConfirmation: any;
+  setSelectedPendingConfirmation: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export enum ValetStatus {
@@ -72,13 +93,22 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const [startLoading, setStartLoading] = useState(false);
   const [selectedValet, setSelectedValet] = useState({});
   const [createValet, { loading }] = useMutation(CREATE_VALET);
-  const [startValet, { data: startValetData }] = useMutation(START_VALET);
+  const [startValet] = useMutation(START_VALET);
+  const findDealerships = useQuery(FIND_DEALERSHIP);
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedDealership, setSelectedDealership] = useState({} as any);
+  const [requestMembership] = useMutation(REQUEST_MEMBERSHIP);
   const [sendLocation] = useMutation(SEND_LOCATION);
   const [valetData, setValetData] = useState({});
   const valetExists = useQuery(VALET_EXISTS);
   const [exists, setExists] = useState(false);
-  const [error, setError] = useState("");
+  const { error, setError } = useContext(ErrorContext);
   const [userType, setUserType] = useState("dealership");
+  const getPendingConfirmation = useQuery(GET_PENDING_CONFIRMATION);
+  const [pendingConfirmations, setPendingConfirmations] = useState<any>([]);
+  const [selectedPendingConfirmation, setSelectedPendingConfirmation] =
+    useState<any>({});
+
   const getAllStartedValets = useQuery(GET_STARTED_VALET, {
     fetchPolicy: "network-only",
   });
@@ -89,30 +119,28 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         setExists(data.valetExists);
       });
     } catch (error: any) {
-      setError(error);
-      throw error;
+      setError(error.message);
     }
   };
 
   const onCreateValet = async (inputs: any) => {
-    inputs.userType = userType;
     try {
       await onValetExists(inputs.orderId);
       if (exists) {
-        throw new Error("Valet already started");
+        setError("Valet already exists");
+        return;
       }
       const { data } = await createValet({ variables: { inputs: inputs } });
       setValetData(data.createValet);
-      // await AsyncStorage.setItem("valet", JSON.stringify(valetData));
-    } catch (error) {
-      // console.log("error from start valet", error);
-      throw error;
+      return data;
+    } catch (error: any) {
+      setError(error.message);
     }
   };
 
-  const onStartValet = async (state: any, valetId: any, inputs = null) => {
-    setStartLoading(true);
+  const onStartValet = async (state: any, valetId: any, inputs: any) => {
     try {
+      console.log("inputs", inputs);
       const { data } = await startValet({
         variables: { state, valetId, inputs },
       });
@@ -120,12 +148,11 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       if (!isObjEmpty(data) && !isObjEmpty(data.updateValet)) {
         setStartedValet(data.updateValet);
       } else {
-        throw new Error("No valet data found");
+        setError("Failed to start valet");
       }
+      return data;
     } catch (error: any) {
-      throw error;
-    } finally {
-      setStartLoading(false);
+      setError(`${error.message}`);
     }
   };
 
@@ -140,10 +167,21 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       ) {
         setStartedValet(getAllStartedDriverValets[0]);
       } else {
-        throw new Error("No started valets found");
+        setError("No started valets found");
       }
     } catch (error: any) {
       setError(`Failed to fetch started valets: ${error.message}`);
+    }
+  };
+
+  const onSearchDealership = async (searchTerm: any) => {
+    try {
+      const { data } = await findDealerships.refetch({
+        searchTerm: searchTerm,
+      });
+      setSearchResults(data.findDealerships);
+    } catch (error: any) {
+      setError(error.message);
     }
   };
 
@@ -160,8 +198,36 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
           longitude: longitude,
         },
       });
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
+
+  const onRequestMembership = async (dealershipName: string) => {
+    try {
+      await requestMembership({
+        variables: {
+          dealershipName,
+        },
+      });
+      const filteredResults = searchResults.filter(
+        (result: any) => result.dealershipName !== dealershipName
+      );
+      setSearchResults(filteredResults);
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
+
+  const onGetPendingConfirmation = async () => {
+    try {
+      const { data, error } = await getPendingConfirmation.refetch();
+      setPendingConfirmations(data.getPendingConfirmations);
+      if (error) {
+        setError(error.message);
+      }
+    } catch (error: any) {
+      setError(error.message);
     }
   };
 
@@ -174,29 +240,38 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
     setError("");
     setUserType("dealership");
   };
-  
+
   return (
     <ValetContext.Provider
       value={{
-        error,
         screen,
         exists,
         loading,
         userType,
         valetData,
+        valetExists,
         startedValet,
         selectedValet,
+        searchResults,
+        selectedDealership,
+        pendingConfirmations,
+        selectedPendingConfirmation,
         setScreen,
-        valetExists,
         setUserType,
         onStartValet,
         onCreateValet,
         onValetExists,
+        resetAllValet,
         setStartedValet,
         onChangeLocation,
         setSelectedValet,
         onGetStartedValet,
-        resetAllValet,
+        onSearchDealership,
+        onRequestMembership,
+        setSelectedDealership,
+        setPendingConfirmations,
+        onGetPendingConfirmation,
+        setSelectedPendingConfirmation,
       }}
     >
       {children}

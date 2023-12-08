@@ -21,6 +21,9 @@ import { OverlayComponent } from "../../../components/overlay.component";
 import { OrdersContext } from "../../../infrastructure/service/orders/context/orders.context";
 // import LogoSvg from "../../../../assets/svgs/logoLoadingIndicator";
 import { DriverContext } from "../../../infrastructure/service/driver/context/driver.context";
+import { ValetContainer } from "../../../components/valet.component";
+import { ErrorContext } from "../../../infrastructure/service/error/error.context";
+import { ErrorComponent } from "../../../components/error.component";
 
 const Container = styled.ScrollView`
   flex-direction: column;
@@ -111,13 +114,10 @@ export const OrderConfirmationScreen: FC<OrderScreenProps> = ({
   navigation,
   route,
 }) => {
-  const {
-    selectedOrder,
-    setSelectedOrder,
-    onConfirmOrder,
-    onDeclineOrder,
-    error,
-  } = useContext(OrderConfirmationContext);
+  const { selectedOrder, onConfirmOrder, onDeclineOrder } = useContext(
+    OrderConfirmationContext
+  );
+  const { error } = useContext(ErrorContext);
   const { profile } = useContext(DriverContext);
   const [getCustomerInfo, { data, error: customerInfoError }] = useLazyQuery(
     GET_USER_INFO_BY_ID,
@@ -136,8 +136,8 @@ export const OrderConfirmationScreen: FC<OrderScreenProps> = ({
     useState(false);
   const [showCancelSuccessModal, setShowCancelSuccessModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showError, setShowError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  // const [showError, setShowError] = useState(false);
+  // const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (!isObjEmpty(selectedOrder)) {
@@ -196,26 +196,25 @@ export const OrderConfirmationScreen: FC<OrderScreenProps> = ({
     setShowCancelConfirmationModal(false);
     setShowCancelSuccessModal(false);
     setShowDriverConfirmation(false);
-    setShowError(false);
+    // setShowError(false);
   };
 
   useEffect(() => {
     if (error) {
-      setErrorMessage(error.message);
       setLoading(false);
-      setShowError(true);
     }
   }, [error]);
 
   return (
     <>
-      <Container>
+      <ValetContainer navigation={navigation}>
+        {/* <Container>
         <HeaderTitleContainer></HeaderTitleContainer>
         <PositionedImage
           source={{
             uri: "https://firebasestorage.googleapis.com/v0/b/ll-v2-4a68f.appspot.com/o/app_images%2Fgenesis-car-img.png?alt=media&token=2847ee38-d2c1-488f-b10a-8ff14ba3cdce",
           }}
-        />
+        /> */}
         <InfoContainer>
           <LabelComponent>Your Info</LabelComponent>
           <AvatarContainer>
@@ -223,7 +222,7 @@ export const OrderConfirmationScreen: FC<OrderScreenProps> = ({
               <Avatar>
                 <AvatarImage
                   source={{
-                    uri: profile.profilePicture.pictureLink,
+                    uri: profile.profilePicture[0].pictureLink,
                   }}
                 />
               </Avatar>
@@ -363,7 +362,8 @@ export const OrderConfirmationScreen: FC<OrderScreenProps> = ({
             <ProceedSvg isIcon={true} width={24} height={24} />
           </ButtonComponent>
         </InfoContainer>
-      </Container>
+        {/* </Container> */}
+      </ValetContainer>
       {showDriverConfirmation && (
         <OverlayComponent onCancel={closeModals} onConfirm={onDriverConfirm}>
           <LabelComponent title={true}>Confirm</LabelComponent>
@@ -372,13 +372,6 @@ export const OrderConfirmationScreen: FC<OrderScreenProps> = ({
             Are you sure you want to accept this order?
           </LabelComponent>
           <Spacer variant="top.large" />
-          <ButtonComponent
-            title="Reject"
-            background={"#FF0000"}
-            onPress={onDriverReject}
-          >
-            <ProceedSvg isIcon={true} width={24} height={24} />
-          </ButtonComponent>
         </OverlayComponent>
       )}
       {showSuccessModal && (
@@ -417,16 +410,7 @@ export const OrderConfirmationScreen: FC<OrderScreenProps> = ({
           </LabelComponent>
         </OverlayComponent>
       )}
-      {showError && (
-        <OverlayComponent
-          onConfirm={closeModals}
-          onCancel={onClose}
-          btnText={"Return Home"}
-        >
-          <LabelComponent title={true}>Error!</LabelComponent>
-          <LabelComponent title2={true}>{errorMessage}</LabelComponent>
-        </OverlayComponent>
-      )}
+      {error && <ErrorComponent errorMessage={error} />}
       {loading && (
         <OverlayComponent
           override={true}

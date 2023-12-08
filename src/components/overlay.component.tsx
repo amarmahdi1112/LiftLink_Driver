@@ -5,7 +5,7 @@ import { LabelComponent } from "./typography";
 import { ButtonComponent } from "./button.component";
 import ConfirmSvg from "../../assets/svgs/confirm";
 
-const Overlay = styled.View`
+const Overlay = styled.View<any>`
   position: absolute;
   top: 0;
   left: 0;
@@ -16,6 +16,7 @@ const Overlay = styled.View`
   z-index: 2;
   justify-content: center;
   align-items: center;
+  height: ${(props) => props.height ? props.height : "auto"};
 `;
 
 const OverlayContent = styled.View`
@@ -60,8 +61,9 @@ interface OverlayComponentProps {
   onConfirm: () => void;
   btnText?: string;
   override?: boolean;
-  style?: any; // Replace 'any' with the type of your styles
-  onPress?: () => void; // Add this line
+  style?: any; 
+  onPress?: () => void; 
+  height?: string;
 }
 
 export const OverlayComponent: FC<PropsWithChildren<OverlayComponentProps>> = ({
@@ -71,11 +73,12 @@ export const OverlayComponent: FC<PropsWithChildren<OverlayComponentProps>> = ({
   btnText,
   override = false,
   style = {},
+  height = "auto",
 }) => {
   return (
     <>
       {!override && (
-        <Overlay>
+        <Overlay height={height}>
           <OverlayContent>
             <CancelButton onPress={onCancel}>
               <CancelSvg width={24} height={24} />
@@ -87,7 +90,7 @@ export const OverlayComponent: FC<PropsWithChildren<OverlayComponentProps>> = ({
           </OverlayContent>
         </Overlay>
       )}
-      {override && <Overlay style={style}>{children}</Overlay>}
+      {override && <Overlay height={height} style={style}>{children}</Overlay>}
     </>
   );
 };

@@ -8,7 +8,6 @@ import { OverlayComponent } from "../../../components/overlay.component";
 import { ConfirmationContext } from "../../../infrastructure/service/confirmation/context/confirmation.context";
 import { format } from "date-fns";
 import { DriverContext } from "../../../infrastructure/service/driver/context/driver.context";
-import { StackNavigationProp } from "@react-navigation/stack";
 
 const Container = styled.ScrollView`
   flex-direction: column;
@@ -91,7 +90,7 @@ const Chip = styled.View`
 `;
 
 interface ConfirmationScreenProps {
-  navigation: StackNavigationProp<any>; // Replace 'any' with the type of your navigation
+  navigation: any; // Replace 'any' with the type of your navigation
 }
 
 export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
@@ -173,7 +172,7 @@ export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
               <Avatar>
                 <AvatarImage
                   source={{
-                    uri: profile.profilePicture.pictureLink,
+                    uri: profile.profilePicture[0].pictureLink,
                   }}
                 />
               </Avatar>

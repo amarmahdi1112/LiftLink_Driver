@@ -4,6 +4,7 @@ import React, {
   useState,
   FC,
   PropsWithChildren,
+  useContext,
 } from "react";
 import {
   useLazyQuery,
@@ -14,10 +15,10 @@ import {
 import { GET_REQUESTS } from "../../query";
 import { ACCEPT_REQUEST, REJECT_REQUEST } from "../../mutation";
 import { GET_DEALERSHIP_REQUESTS } from "../../subscription";
+import { ErrorContext } from "../../error/error.context";
 
 interface ConfirmationContextProps {
   loading: boolean;
-  error: Error | null;
   confirmation: any; // Replace 'any' with the type of your confirmation
   setConfirmation: React.Dispatch<React.SetStateAction<any>>; // Replace 'any' with the type of your confirmation
   rejectRequest: (args: { variables: { confirmationId: string } }) => Promise<any>;
@@ -41,11 +42,11 @@ export const ConfirmationProvider: FC<PropsWithChildren<{}>> = ({
     GET_DEALERSHIP_REQUESTS
   );
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
   const [acceptRequest] = useMutation(ACCEPT_REQUEST);
   const [rejectRequest] = useMutation(REJECT_REQUEST);
   const [confirmation, setConfirmation] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const { error, setError } = useContext(ErrorContext);
 
   const onRefresh = async () => {
     setConfirmation(null);
@@ -75,7 +76,6 @@ export const ConfirmationProvider: FC<PropsWithChildren<{}>> = ({
     <ConfirmationContext.Provider
       value={{
         loading,
-        error,
         confirmation,
         setConfirmation,
         acceptRequest: acceptRequest as any,

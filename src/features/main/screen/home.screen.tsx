@@ -194,7 +194,6 @@ const ButtonContainer = styled.View`
 export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { profile } = useContext(DriverContext);
   const {
-    error,
     setConfirmation,
     confirmation,
     onRefresh: refreshConfirmation,
@@ -202,7 +201,6 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const {
     orders,
     getAllOrders,
-    error: ordersFetchError,
     refreshing: orderRefreshing,
   } = useContext(OrdersContext);
   const { setSelectedOrder: confirmOrder, selectedOrder } = useContext(
@@ -251,6 +249,7 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     try {
       setSelectedValet({});
       setStartedValet({});
+      setConfirmation!({});
       setRefreshing(true);
       await onGetStartedValet();
       await getDatas();
@@ -269,19 +268,12 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (ordersFetchError) {
-      setOrderError(true);
-      setOrderErrorMessage(ordersFetchError.message);
-    }
-  }, [ordersFetchError]);
-
-  useEffect(() => {
     setOrderList(orders as any);
   }, [orders]);
 
   useEffect(() => {
-    if(confirmation) setConfirmations(confirmation)
-  }, [confirmation])
+    if (confirmation) setConfirmations(confirmation);
+  }, [confirmation]);
 
   const isSameDay = (d1: any, d2: any) =>
     format(d1, "yyyy-MM-dd") === format(d2, "yyyy-MM-dd");
@@ -422,10 +414,10 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                   <ListCard key={item.confirmationId}>
                     <ListComponent key={item.confirmationId}>
                       <CarDescription key={item.confirmationId}>
-                        <LabelComponent  key={item.confirmationId}>
+                        <LabelComponent key={item.confirmationId}>
                           {item.dealership.dealershipName}
                         </LabelComponent>
-                        <LabelComponent title2={true}  key={item.confirmationId}>
+                        <LabelComponent title2={true} key={item.confirmationId}>
                           {isSameDay(new Date(item.confirmationDate), today)
                             ? "Today"
                             : format(
@@ -443,47 +435,51 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           </RequestContainer>
         )}
         {orders.length === 0 && (
-            <NoOrderContainer>
-              <NoOrderImg
-                source={{
-                  uri: "https://firebasestorage.googleapis.com/v0/b/ll-v2-4a68f.appspot.com/o/app_images%2FemptyIndicator.png?alt=media&token=fb225083-eac2-403d-b4fe-00f23823426d",
-                }}
-                resizeMode="contain"
-              />
-              <Spacer variant="top.large" />
-              <LabelComponent title={true}>No order(s)</LabelComponent>
-              <Spacer variant="top.medium" />
-              <LabelComponent
-                styles={{
-                  textAlign: "center",
-                  width: "80%",
-                }}
-              >
-                You can view an order in your order list after it has been
-                added.
-              </LabelComponent>
-            </NoOrderContainer>
-          )}
+          <NoOrderContainer>
+            <NoOrderImg
+              source={{
+                uri: "https://firebasestorage.googleapis.com/v0/b/ll-v2-4a68f.appspot.com/o/app_images%2FemptyIndicator.png?alt=media&token=fb225083-eac2-403d-b4fe-00f23823426d",
+              }}
+              resizeMode="contain"
+            />
+            <Spacer variant="top.large" />
+            <LabelComponent title={true}>No order(s)</LabelComponent>
+            <Spacer variant="top.medium" />
+            <LabelComponent
+              styles={{
+                textAlign: "center",
+                width: "80%",
+              }}
+            >
+              You can view an order in your order list after it has been added.
+            </LabelComponent>
+          </NoOrderContainer>
+        )}
         {orders.length > 0 && !dataLoading && !refreshing && (
-          <TopSpacer none={confirmations.length > 0}>
-            <LabelComponent title={true}>New Order(s)</LabelComponent>
-            {orders.map((item) => (
-              <>
-                <OrderContainer
-                  key={item.orderId}
-                  backgroundColor={colors.bg.secondary}
-                  justifyContent={"flex-start"}
-                  alignItems={"flex-start"}
-                  order={true}
-                  data={item}
-                  onPress={() => {
-                    confirmOrder(item);
-                    navigation.navigate("ConfirmOrder");
-                  }}
-                />
-              </>
-            ))}
-          </TopSpacer>
+          <>
+            <Spacer variant="top.large" />
+            <Spacer variant="top.large" />
+            <Spacer variant="top.large" />
+            <TopSpacer none={confirmations.length > 0}>
+              <LabelComponent title={true}>New Order(s)</LabelComponent>
+              {orders.map((item) => (
+                <>
+                  <OrderContainer
+                    key={item.orderId}
+                    backgroundColor={colors.bg.secondary}
+                    justifyContent={"flex-start"}
+                    alignItems={"flex-start"}
+                    order={true}
+                    data={item}
+                    onPress={() => {
+                      confirmOrder(item);
+                      navigation.navigate("ConfirmOrder");
+                    }}
+                  />
+                </>
+              ))}
+            </TopSpacer>
+          </>
         )}
         <Spacer variant="top.large" />
         <Spacer variant="top.large" />

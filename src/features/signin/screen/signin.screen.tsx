@@ -1,9 +1,17 @@
 import React, { FC, useContext } from "react";
 import styled from "styled-components/native";
 import { AuthContext } from "../../../infrastructure/service/authentication/context/auth.context";
-import { LabelComponent, LabelFormComponent } from "../../../components/typography";
+import {
+  LabelComponent,
+  LabelFormComponent,
+} from "../../../components/typography";
 import { Spacer } from "../../../components/utils/spacer.component";
 import { InputComponent } from "../../../components/input.component";
+import { ConfirmationContext } from "../../../infrastructure/service/confirmation/context/confirmation.context";
+import { OrdersContext } from "../../../infrastructure/service/orders/context/orders.context";
+import { ValetContext } from "../../../infrastructure/service/valet/context/valet.context";
+import { DriverContext } from "../../../infrastructure/service/driver/context/driver.context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Container = styled.View`
   flex: 1;
@@ -32,7 +40,24 @@ export const SigninScreen: FC<SigninScreenProps> = ({ navigation }) => {
     setUsernameError,
     passwordError,
     setPasswordError,
+    resetAll,
   } = useContext(AuthContext);
+  const { resetAllConfirmation } = useContext(ConfirmationContext);
+  const { resetAllOrders } = useContext(OrdersContext);
+  const { resetAllValet } = useContext(ValetContext);
+  const { resetAllDriver } = useContext(DriverContext);
+
+  React.useEffect(() => {
+    const logout = async () => {
+      await AsyncStorage.clear();
+      resetAll!();
+      resetAllConfirmation!();
+      resetAllOrders!();
+      resetAllValet!();
+      resetAllDriver!();
+    };
+    logout();
+  }, []);
 
   return (
     <>

@@ -12,8 +12,8 @@ import { ValetContext } from "../../../infrastructure/service/valet/context/vale
 import { ActivityIndicator } from "react-native-paper";
 import { OverlayComponent } from "../../../components/overlay.component";
 // import LogoSvg from "../../../../assets/svgs/logoLoadingIndicator";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { MainContainer } from "../../../components/main.component";
+import { isObjEmpty } from "./main.screen";
 
 interface HomeProps {
   showAvatar?: boolean;
@@ -50,7 +50,7 @@ interface OrderProps {
   backgroundColor?: string;
 }
 
-const OrderContainer = styled(CardComponent) <OrderProps>`
+const OrderContainer = styled(CardComponent)<OrderProps>`
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
@@ -63,7 +63,7 @@ interface TopSpacerProps {
 }
 
 const TopSpacer = styled.View<TopSpacerProps>`
-  margin-top: ${(props: any) => (props.none ? "120" : "20")}px;
+  margin-top: ${(props: any) => (props.none ? "50" : "20")}px;
 `;
 
 const LoadingContainer = styled.View`
@@ -75,7 +75,7 @@ const LoadingContainer = styled.View`
 `;
 
 interface ConfirmedOrdersScreenProps {
-  navigation: StackNavigationProp<any>; // Replace 'any' with the type of your navigation
+  navigation: any;
 }
 
 export const ConfirmedOrdersScreen: React.FC<ConfirmedOrdersScreenProps> = ({
@@ -84,30 +84,20 @@ export const ConfirmedOrdersScreen: React.FC<ConfirmedOrdersScreenProps> = ({
   const {
     confirmedOrders,
     onGetConfirmedOrders,
-    error,
     loading,
     incrementPage,
   }: OrderConfirmationContextProps = useContext(OrderConfirmationContext);
   const { setSelectedValet } = useContext(ValetContext);
   const [isEndReached, setIsEndReached] = useState(false);
   const scrollViewRef = useRef();
-  const [showError, setShowError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    onGetConfirmedOrders();
+    const getData = async () => {
+      await onGetConfirmedOrders();
+    };
+
+    getData();
   }, []);
-
-  useEffect(() => {
-    if (
-      error &&
-      typeof error === "string" &&
-      error !== "No assigned orders found"
-    ) {
-      setErrorMessage(error);
-      setShowError(true);
-    }
-  }, [error]);
 
   const handleScroll = (event: any) => {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
@@ -123,12 +113,16 @@ export const ConfirmedOrdersScreen: React.FC<ConfirmedOrdersScreenProps> = ({
     setIsEndReached(isEnd);
   };
 
-  const handleEndReached = () => {
+  const handleEndReached = async () => {
     if (isEndReached) {
-      onGetConfirmedOrders();
+      await onGetConfirmedOrders();
       incrementPage();
     }
   };
+
+  useEffect(() => {
+    console.log("confirmedOrders", confirmedOrders);
+  }, [confirmedOrders]);
 
   return (
     <>
@@ -165,7 +159,7 @@ export const ConfirmedOrdersScreen: React.FC<ConfirmedOrdersScreenProps> = ({
               </LabelComponent>
             </NoOrderContainer>
           )}
-          {confirmedOrders.length > 0 && (
+          {!isObjEmpty(confirmedOrders) && confirmedOrders.length > 0 && !loading && (
             <TopSpacer none={confirmedOrders.length !== 0}>
               <LabelComponent title={true}>Confirmed Order(s)</LabelComponent>
               {confirmedOrders.map((item) => (

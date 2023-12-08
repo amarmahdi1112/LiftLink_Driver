@@ -432,3 +432,35 @@ export const UPDATE_USERNAME = gql`
     changeUsername(newUsername: $newUsername)
   }
 `;
+
+export const ADD_LICENSE = gql`
+  mutation (
+    $licenseImageBack: String!
+    $licenseImageFront: String!
+    $licenseExpiration: String!
+    $licenseState: String!
+    $licenseNumber: String!
+  ) {
+    createLicense(
+      licenseImageBack: $licenseImageBack
+      licenseImageFront: $licenseImageFront
+      licenseExpiration: $licenseExpiration
+      licenseState: $licenseState
+      licenseNumber: $licenseNumber
+    ) {
+      licenseExpiration
+      licenseId
+      licenseImageBack
+      licenseImageFront
+      licenseNumber
+      licenseState
+      verified
+    }
+  }
+`;
+
+export const REQUEST_MEMBERSHIP = gql`
+  mutation ($dealershipName: String!) {
+    requestMembership(dealershipName: $dealershipName)
+  }
+`;

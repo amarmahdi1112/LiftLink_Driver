@@ -3,7 +3,9 @@ import React, { useContext, useState, useEffect, FC } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { MainContainer } from "../../components/main.component";
 import { DriverProfileScreen } from "./screens/driver.profile.screen";
-import { ImageContainerProvider } from "./utils/imageObjectContainer";
+import {
+  ImageContainerContext,
+} from "../../infrastructure/service/driver/context/utils/imageObjectContainer";
 import {
   DriverContext,
   screens,
@@ -21,6 +23,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { ErrorContext } from "../../infrastructure/service/error/error.context";
 import { AuthContext } from "../../infrastructure/service/authentication/context/auth.context";
 import { ErrorComponent } from "../../components/error.component";
+import { DriverLicenseScreen } from "./screens/driver.licence.screen";
 
 const LoaderContainer = styled.View`
   position: absolute;
@@ -57,17 +60,19 @@ export const DriverScreen: FC<DriverScreenProps> = ({
   children,
   navigation,
 }) => {
-  const { screen, setScreen, profile } = useContext(DriverContext);
-  const { updateNames, firstName, lastName } = useContext(AuthContext);
+  const { screen, setScreen, profile, onGetUserData } = useContext(DriverContext);
+  const { updateNames, firstName, lastName, addLicense } =
+    useContext(AuthContext);
   const { error, setError } = useContext(ErrorContext);
   const [loading, setLoading] = useState(true);
   const isFocused = useIsFocused();
+  const { backImage, frontImage, expirationDate, licenseNumber, licenseState } = useContext(ImageContainerContext);
 
   const checker = () => {
-    // if (!profile.isVerified) {
-    //   setScreen(screens.phoneVerification);
-    //   return;
-    // }
+    if (!profile.isVerified) {
+      setScreen(screens.license);
+      return;
+    }
     if (!profile.firstName || !profile.lastName) {
       setScreen(screens.names);
       return;
@@ -76,15 +81,27 @@ export const DriverScreen: FC<DriverScreenProps> = ({
       setScreen(screens.profile);
       return;
     }
+    navigation.navigate("Home");
   };
 
-  useEffect(() => {
-    if (error) {
-      setTimeout(() => {
-        setError("");
-      }, 3000);
+  const handleUpload = async () => {
+    setLoading(true);
+    try {
+      await addLicense!({
+        licenseImageBack: backImage as any,
+        licenseImageFront: frontImage as any,
+        licenseExpiration: expirationDate,
+        licenseState: licenseState,
+        licenseNumber: licenseNumber,
+      });
+      console.log("license added")
+      await onGetUserData();
+      console.log(profile)
+    } catch (error: any) {
+    } finally {
+      setLoading(false);
     }
-  }, [error]);
+  };
 
   useEffect(() => {
     if (isFocused) {
@@ -94,13 +111,17 @@ export const DriverScreen: FC<DriverScreenProps> = ({
   }, [isFocused]);
 
   return (
-    <ImageContainerProvider>
+    <>
       <MainContainer navigation={navigation} showAvatar={false} showLogo={true}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1, width: "100%", height: "100%" }}
         >
-          <ScrollView>
+          <ScrollView
+            style={{
+              height: "100%",
+            }}
+          >
             <LabelContainer>
               <LabelComponent title2={true}>
                 Enter the required information mentioned down below.
@@ -113,9 +134,9 @@ export const DriverScreen: FC<DriverScreenProps> = ({
             )}
             {!loading && (
               <>
-                {/* {screen === screens.phoneVerification && (
-                  <DriverPhoneVerificationScreen navigation={navigation} />
-                )} */}
+                {screen === screens.license && (
+                  <DriverLicenseScreen navigation={navigation} />
+                )}
                 {screen === screens.names && (
                   <DriverInfoScreen navigation={navigation} />
                 )}
@@ -138,9 +159,7 @@ export const DriverScreen: FC<DriverScreenProps> = ({
               }
               const updateName = await updateNames!(firstName, lastName);
               if (updateName) {
-                if (isObjEmpty(profile.profilePicture))
-                  setScreen(screens.profile);
-                else navigation.navigate("Home");
+                checker();
               } else {
                 setError("Something went wrong");
               }
@@ -150,7 +169,30 @@ export const DriverScreen: FC<DriverScreenProps> = ({
           </ButtonComponent>
         </ButtonContainer>
       )}
+      {screen === "license" && (
+        <ButtonContainer>
+          <ButtonComponent
+            loading={loading}
+            title="Next"
+            onPress={async () => {
+              if (
+                frontImage !== null && typeof frontImage !== "undefined" &&
+                backImage !== null && typeof backImage !== "undefined"
+              ) {
+                await handleUpload();
+                checker();
+              } else {
+                setError("Please upload a profile picture.");
+                setLoading(false);
+              }
+            }}
+          >
+            <ProceedSvg width={23} height={23} />
+          </ButtonComponent>
+        </ButtonContainer>
+      )}
+
       {error && <ErrorComponent errorMessage={error} />}
-    </ImageContainerProvider>
+    </>
   );
 };

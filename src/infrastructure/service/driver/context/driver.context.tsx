@@ -9,6 +9,7 @@ import React, {
 import { useQuery } from "@apollo/client";
 import { GET_USER_INFO } from "../../query";
 import { isObjEmpty } from "../../../../features/main/screen/main.screen";
+import { ErrorContext } from "../../error/error.context";
 
 export interface DriverContextProps {
   profile: any; // Replace 'any' with the type of your profile
@@ -17,8 +18,6 @@ export interface DriverContextProps {
   onGetUserData: () => Promise<void>;
   screen: string;
   setScreen: React.Dispatch<React.SetStateAction<string>>;
-  errorDriver: Error | null;
-  setErrorDriver: React.Dispatch<React.SetStateAction<any | null>>;
   resetAllDriver: () => void;
 }
 
@@ -26,18 +25,18 @@ export const DriverContext = createContext<DriverContextProps>(null as any);
 
 export const screens = {
   profile: "profile",
-  phoneVerification: "phoneVerification",
+  license: "license",
   names: "names",
 };
 
 export const DriverProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
-  const [screen, setScreen] = useState("phoneVerification");
+  const [screen, setScreen] = useState("license");
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
-  const [errorDriver, setErrorDriver] = useState<any | null>(null);
   const getUserData = useQuery(GET_USER_INFO, {
     fetchPolicy: "network-only",
   });
+  const { error, setError } = useContext(ErrorContext);
 
   // const importUserData = async () => {
   //   if (!loadingDriver && data) {
@@ -64,7 +63,7 @@ export const DriverProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         throw new Error("No user data found");
       }
     } catch (error: any) {
-      setErrorDriver(`Failed to fetch user data: ${error.message}`);
+      setError(`Failed to fetch user data: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -73,7 +72,7 @@ export const DriverProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const resetAllDriver = () => {
     setProfile({});
     setLoading(true);
-    setErrorDriver(null);
+    setError(null);
   };
 
   // useEffect(() => {
@@ -101,8 +100,6 @@ export const DriverProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         onGetUserData,
         screen,
         setScreen,
-        errorDriver,
-        setErrorDriver,
         resetAllDriver,
       }}
     >

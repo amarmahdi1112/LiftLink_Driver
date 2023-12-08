@@ -50,11 +50,8 @@ const Divider = styled.View`
 `;
 
 export const SettingsScreen: React.FC<SettingsProps> = ({ navigation }) => {
-  const { profile, resetAllDriver } = useContext(DriverContext);
-  const { resetAllConfirmation } = useContext(ConfirmationContext);
-  const { resetAll } = useContext(AuthContext);
-  const { resetAllOrders } = useContext(OrdersContext);
-  const { resetAllValet } = useContext(ValetContext);
+  const { profile } = useContext(DriverContext);
+  const { onLogout } = useContext(AuthContext);
 
   return (
     <MainContainer navigation={navigation} secondaryPage={true} showSecondaryAvatar={true}>
@@ -124,13 +121,10 @@ export const SettingsScreen: React.FC<SettingsProps> = ({ navigation }) => {
         <Spacer variant="top.small" />
         <ListItem
           onPress={async () => {
-            navigation.navigate("Auth");
-            await AsyncStorage.clear();
-            resetAllConfirmation!();
-            resetAllOrders();
-            resetAllValet();
-            resetAll!();
-            resetAllDriver();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "Auth" }],
+            });
           }}
         >
           <ListLabelContainer>

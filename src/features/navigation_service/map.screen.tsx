@@ -427,8 +427,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                   <Avatar>
                     <AvatarImage
                       source={{
-                        uri: selectedValet.customer.profilePicture[0]
-                          .pictureLink,
+                        uri: selectedValet.customer.profilePicture[0].pictureLink,
                       }}
                     />
                   </Avatar>

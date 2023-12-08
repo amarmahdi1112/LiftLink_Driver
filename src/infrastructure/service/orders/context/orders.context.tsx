@@ -4,6 +4,7 @@ import React, {
   useState,
   FC,
   PropsWithChildren,
+  useContext,
 } from "react";
 import {
   useLazyQuery,
@@ -13,14 +14,13 @@ import {
 } from "@apollo/client";
 import { GET_ORDERS } from "../../query";
 import { GET_ASSIGNED_ORDERS } from "../../subscription";
+import { ErrorContext } from "../../error/error.context";
 
 interface OrdersContextProps {
-  error: Error | null;
   orders: any[]; // Replace 'any' with the type of your orders
   setOrders: React.Dispatch<React.SetStateAction<any[]>>; // Replace 'any' with the type of your orders
   refreshing: boolean;
   getAllOrders: () => Promise<void>;
-  setError: React.Dispatch<React.SetStateAction<any | null>>;
   onRemoveOrder: (orderId: string) => Promise<void>;
   resetAllOrders: () => void;
 }
@@ -31,12 +31,12 @@ export const OrdersProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   // const [getOrders, { data, loading, error: err }] = useLazyQuery(GET_ORDERS);
   const [orders, setOrders] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState(null);
   const { data: assignedOrderSubscription } =
     useSubscription(GET_ASSIGNED_ORDERS);
   const orderData = useQuery(GET_ORDERS, {
     fetchPolicy: "network-only",
   });
+  const { error, setError } = useContext(ErrorContext);
 
   const getAllOrders = async () => {
     setOrders([]);
@@ -50,7 +50,6 @@ export const OrdersProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         return order;
       });
       setOrders(orders);
-      setError(null);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -79,16 +78,13 @@ export const OrdersProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   return (
     <OrdersContext.Provider
       value={{
-        error,
         orders,
         setOrders,
         refreshing,
         getAllOrders,
-        setError,
         onRemoveOrder,
         resetAllOrders: () => {
           setOrders([]);
-          setError(null);
         },
       }}
     >

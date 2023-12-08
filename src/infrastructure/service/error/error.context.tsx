@@ -12,7 +12,10 @@ export const ErrorProvider = ({ children }: any) => {
 
   useEffect(() => {
     if (error) {
-      console.log("error", error);
+      setTimeout(() => {
+        setError("");
+      }, 5000);
+      console.log(error);
     }
   }, [error]);
 

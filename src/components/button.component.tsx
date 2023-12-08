@@ -52,9 +52,9 @@ export const ButtonComponent: FC<PropsWithChildren<ButtonComponentProps>> = ({
   return (
     <StyledButton {...props} background={background}>
       {title && <StyledButtonText>{title}</StyledButtonText>}
-      <Spacer variant={"left.large"} />
+      <Spacer variant={"left.medium"} />
       <HorizontalLine />
-      <Spacer variant={"left.large"} />
+      <Spacer variant={"left.medium"} />
       { props.loading &&
         <ActivityIndicator size="small" color="#fff" />
       }

@@ -21,7 +21,6 @@ export interface OrderConfirmationContextProps {
   confirmedOrders: any[]; // Replace 'any' with the type of your confirmedOrders
   loading: boolean;
   incrementPage: () => void;
-  error: Error | null;
   // onRefresh: () => Promise<void>;
   resetAllOrderConfirmation: () => void;
 }
@@ -86,6 +85,7 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
   const onGetConfirmedOrders = async () => {
     setLoading(true);
     if (confirmedOrders.length === 0) {
+      setConfirmedOrders([]);
       setPagination({
         page: 1,
         perPage: 10,
@@ -131,7 +131,7 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
         if (error.message.includes("No assigned orders found")) {
           setCanLoadMore(false);
         }
-        throw new Error(error.message);
+        setError((error as any).message);
       }
     } catch (error: any) {
       setError(error.message);
@@ -152,12 +152,6 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
   //     setConfirmedOrders(getConfirmedOrders);
   //   });
   // };
-
-  useEffect(() => {
-    if (error) {
-      setError((error as any).message);
-    }
-  }, [error as any]);
 
   const incrementPage = () => {
     if (canLoadMore) {
@@ -192,8 +186,6 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
         confirmedOrders,
         loading,
         incrementPage,
-        error,
-        // onRefresh,
         resetAllOrderConfirmation,
       }}
     >

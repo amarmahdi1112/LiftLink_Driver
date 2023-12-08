@@ -1,5 +1,10 @@
-import React, { FC, PropsWithChildren } from "react";
+import React, { FC, PropsWithChildren, useContext } from "react";
 import styled from "styled-components/native";
+import { LabelComponent } from "./typography";
+import { Pressable } from "react-native";
+import { AvatarComponent } from "./utils/avatar.component";
+import BackIcon from "../../assets/svgs/back";
+import { DriverContext } from "../infrastructure/service/driver/context/driver.context";
 
 const Container = styled.ScrollView`
   flex-direction: column;
@@ -25,6 +30,10 @@ const HeaderTitleContainer = styled.View`
   align-items: center;
   width: 100%;
   height: 120px;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 30px;
+  padding-right: 30px;
 `;
 
 const FixedBackgroundImg = styled.Image`
@@ -36,7 +45,11 @@ const FixedBackgroundImg = styled.Image`
   resize-mode: cover;
 `;
 
-export const ValetContainer: FC<PropsWithChildren<{}>> = ({ children }) => {
+export const ValetContainer: FC<PropsWithChildren<any>> = ({
+  children,
+  navigation,
+}) => {
+  const { profile } = useContext(DriverContext);
   return (
     <>
       <FixedBackgroundImg
@@ -45,7 +58,14 @@ export const ValetContainer: FC<PropsWithChildren<{}>> = ({ children }) => {
         }}
       />
       <Container>
-        <HeaderTitleContainer></HeaderTitleContainer>
+        <HeaderTitleContainer>
+          <Pressable onPress={() => navigation.goBack()}>
+            <BackIcon width={32} height={32} />
+          </Pressable>
+          <Pressable onPress={() => navigation.navigate("Settings")}>
+            <AvatarComponent imageUrl={profile.profilePicture[0].pictureLink} />
+          </Pressable>
+        </HeaderTitleContainer>
         <PositionedImage
           source={{
             uri: "https://firebasestorage.googleapis.com/v0/b/ll-v2-4a68f.appspot.com/o/app_images%2Fgenesis-car-img.png?alt=media&token=2847ee38-d2c1-488f-b10a-8ff14ba3cdce",

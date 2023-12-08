@@ -152,7 +152,7 @@ export const MainContainer: FC<PropsWithChildren<MainContainerProps>> = ({
         )}
 
         {showAvatar && !loading && !isObjEmpty(profile) && (
-          <Pressable onPress={() => navigation.navigate("ProfileSettings")}>
+          <Pressable onPress={() => navigation.navigate("Settings")}>
             <AvatarComponent
               showGreetings={showGreetings}
               fullName={title || `${profile.firstName} ${profile.lastName}`}
@@ -162,7 +162,7 @@ export const MainContainer: FC<PropsWithChildren<MainContainerProps>> = ({
         )}
 
         {showSecondaryAvatar && (
-          <Pressable onPress={() => navigation.navigate("Profile")}>
+          <Pressable onPress={() => navigation.navigate("Settings")}>
             <AvatarComponent
               imageUrl={profile.profilePicture[0].pictureLink}
             />
@@ -171,7 +171,7 @@ export const MainContainer: FC<PropsWithChildren<MainContainerProps>> = ({
         {showMenu && (
           <Pressable
             onPress={async () => {
-              navigation.navigate("Settings");
+              navigation.navigate("FindDealerships");
             }}
           >
             <Menu width={32} height={32} />

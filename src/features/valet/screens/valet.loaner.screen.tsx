@@ -7,25 +7,22 @@ import { Spacer } from "../../../components/utils/spacer.component";
 import { CamCardComponent } from "../components/camera.card.component";
 import { ButtonComponent } from "../../../components/button.component";
 import styled from "styled-components/native";
-// import { ScrollViewComponent } from "react-native";
 import { ImageContainerContext } from "../utils/imageObjectContainer";
-// import { uploadToFirebase } from "../../../../firebase-config";
 import { InputComponent } from "../../../components/input.component";
 import { LabelFormComponent } from "../../../components/typography/label.form.component";
 import { isObjEmpty } from "../../main/screen/main.screen";
-// import { DriverProfileContext } from "../../../infrastructure/service/driver/context/driver.profile.context";
 import {
   ValetContext,
   ValetStatus,
 } from "../../../infrastructure/service/valet/context/valet.context";
 import { uploadToFirebase } from "../../../../firebase-config";
-// import { Add_CAR_INFO } from "../../../infrastructure/service/mutation";
-// import { useMutation } from "@apollo/client";
 import UploadProgress from "../../../../assets/svgs/upload_progress";
 import { OverlayComponent } from "../../../components/overlay.component";
-// import LogoSvg from "../../../../assets/svgs/logoLoadingIndicator";
 import { DriverContext } from "../../../infrastructure/service/driver/context/driver.context";
 import { Platform } from "react-native";
+import { ErrorContext } from "../../../infrastructure/service/error/error.context";
+import { ErrorComponent } from "../../../components/error.component";
+import ProceedSvg from "../../../../assets/svgs/proceed";
 
 const Container = styled.View`
   flex-direction: column;
@@ -116,11 +113,13 @@ interface ValetLoanerScreenProps {
   navigation: any;
 }
 
-export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) => {
-  const [progressFront, setProgressFront] = useState(100);
-  const [progressBack, setProgressBack] = useState(100);
-  const [progressLeft, setProgressLeft] = useState(100);
-  const [progressRight, setProgressRight] = useState(100);
+export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
+  navigation,
+}) => {
+  const [progressFront, setProgressFront] = useState(0);
+  const [progressBack, setProgressBack] = useState(0);
+  const [progressLeft, setProgressLeft] = useState(0);
+  const [progressRight, setProgressRight] = useState(0);
   const [gasLevel, setGasLevel] = useState("");
   const [comments, setComments] = useState("");
   const [mileage, setMileage] = useState("");
@@ -130,7 +129,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
   const [rightImgUrl, setRightImgUrl] = useState("");
   const [inProgress, setInProgress] = useState(false);
   const [totalUploadProgress, setTotalUploadProgress] = useState(0);
-  const [error, setError] = useState(false);
+  const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [fimgError, setFimgError] = useState(false);
   const [bimgError, setBimgError] = useState(false);
@@ -138,6 +137,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
   const [rimgError, setrImgError] = useState(false);
   const [mileageError, setMileageError] = useState(false);
   const [gasLevelError, setGasLevelError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { profile } = useContext(DriverContext);
   const { front, back, left, right, clearall } = useContext(
     ImageContainerContext
@@ -152,10 +152,15 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
     exists,
     onStartValet,
     startedValet,
-    error: valetError,
   } = useContext(ValetContext);
+  const { error } = useContext(ErrorContext);
 
   useEffect(() => {
+    handleProgress();
+  }, [progressFront, progressBack, progressLeft, progressRight]);
+
+  // calculate the progress from the image upload
+  const handleProgress = () => {
     const progressValues = [
       progressFront,
       progressBack,
@@ -169,20 +174,12 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
       validProgressValues.reduce((sum, value) => sum + value, 0) /
       validProgressValues.length;
     setTotalUploadProgress(averageProgress);
-  }, [
-    frontImgUrl,
-    backImgUrl,
-    leftImgUrl,
-    rightImgUrl,
-    progressFront,
-    progressBack,
-    progressLeft,
-    progressRight,
-  ]);
+  };
 
   const uploadImages = async () => {
-    // console.log(selectedValet.order.orderId, "selectedValet");
-    setError(false);
+    console.log("userType", userType);
+    setLoading(true);
+    setIsError(false);
     setErrorMessage("");
     setFimgError(false);
     setBimgError(false);
@@ -191,7 +188,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
     setMileageError(false);
     setGasLevelError(false);
     if (userType !== "customer") {
-      await onValetExists(selectedValet.order.orderId);
+      await onValetExists(selectedValet.order[0].orderId);
       if (exists) throw new Error("Valet already started");
     }
     setInProgress(true);
@@ -202,31 +199,31 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
       isObjEmpty(right)
     ) {
       setErrorMessage("Please take all pictures");
-      setError(true);
+      setIsError(true);
     }
     if (front === "") {
       setFimgError(true);
-      setError(true);
+      setIsError(true);
     }
     if (back === "") {
       setBimgError(true);
-      setError(true);
+      setIsError(true);
     }
     if (left === "") {
       setLimgError(true);
-      setError(true);
+      setIsError(true);
     }
     if (right === "") {
       setrImgError(true);
-      setError(true);
+      setIsError(true);
     }
     if (mileage === "") {
       setMileageError(true);
-      setError(true);
+      setIsError(true);
     }
     if (gasLevel === "") {
       setGasLevelError(true);
-      setError(true);
+      setIsError(true);
     }
     if (error) {
       setInProgress(false);
@@ -237,7 +234,6 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
       const frontUrl =
         frontImgUrl ||
         (await handleUpload(front, (progress: any) => {
-          console.log(progress, "progress");
           setProgressFront(Number.parseInt(progress));
         }));
       setFrontImgUrl(frontUrl);
@@ -259,20 +255,22 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
           setProgressLeft(Number.parseInt(progress));
         }));
       setLeftImgUrl(leftUrl);
+      // console.log(userType);
 
-      const datas = {
-        frontImage: frontUrl,
-        backImage: backUrl,
-        leftImage: leftUrl,
-        rightImage: rightUrl,
-        mileage: Number.parseInt(mileage),
-        gasLevel: Number.parseInt(gasLevel),
-        comments: comments,
-        customerId: selectedValet.customerId,
-        dealershipId: selectedValet.dealership.dealershipId,
-        orderId: selectedValet.order.orderId,
-        userType: userType,
-      };
+      // const datas = {
+      //   frontImage: frontUrl,
+      //   backImage: backUrl,
+      //   leftImage: leftUrl,
+      //   rightImage: rightUrl,
+      //   mileage: Number.parseInt(mileage),
+      //   gasLevel: Number.parseInt(gasLevel),
+      //   comments: comments,
+      //   customerId: selectedValet.customerId ?? startedValet.customer.userId,
+      //   dealershipId: selectedValet.dealership.dealershipId,
+      //   orderId: selectedValet.order[0].orderId ?? startedValet.order.orderId,
+      //   userType: userType,
+      // };
+      // console.log("datas", datas);
 
       // console.log("selectedValet", startedValet);
 
@@ -295,24 +293,52 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
       //   mileage: 1000,
       // };
 
-      if (userType === "dealership") await onCreateValet(datas);
-      if (userType === "customer")
+      if (userType === "dealership") {
+        await onCreateValet({
+          frontImage: frontUrl,
+          backImage: backUrl,
+          leftImage: leftUrl,
+          rightImage: rightUrl,
+          mileage: Number.parseInt(mileage),
+          gasLevel: Number.parseInt(gasLevel),
+          comments: comments,
+          customerId: selectedValet.customerId || startedValet.customer.userId,
+          dealershipId: selectedValet.dealership.dealershipId,
+          orderId: selectedValet.order[0].orderId || startedValet.order.orderId,
+          userType: userType,
+        });
+      } else if (userType === "customer") {
         await onStartValet(
           ValetStatus.CUSTOMER_VEHICLE_PICK_UP,
           valetData.valetId || startedValet.valetId,
-          datas
+          {
+            frontImage: frontUrl,
+            backImage: backUrl,
+            leftImage: leftUrl,
+            rightImage: rightUrl,
+            mileage: Number.parseInt(mileage),
+            gasLevel: Number.parseInt(gasLevel),
+            comments: comments,
+            customerId:
+              selectedValet.customerId || startedValet.customer.userId,
+            dealershipId: selectedValet.dealership.dealershipId,
+            orderId:
+              selectedValet.order[0].orderId || startedValet.order.orderId,
+            userType: userType,
+          }
         );
+      }
 
       if (valetData) {
         setInProgress(false);
         navigation.navigate("Map");
-        clearall();
         return;
       }
     } catch (error: any) {
       setInProgress(false);
-      setErrorMessage(error.message);
-      setError(true);
+      setIsError(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -328,11 +354,6 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
     return data.url;
   };
 
-  useEffect(() => {
-    if (error)
-      Alert.alert("Error", "Faild to upload vehicle check. Please try again");
-  }, [error]);
-
   return (
     <>
       <KeyboardAvoidingView
@@ -340,13 +361,6 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
         style={{ flex: 1, width: "100%" }}
       >
         <ScrollViewContainer>
-          {/* <Container
-            styles={{
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "flex-start",
-            }}
-          ></Container> */}
           <>
             <UploadProgress />
             <Spacer variant="top.large" />
@@ -358,7 +372,6 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
                 <Label title2={true}>Front</Label>
                 <Spacer variant="top.small" />
                 <CamCardComponent side={"front"} />
-                {/* <StyledText>{progressFront}</StyledText> */}
                 <ErrorMessage>
                   {fimgError ? "Please take a picture" : ""}
                 </ErrorMessage>
@@ -366,7 +379,6 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
                 <Label title2={true}>Right</Label>
                 <Spacer variant="top.small" />
                 <CamCardComponent side={"right"} />
-                {/* <StyledText>{progressRight}</StyledText> */}
                 <ErrorMessage>
                   {rimgError ? "Please take a picture" : ""}
                 </ErrorMessage>
@@ -374,7 +386,6 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
                 <Label title2={true}>Back</Label>
                 <Spacer variant="top.small" />
                 <CamCardComponent side={"back"} />
-                {/* <StyledText>{progressBack}</StyledText> */}
                 <ErrorMessage>
                   {bimgError ? "Please take a picture" : ""}
                 </ErrorMessage>
@@ -382,7 +393,6 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
                 <Label title2={true}>Left</Label>
                 <Spacer variant="top.small" />
                 <CamCardComponent side={"left"} />
-                {/* <StyledText>{progressLeft}</StyledText> */}
                 <ErrorMessage>
                   {limgError ? "Please take a picture" : ""}
                 </ErrorMessage>
@@ -432,7 +442,13 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
         </ScrollViewContainer>
       </KeyboardAvoidingView>
       <ButtonContainer>
-        <ButtonComponent title="Next" onPress={() => uploadImages()} />
+        <ButtonComponent
+          title="Next"
+          onPress={() => uploadImages()}
+          loading={loading}
+        >
+          <ProceedSvg width={23} height={23} />
+        </ButtonComponent>
       </ButtonContainer>
       {inProgress && (
         <OverlayComponent
@@ -440,7 +456,6 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
           onCancel={() => console.log("hello cancel")}
           onConfirm={() => console.log("hello confirm")}
         >
-          {/* <LogoSvg width={100} height={120} /> */}
           {totalUploadProgress !== 100 && (
             <Label
               title2={true}
@@ -454,6 +469,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({ navigation }) =>
           )}
         </OverlayComponent>
       )}
+      {error && <ErrorComponent errorMessage={error} />}
     </>
   );
 };

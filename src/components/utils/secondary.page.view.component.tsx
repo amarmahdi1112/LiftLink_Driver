@@ -29,33 +29,42 @@ interface PageProps {
   navigation: any;
   buttonAction?: any;
   buttonLoading?: boolean;
+  showActionButton?: boolean;
 }
 
-export const SecondaryPageView: FC<PageProps> = ({ children, navigation, buttonAction, buttonLoading }) => {
+export const SecondaryPageView: FC<PageProps> = ({
+  children,
+  navigation,
+  buttonAction,
+  buttonLoading,
+  showActionButton = true,
+}) => {
   const { error } = useContext(ErrorContext);
   return (
-    <MainContainer navigation={navigation} secondaryPage={true} showSecondaryAvatar={true}>
+    <MainContainer
+      navigation={navigation}
+      secondaryPage={true}
+      showSecondaryAvatar={true}
+    >
       <>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1, width: "100%" }}
         >
-          <ScrollViewContainer>
-            {children}
-          </ScrollViewContainer>
+          <ScrollViewContainer>{children}</ScrollViewContainer>
         </KeyboardAvoidingView>
-        <ButtonContainer>
-          <ButtonComponent
-            title="Save Changes"
-            onPress={buttonAction}
-            loading={buttonLoading}
-          >
-            <CheckSvg />
-          </ButtonComponent>
-        </ButtonContainer>
-        {error && (
-          <ErrorComponent errorMessage={error} />
+        {showActionButton && (
+          <ButtonContainer>
+            <ButtonComponent
+              title="Save Changes"
+              onPress={buttonAction}
+              loading={buttonLoading}
+            >
+              <CheckSvg />
+            </ButtonComponent>
+          </ButtonContainer>
         )}
+        {error && <ErrorComponent errorMessage={error} />}
       </>
     </MainContainer>
   );

@@ -431,3 +431,23 @@ export const GET_STARTED_VALET = gql`
     }
   }
 `;
+
+export const GET_PENDING_CONFIRMATION = gql`
+query {
+  getPendingConfirmations {
+    dealership {
+      dealershipName
+      dealershipId
+      dealershipCity
+      dealershipCountry
+      dealershipAddress
+      dealershipZipCode
+      dealershipState
+    }
+    confirmationDate
+    confirmationId
+    confirmationStatus
+    updatedAt
+  }
+}
+`;

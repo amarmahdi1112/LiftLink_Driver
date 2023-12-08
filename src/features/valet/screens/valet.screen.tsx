@@ -1,12 +1,16 @@
 /* eslint-disable react/prop-types */
-import React, { FC, useContext } from "react";
+import React, { FC, useContext, useEffect } from "react";
 import { MainContainer } from "../../../components/main.component";
 import styled from "styled-components/native";
-import { ValetContext } from "../../../infrastructure/service/valet/context/valet.context";
+import {
+  ValetContext,
+  ValetStatus,
+} from "../../../infrastructure/service/valet/context/valet.context";
 import { ValetLoanerScreen } from "./valet.loaner.screen";
 import { ValetInfoScreen } from "./valet.info.screen";
 import { ValetContainer } from "../../../components/valet.component";
 import { ImageContainerProvider } from "../utils/imageObjectContainer";
+import { isObjEmpty } from "../../main/screen/main.screen";
 
 const InfoContainer = styled.View`
   flex-direction: column;
@@ -22,12 +26,22 @@ interface ValetScreenProps {
 }
 
 export const ValetScreen: FC<ValetScreenProps> = ({ navigation }) => {
-  const { screen } = useContext(ValetContext);
+  const { screen, setUserType, startedValet } = useContext(ValetContext);
+  useEffect(() => {
+    if (!isObjEmpty(startedValet)) {
+      if (
+        startedValet.valetStatus ===
+        ValetStatus.DEALERSHIP_TO_CUSTOMER_COMPLETED.valueOf()
+      ) {
+        setUserType("customer");
+      }
+    }
+  }, []);
   return (
     <ImageContainerProvider>
       <>
         {screen === "details" && (
-          <ValetContainer>
+          <ValetContainer navigation={navigation}>
             <InfoContainer>
               <ValetInfoScreen navigation={navigation} />
             </InfoContainer>
