@@ -127,7 +127,7 @@ export const CamCardComponent: FC<CamCardComponentProps> = ({ imageLink, clearCo
         height: "250px",
         width: "100%",
       }}
-      onPress={pickImage}
+      onPress={takeImage}
     >
       <CustomCard>
         {image && !imageLink && side ? (

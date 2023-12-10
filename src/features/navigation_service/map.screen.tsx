@@ -725,7 +725,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
       {!loading && (
         <SliderContainer>
           <SlideButton
-            title="Slide to start"
+            title={started ? "Slide to finish" : "Slide to start"}
             borderRadius={20}
             padding={0}
             reverseSlideEnabled={true}
