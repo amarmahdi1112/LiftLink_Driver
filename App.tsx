@@ -28,7 +28,7 @@ import * as ExpoSplashScreen from "expo-splash-screen";
 import { ErrorProvider } from "./src/infrastructure/service/error/error.context";
 import { ImageContainerProvider } from "./src/infrastructure/service/driver/context/utils/imageObjectContainer";
 
-const tunnel = false;
+const tunnel = true;
 
 const wsLink: any = new GraphQLWsLink(
   createClient({

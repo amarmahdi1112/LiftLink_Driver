@@ -42,11 +42,6 @@ export const DriverProfileScreen: FC<DriverProfileScreenProps> = ({
 
   const handleUpload = async () => {
     setLoading(true);
-    // console.log("imageObject", imageObject)
-    // const imageKey = `object_${Object.keys(imageObject).length - 1}`;
-    // const fileName = imageObject[imageKey].substring(
-    //   imageObject[imageKey].lastIndexOf("/") + 1
-    // );
     try {
       await onUpdateProfilePicture!(imageObject as any);
     } catch (error: any) {

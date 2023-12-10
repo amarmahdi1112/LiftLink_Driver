@@ -76,7 +76,7 @@ export const SigninScreen: FC<SigninScreenProps> = ({ navigation }) => {
     <>
       <Container>
         <Spacer variant="top.large" />
-        <LabelComponent>Username</LabelComponent>
+        <LabelComponent>Username / Email</LabelComponent>
         <Spacer variant="top.xsmall" />
         <InputComponent
           value={username}

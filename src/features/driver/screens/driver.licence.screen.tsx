@@ -5,12 +5,9 @@ import {
 } from "../../../components/typography/label.component";
 import { Spacer } from "../../../components/utils/spacer.component";
 import styled from "styled-components/native";
-import { ButtonComponent } from "../../../components/button.component";
 import { CamCardComponent } from "../components/camera.card.component";
 import { ImageContainerContext } from "../../../infrastructure/service/driver/context/utils/imageObjectContainer";
 import { ErrorContext } from "../../../infrastructure/service/error/error.context";
-import { AuthContext } from "../../../infrastructure/service/authentication/context/auth.context";
-import ProceedSvg from "../../../../assets/svgs/proceed";
 import * as ImagePicker from "expo-image-picker";
 import { LabelFormComponent } from "../../../components/typography";
 import { InputComponent } from "../../../components/input.component";
@@ -25,13 +22,6 @@ const MContainer = styled.View`
   width: 100%;
   padding-left: 30px;
   padding-right: 30px;
-`;
-
-const ButtonContainer = styled.View`
-  width: 100%;
-  padding-left: 30px;
-  padding-right: 30px;
-  z-index: 2;
 `;
 
 const ErrorText = styled.Text`
@@ -69,10 +59,8 @@ export const DriverLicenseScreen: FC<DriverProfileScreenProps> = ({
     backImage,
     setBackImage,
     setFrontImage,
-    expirationDate,
     setExpirationDate,
     expirationDateError,
-    setExpirationDateError,
     licenseState,
     setLicenseState,
     licenseStateError,
@@ -105,7 +93,6 @@ export const DriverLicenseScreen: FC<DriverProfileScreenProps> = ({
     setDate(currentDate);
     setExpirationDate!(currentDate.toDateString());
     setShowDateTimePicker(false);
-    console.log(currentDate);
   };
 
   const renderDateTimePicker = () => {
@@ -135,20 +122,6 @@ export const DriverLicenseScreen: FC<DriverProfileScreenProps> = ({
           <Spacer variant="top.large" />
           <LabelFormComponent size={"100%"}>Expiration Date</LabelFormComponent>
           <Spacer variant="top.xsmall" />
-          {/* <InputComponent
-            value={expirationDate}
-            onChangeText={(text: any) => {
-              if (text.length === 0) {
-                setExpirationDateError!(true);
-              }
-              if (text.length > 0 && expirationDateError) {
-                setExpirationDateError!(false);
-              }
-              setExpirationDate!(text);
-            }}
-            isError={expirationDateError}
-          /> */}
-          
           <DateTimePickerContainer
               onPress={() => setShowDateTimePicker(!showDateTimePicker)}
             >
