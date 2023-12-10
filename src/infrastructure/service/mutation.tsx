@@ -258,6 +258,8 @@ export const CREATE_VALET = gql`
       customer {
         userId
         accountType
+        firstName
+        lastName
         profilePicture {
           pictureLink
         }
@@ -330,6 +332,8 @@ export const START_VALET = gql`
       comments
       customer {
         accountType
+        firstName
+        lastName
         profilePicture {
           pictureLink
         }

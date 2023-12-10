@@ -26,6 +26,8 @@ import MapViewDirections from "react-native-maps-directions";
 import set from "date-fns/fp/set/index.js";
 import { DriverContext } from "../../infrastructure/service/driver/context/driver.context";
 import { theme } from "../../infrastructure/theme";
+import { ErrorContext } from "../../infrastructure/service/error/error.context";
+import { ErrorComponent } from "../../components/error.component";
 
 const BottomOverflowContainer = styled.View`
   width: 100%;
@@ -187,6 +189,14 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
   const [currentLocationTracker, setCurrentLocationTracker] = useState<any>({});
   const [loaded, setLoaded] = useState(false);
   const [customerProfilePicture, setCustomerProfilePicture] = useState("");
+  const { error, setError } = useContext(ErrorContext);
+  const [customerFirstName, setCustomerFirstName] = useState("");
+  const [customerLastName, setCustomerLastName] = useState("");
+  const [customerAccountType, setCustomerAccountType] = useState("");
+  const [customerUID, setCustomerUID] = useState("");
+  const [serviceDeliveryDate, setServiceDeliveryDate] = useState("");
+  const [pickupLocation, setPickupLocation] = useState("");
+  const [type, setType] = useState("");
 
   const decodePolyline = (pl: any) => {
     const decoded = decode(pl);
@@ -208,32 +218,77 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
   };
 
   useEffect(() => {
+    setLoading(true);
     setPoly();
-    // check if the customerProfilePicture is on the selectedValet or startedValet and if its an array or an object and set the customerProfilePicture
-    if (selectedValet.customer && selectedValet.customer.profilePicture) {
-      if (Array.isArray(selectedValet.customer.profilePicture)) {
-        setCustomerProfilePicture(
-          selectedValet.customer.profilePicture[0].pictureLink
-        );
-      } else {
-        setCustomerProfilePicture(
-          selectedValet.customer.profilePicture.pictureLink
-        );
+    // if (!isObjEmpty(valetData)) {
+    //   if (
+    //     valetData.valetStatus ===
+    //       ValetStatus.CUSTOMER_TO_DEALERSHIP_COMPLETED.valueOf() ||
+    //     valetData.valetStatus === ValetStatus.CUSTOMER_RETURN_STARTED.valueOf()
+    //   ) {
+    //     setType("return");
+    //   }
+    // }
+    // Define a helper function to get the first valid customer from selectedValet, startedValet, or valetData
+    const getCustomer = () => {
+      const valets = [selectedValet, startedValet, valetData];
+      for (const valet of valets) {
+        if (valet && valet.customer) {
+          return valet.customer;
+        }
       }
-    } else if (
-      startedValet.customer &&
-      startedValet.customer.profilePicture
-    ) {
-      if (Array.isArray(startedValet.customer.profilePicture)) {
-        setCustomerProfilePicture(
-          startedValet.customer.profilePicture[0].pictureLink
-        );
-      } else {
-        setCustomerProfilePicture(
-          startedValet.customer.profilePicture.pictureLink
-        );
+      return null;
+    };
+
+    // Define a helper function to get the first valid order from selectedValet, startedValet, or valetData
+    const getOrder = () => {
+      const valets = [selectedValet, startedValet, valetData];
+      for (const valet of valets) {
+        if (valet && valet.order) {
+          return Array.isArray(valet.order) ? valet.order[0] : valet.order;
+        }
+      }
+      return null;
+    }; 
+
+    // Use the helper functions to get the customer and order
+    const customer = getCustomer(); 
+    const order = getOrder();
+
+    // Set the customer profile picture
+    if (customer && customer.profilePicture) {
+      const profilePicture = Array.isArray(customer.profilePicture)
+        ? customer.profilePicture[0]
+        : customer.profilePicture;
+      setCustomerProfilePicture(profilePicture.pictureLink);
+    }
+
+    // Set the customer first name, last name, and account type
+    if (customer) {
+      if (customer.firstName) {
+        setCustomerFirstName(customer.firstName);
+      }
+      if (customer.lastName) {
+        setCustomerLastName(customer.lastName);
+      }
+      if (customer.accountType) {
+        setCustomerAccountType(customer.accountType);
       }
     }
+
+    // Set the service delivery date and pickup location
+    if (order) {
+      if (order.orderDeliveryDate) {
+        setServiceDeliveryDate(order.orderDeliveryDate);
+      }
+      if (order.pickupLocation) {
+        setPickupLocation(order.pickupLocation);
+      }
+      if (order.orderStatus === "RETURN_ACCEPTED") {
+        setType("return");
+      }
+    }
+    setLoading(false);
   }, []);
 
   const mapCamView = async (coords: any) => {
@@ -290,20 +345,47 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
       longitudeDelta: 0.01,
     });
 
-    if (loaded) await (mapRef.current as any).setCamera({
-      center: {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      },
-      pitch: 45,
-      heading: 90,
-      altitude: 1000,
-    });
+    if (loaded)
+      await (mapRef.current as any).setCamera({
+        center: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        },
+        pitch: 45,
+        heading: 90,
+        altitude: 1000,
+      });
 
     return location;
   };
 
   useEffect(() => {
+    // Check which is not empty and select the existing one and check what the valet status in valet data or selected valet is and set the user type accordingly
+    if (!isObjEmpty(selectedValet)) {
+      if (
+        selectedValet.valetStatus === ValetStatus.DEALERSHIP_TO_CUSTOMER_STARTED
+      ) {
+        setUserType("dealership");
+      } else if (
+        selectedValet.valetStatus ===
+          ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED ||
+        selectedValet.valetStatus === ValetStatus.CUSTOMER_VEHICLE_PICK_UP
+      ) {
+        setUserType("customer");
+      }
+    } else if (!isObjEmpty(valetData)) {
+      setSelectedValet(valetData);
+      if (
+        valetData.valetStatus === ValetStatus.DEALERSHIP_TO_CUSTOMER_STARTED
+      ) {
+        setUserType("dealership");
+      } else if (
+        valetData.valetStatus === ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED
+      ) {
+        setUserType("customer");
+      }
+    }
+
     if (isObjEmpty(currentLocation)) {
       getLocation();
     }
@@ -315,7 +397,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
       );
     else if (userType === "customer")
       setDestinationLocation(selectedValet.dealership.dealershipAddress);
-    else Alert.alert("Error", "Invalid user type");
+    else setError("Invalid user type");
   }, []);
 
   useEffect(() => {
@@ -323,6 +405,118 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
       setLoadingLocation(false);
     }
   }, [currentLocation]);
+
+  const onSlideFinish = async () => {
+    const startDealershipToCustomer = async () => {
+      try {
+        await onStartValet(
+          ValetStatus.DEALERSHIP_TO_CUSTOMER_STARTED,
+          selectedValet.valetId || valetData.valetId
+        );
+        setStarted(true);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    };
+
+    const completeDealershipToCustomer = async () => {
+      try {
+        await onStartValet(
+          ValetStatus.DEALERSHIP_TO_CUSTOMER_COMPLETED,
+          selectedValet.valetId || valetData.valetId
+        );
+        setUserType("customer");
+        setStarted(false);
+        setScreen("details");
+        return true;
+      } catch (error) {
+        return false;
+      }
+    };
+
+    const startCustomerToDealership = async () => {
+      try {
+        await onStartValet(
+          ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED,
+          selectedValet.valetId || valetData.valetId
+        );
+        setStarted(true);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    };
+
+    const completeCustomerToDealership = async () => {
+      try {
+        await onStartValet(
+          ValetStatus.CUSTOMER_TO_DEALERSHIP_COMPLETED,
+          selectedValet.valetId || valetData.valetId
+        );
+        setUserType("confirm_completion");
+        setStarted(false);
+        setScreen("details");
+        return true;
+      } catch (error) {
+        return false;
+      }
+    };
+
+    const startReturnVehicle = async () => {
+      try {
+        await onStartValet(
+          ValetStatus.CUSTOMER_RETURN_STARTED,
+          selectedValet.valetId || valetData.valetId
+        );
+        setStarted(true);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    };
+
+    const endReturnVehicle = async () => {
+      try {
+        await onStartValet(
+          ValetStatus.CUSTOMER_RETURN_COMPLETED,
+          selectedValet.valetId || valetData.valetId
+        );
+        setUserType("confirm_completion");
+        setStarted(false);
+        setScreen("details");
+        return true;
+      } catch (error) {
+        return false;
+      }
+    };
+
+    if (userType === "dealership" && type !== "return") {
+      if (!started) {
+        await startDealershipToCustomer();
+      } else {
+        if (await completeDealershipToCustomer()) {
+          onFinish();
+        }
+      }
+    } else if (userType === "customer") {
+      if (!started) {
+        await startCustomerToDealership();
+      } else {
+        if (await completeCustomerToDealership()) {
+          onFinish();
+        }
+      }
+    } else {
+      if (!started) {
+        await startReturnVehicle();
+      } else {
+        if (await endReturnVehicle()) {
+          onFinish();
+        }
+      }
+    }
+  };
 
   const onFinish = async () => {
     navigation.navigate("Valet");
@@ -446,7 +640,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
             <Bar />
             <LabelComponent inverted={true}>{swipeText}</LabelComponent>
           </BarContainer>
-          {viewData && (
+          {viewData && !loading && (
             <DataContainer>
               <AvatarContainer>
                 <UserProfileContainer>
@@ -460,8 +654,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                   <Spacer variant="left.medium" />
                   <UserInfoContainer>
                     <LabelComponent inverted={true}>
-                      {selectedValet.customer.firstName}{" "}
-                      {selectedValet.customer.lastName}
+                      {customerFirstName} {customerLastName}
                     </LabelComponent>
                     <Spacer variant="top.small" />
                     <Chip>
@@ -472,7 +665,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                         }}
                         title2={true}
                       >
-                        {selectedValet.customer.accountType.toUpperCase()}
+                        {customerAccountType.toUpperCase()}
                       </LabelComponent>
                     </Chip>
                   </UserInfoContainer>
@@ -507,13 +700,9 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                     Pickup Location
                   </LabelComponent>
                   <Spacer variant="top.xsmall" />
-                  {!isObjEmpty(selectedValet) && (
-                    <LabelComponent inverted={true} title2={true}>
-                      {Array.isArray(selectedValet.order)
-                        ? (selectedValet as any).order[0].pickupLocation
-                        : selectedValet.order.pickupLocation || "N/A"}
-                    </LabelComponent>
-                  )}
+                  <LabelComponent inverted={true} title2={true}>
+                    {pickupLocation || "N/A"}
+                  </LabelComponent>
                 </ContentView>
               </ContentContainer>
               <Spacer variant="top.large" />
@@ -525,14 +714,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
                   </LabelComponent>
                   <Spacer variant="top.xsmall" />
                   <LabelComponent inverted={true} title2={true}>
-                    {format(
-                      new Date(
-                        Array.isArray(selectedValet.order)
-                          ? (selectedValet as any).order[0].orderDeliveryDate
-                          : selectedValet.order.orderDeliveryDate
-                      ),
-                      "MM/dd/yyyy"
-                    )}
+                    {format(new Date(serviceDeliveryDate), "MM/dd/yyyy")}
                   </LabelComponent>
                 </ContentView>
               </ContentContainer>
@@ -540,74 +722,43 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
           )}
         </BottomOverflowContainer>
       </SlidingUpPanel>
-      <SliderContainer>
-        <SlideButton
-          title="Slide to start"
-          borderRadius={20}
-          padding={0}
-          reverseSlideEnabled={true}
-          containerStyle={{
-            backgroundColor: started
-              ? colors.buttonColors.error
-              : colors.buttonColors.primary,
-            padding: 0,
-            margin: 0,
-          }}
-          underlayStyle={{
-            backgroundColor: started
-              ? colors.buttonColors.error
-              : colors.buttonColors.primary,
-            padding: 0,
-            margin: 0,
-          }}
-          icon={<SliderIcon width={25} height={25} />}
-          thumbStyle={{
-            backgroundColor: started
-              ? colors.buttonColors.error
-              : colors.buttonColors.primary,
-            padding: 0,
-            margin: 0,
-          }}
-          onSlideEnd={async () => {
-            if (!started && userType === "dealership") {
-              await onStartValet(
-                ValetStatus.DEALERSHIP_TO_CUSTOMER_STARTED,
-                selectedValet.valetId || valetData.valetId
-              );
-              setStarted(true);
-              return;
-            }
-            if (userType === "dealership" && started) {
-              await onStartValet(
-                ValetStatus.DEALERSHIP_TO_CUSTOMER_COMPLETED,
-                selectedValet.valetId || valetData.valetId
-              );
-              setUserType("customer");
-              setStarted(false);
-              setScreen("details");
-            }
-            if (!started && userType === "customer") {
-              await onStartValet(
-                ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED,
-                selectedValet.valetId || valetData.valetId
-              );
-              setStarted(true);
-              return;
-            }
-            if (started && userType === "customer") {
-              await onStartValet(
-                ValetStatus.CUSTOMER_TO_DEALERSHIP_COMPLETED,
-                selectedValet.valetId || valetData.valetId
-              );
-              setUserType("confirm_completion");
-              setStarted(false);
-              setScreen("details");
-            }
-            onFinish();
-          }}
-          autoReset={true}
-        />
-      </SliderContainer>
+      {!loading && (
+        <SliderContainer>
+          <SlideButton
+            title="Slide to start"
+            borderRadius={20}
+            padding={0}
+            reverseSlideEnabled={true}
+            containerStyle={{
+              backgroundColor: started
+                ? colors.buttonColors.error
+                : colors.buttonColors.primary,
+              padding: 0,
+              margin: 0,
+            }}
+            underlayStyle={{
+              backgroundColor: started
+                ? colors.buttonColors.error
+                : colors.buttonColors.primary,
+              padding: 0,
+              margin: 0,
+            }}
+            icon={<SliderIcon width={25} height={25} />}
+            thumbStyle={{
+              backgroundColor: started
+                ? colors.buttonColors.error
+                : colors.buttonColors.primary,
+              padding: 0,
+              margin: 0,
+            }}
+            onReachedToEnd={async () => {
+              await onSlideFinish();
+            }}
+            autoReset={true}
+          />
+        </SliderContainer>
+      )}
+      {error && <ErrorComponent errorMessage={error} />}
     </>
   );
 };

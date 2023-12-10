@@ -8,7 +8,12 @@ import React, {
 } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { CONFIRM_ORDER, REJECT_ORDER } from "../../mutation";
-import { GET_CONFIRMED_ORDERS, GET_STARTED_VALET } from "../../query";
+import {
+  GET_CONFIRMED_ORDERS,
+  GET_ORDER,
+  GET_STARTED_VALET,
+} from "../../query";
+import { ErrorContext } from "../../error/error.context";
 // import { ValetContext } from "../../valet/context/valet.context";
 
 export interface OrderConfirmationContextProps {
@@ -48,7 +53,7 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
     page: 1,
     perPage: 3,
   });
-  const [error, setError] = useState(null);
+  const { error, setError } = useContext(ErrorContext);
   // const { setselectedValet } = useContext(ValetContext);
   const [canLoadMore, setCanLoadMore] = useState(true);
 
@@ -62,7 +67,7 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
       setLoading(confirmOrderLoading);
       return data;
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
       return;
     }
   };
@@ -77,15 +82,38 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
       setLoading(declineOrderLoading);
       return data;
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
       return;
     }
   };
 
+  const hasBeenServed = async () => {
+    confirmedOrders.map((order) => {
+      if (Array.isArray(order.order)) {
+        if (order.order[0].orderStatus.includes("ACCEPTED")) {
+          setConfirmedOrders((prev) => {
+            return prev.filter(
+              (prevOrder) => prevOrder.assignId !== order.assignId
+            );
+          });
+        }
+      } else {
+        if (order.order.orderStatus.includes("ACCEPTED")) {
+          setConfirmedOrders((prev) => {
+            return prev.filter(
+              (prevOrder) => prevOrder.assignId !== order.assignId
+            );
+          });
+        }
+      }
+    });
+    // setConfirmedOrders(orders)
+  };
+
   const onGetConfirmedOrders = async () => {
     setLoading(true);
+    hasBeenServed();
     if (confirmedOrders.length === 0) {
-      setConfirmedOrders([]);
       setPagination({
         page: 1,
         perPage: 10,
@@ -134,7 +162,7 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
         setError((error as any).message);
       }
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
       setLoading(false);
       return;
     }

@@ -15,7 +15,6 @@ export const ErrorProvider = ({ children }: any) => {
       setTimeout(() => {
         setError("");
       }, 5000);
-      console.log(error);
     }
   }, [error]);
 

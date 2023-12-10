@@ -79,10 +79,11 @@ const DarkBgImg = styled.Image`
 
 const CardPadding = styled.View`
   padding: 20px;
+  width: 100%;
 `;
 
 const LabelContainer = styled.View`
-  width: 80%;
+  width: 100%;
   padding-right: 10px;
 `;
 

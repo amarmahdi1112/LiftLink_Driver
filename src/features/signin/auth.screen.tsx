@@ -69,6 +69,15 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
     } catch (error) { }
   };
 
+  const handleSignup = async () => {
+    try {
+      const data = await onSignup!(username as any, password as any, email as any);
+      if (data) {
+        navigation.navigate("MainNavigation");
+      }
+    } catch (error) { }
+  }
+
   useEffect(() => {
     if (!isObjEmpty(user)) {
       navigation.navigate("MainNavigation");
@@ -96,7 +105,6 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     if (error) {
-      console.log("error", error);
       setLoadingState(false);
       setTimeout(() => {
         setError!("");
@@ -162,7 +170,7 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
                 password &&
                 email
               )
-                await onSignup!(username, password, email);
+                await handleSignup();
             }}
           >
             <SignUpSvg width={24} height={24} />

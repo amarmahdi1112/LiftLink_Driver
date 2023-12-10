@@ -18,6 +18,7 @@ import {
   GET_STARTED_VALET,
   FIND_DEALERSHIP,
   GET_PENDING_CONFIRMATION,
+  GET_VALET_INFO,
 } from "../../query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { isObjEmpty } from "../../../../features/main/screen/main.screen";
@@ -62,10 +63,12 @@ interface ValetContextProps {
   setSelectedPendingConfirmation: React.Dispatch<React.SetStateAction<any>>;
   isError: boolean;
   setIsError: React.Dispatch<React.SetStateAction<boolean>>;
+  onGetValetData: (valetId: string) => Promise<void>;
 }
 
 export enum ValetStatus {
   IN_PROGRESS = "IN_PROGRESS",
+  RETURN_IN_PROGRESS = "RETURN_IN_PROGRESS",
   NOT_STARTED = "NOT_STARTED",
   CUSTOMER_VEHICLE_PICK_UP = "CUSTOMER_VEHICLE_PICK_UP",
   CUSTOMER_VEHICLE_DROP_OFF = "CUSTOMER_VEHICLE_DROP_OFF",
@@ -77,6 +80,7 @@ export enum ValetStatus {
   CUSTOMER_TO_DEALERSHIP_COMPLETED = "CUSTOMER_TO_DEALERSHIP_COMPLETED",
   CUSTOMER_RETURN_STARTED = "CUSTOMER_RETURN_STARTED",
   CUSTOMER_RETURN_COMPLETED = "CUSTOMER_RETURN_COMPLETED",
+  RETURN_DEALERSHIP_TO_CUSTOMER_STARTED = "RETURN_DEALERSHIP_TO_CUSTOMER_STARTED",
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
 }
@@ -96,18 +100,27 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const [selectedValet, setSelectedValet] = useState({});
   const [createValet, { loading }] = useMutation(CREATE_VALET);
   const [startValet] = useMutation(START_VALET);
-  const findDealerships = useQuery(FIND_DEALERSHIP);
+  const findDealerships = useQuery(FIND_DEALERSHIP, {
+    fetchPolicy: "network-only",
+  });
   const [searchResults, setSearchResults] = useState([]);
   const [selectedDealership, setSelectedDealership] = useState({} as any);
   const [requestMembership] = useMutation(REQUEST_MEMBERSHIP);
   const [sendLocation] = useMutation(SEND_LOCATION);
   const [valetData, setValetData] = useState({});
-  const valetExists = useQuery(VALET_EXISTS);
+  const valetExists = useQuery(VALET_EXISTS, {
+    fetchPolicy: "network-only",
+  });
+  const getValet = useQuery(GET_VALET_INFO, {
+    fetchPolicy: "network-only",
+  });
   const [exists, setExists] = useState(false);
   const [isError, setIsError] = useState(false);
   const { error, setError } = useContext(ErrorContext);
   const [userType, setUserType] = useState("dealership");
-  const getPendingConfirmation = useQuery(GET_PENDING_CONFIRMATION);
+  const getPendingConfirmation = useQuery(GET_PENDING_CONFIRMATION, {
+    fetchPolicy: "network-only",
+  });
   const [pendingConfirmations, setPendingConfirmations] = useState<any>([]);
   const [selectedPendingConfirmation, setSelectedPendingConfirmation] =
     useState<any>({});
@@ -122,9 +135,19 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         setExists(data.valetExists);
       });
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
     }
   };
+
+  const onGetValetData = async (valetId: any) => {
+    try {
+      await getValet.refetch({ orderId: valetId }).then(({ data }) => {
+        setValetData(data.getValet);
+      });
+    } catch (error: any) {
+      setError("There was an error, please try again");
+    }
+  }
 
   const onCreateValet = async (inputs: any) => {
     isError && setIsError(false);
@@ -138,8 +161,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       setValetData(data.createValet);
       return data;
     } catch (error: any) {
-      console.log(error);
-      setError(error.message);
+      setError("There was an error, please try again");
       setIsError(true);
     }
   };
@@ -157,8 +179,9 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       }
       return data;
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
       setIsError(true);
+      throw error;
     }
   };
 
@@ -176,7 +199,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         setError("No started valets found");
       }
     } catch (error: any) {
-      setError(`Failed to fetch started valets: ${error.message}`);
+      setError("There was an error, please try again");
     }
   };
 
@@ -187,7 +210,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       });
       setSearchResults(data.findDealerships);
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
     }
   };
 
@@ -205,7 +228,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         },
       });
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
     }
   };
 
@@ -221,7 +244,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       );
       setSearchResults(filteredResults);
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
     }
   };
 
@@ -230,10 +253,10 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       const { data, error } = await getPendingConfirmation.refetch();
       setPendingConfirmations(data.getPendingConfirmations);
       if (error) {
-        setError(error.message);
+        setError("There was an error, please try again");
       }
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
     }
   };
 
@@ -270,6 +293,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         onCreateValet,
         onValetExists,
         resetAllValet,
+        onGetValetData,
         setStartedValet,
         onChangeLocation,
         setSelectedValet,

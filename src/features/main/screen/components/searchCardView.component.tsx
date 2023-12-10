@@ -103,7 +103,6 @@ export const SearchCardView: React.FC<SearchCardViewProps> = ({ data, title, add
       >
         <CardItemsContainer
           onPress={() => {
-            console.log("data", data);
             selectedDealershipFunc(data);
             onPress!();
           }}

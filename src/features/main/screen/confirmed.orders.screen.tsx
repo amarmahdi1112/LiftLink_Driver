@@ -120,10 +120,6 @@ export const ConfirmedOrdersScreen: React.FC<ConfirmedOrdersScreenProps> = ({
     }
   };
 
-  useEffect(() => {
-    console.log("confirmedOrders", confirmedOrders);
-  }, [confirmedOrders]);
-
   return (
     <>
       <MainContainer

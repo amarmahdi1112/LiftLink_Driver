@@ -123,10 +123,10 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
   const [gasLevel, setGasLevel] = useState("");
   const [comments, setComments] = useState("");
   const [mileage, setMileage] = useState("");
-  const [frontImgUrl, setFrontImgUrl] = useState("");
-  const [backImgUrl, setBackImgUrl] = useState("");
-  const [leftImgUrl, setLeftImgUrl] = useState("");
-  const [rightImgUrl, setRightImgUrl] = useState("");
+  // const [frontImgUrl, setFrontImgUrl] = useState("");
+  // const [backImgUrl, setBackImgUrl] = useState("");
+  // const [leftImgUrl, setLeftImgUrl] = useState("");
+  // const [rightImgUrl, setRightImgUrl] = useState("");
   const [inProgress, setInProgress] = useState(false);
   const [totalUploadProgress, setTotalUploadProgress] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
@@ -154,7 +154,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
     isError,
     setIsError,
   } = useContext(ValetContext);
-  const { error } = useContext(ErrorContext);
+  const { error, setError } = useContext(ErrorContext);
 
   useEffect(() => {
     handleProgress();
@@ -187,76 +187,70 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
     setrImgError(false);
     setMileageError(false);
     setGasLevelError(false);
+
+    const checkAndSetError = (
+      value: string,
+      setErrorBool: (error: boolean) => void,
+      errorMsg?: string
+    ) => {
+      if (value === "") {
+        setErrorBool(true);
+        setIsError(true);
+        if (errorMsg) setError!(errorMsg);
+      }
+    };
+
+    checkAndSetError(front, setFimgError);
+    checkAndSetError(back, setBimgError);
+    checkAndSetError(left, setLimgError);
+    checkAndSetError(right, setrImgError);
+    checkAndSetError(mileage, setMileageError);
+    checkAndSetError(gasLevel, setGasLevelError);
+
     if (userType !== "customer") {
       await onValetExists(selectedValet.order[0].orderId);
       if (exists) throw new Error("Valet already started");
     }
+
     setInProgress(true);
-    if (
-      isObjEmpty(front) ||
-      isObjEmpty(back) ||
-      isObjEmpty(left) ||
-      isObjEmpty(right)
-    ) {
-      setErrorMessage("Please take all pictures");
-      setIsError(true);
-    }
-    if (front === "") {
-      setFimgError(true);
-      setIsError(true);
-    }
-    if (back === "") {
-      setBimgError(true);
-      setIsError(true);
-    }
-    if (left === "") {
-      setLimgError(true);
-      setIsError(true);
-    }
-    if (right === "") {
-      setrImgError(true);
-      setIsError(true);
-    }
-    if (mileage === "") {
-      setMileageError(true);
-      setIsError(true);
-    }
-    if (gasLevel === "") {
-      setGasLevelError(true);
-      setIsError(true);
-    }
-    if (error || isError) {
+
+    if (isError) {
       setInProgress(false);
       return;
     }
 
+    let frontImgUrl = "";
+    let backImgUrl = "";
+    let leftImgUrl = "";
+    let rightImgUrl = "";
+
     try {
-      const frontUrl =
-        frontImgUrl ||
-        (await handleUpload(front, (progress: any) => {
-          setProgressFront(Number.parseInt(progress));
-        }));
-      setFrontImgUrl(frontUrl);
-      const rightUrl =
-        rightImgUrl ||
-        (await handleUpload(right, (progress: any) => {
-          setProgressRight(Number.parseInt(progress));
-        }));
-      setRightImgUrl(rightUrl);
-      const backUrl =
-        backImgUrl ||
-        (await handleUpload(back, (progress: any) => {
-          setProgressBack(Number.parseInt(progress));
-        }));
-      setBackImgUrl(backUrl);
-      const leftUrl =
-        leftImgUrl ||
-        (await handleUpload(left, (progress: any) => {
-          setProgressLeft(Number.parseInt(progress));
-        }));
-      setLeftImgUrl(leftUrl);
-    } catch (error: any) {
+      const uploadImage = async (
+        image: string,
+        setProgress: (progress: number) => void,
+      ) => {
+        const url = await handleUpload(image, (progress: any) => {
+          setProgress(Number.parseInt(progress));
+        });
+        return url;
+      };
+      frontImgUrl = await uploadImage(front, setProgressFront);
+      rightImgUrl = await uploadImage(right, setProgressRight);
+      backImgUrl = await uploadImage(back, setProgressBack);
+      leftImgUrl = await uploadImage(left, setProgressLeft);
+    } catch (error: any) {}
+
+    // Check if the image URLs are empty and set the errors
+    checkAndSetError(frontImgUrl, setFimgError, "Front image url is empty");
+    checkAndSetError(backImgUrl, setBimgError, "Back image url is empty");
+    checkAndSetError(leftImgUrl, setLimgError, "Left image url is empty");
+    checkAndSetError(rightImgUrl, setrImgError, "Right image url is empty");
+
+    if (isError || fimgError || bimgError || limgError || rimgError) {
+      setInProgress(false);
+      return;
     }
+
     // console.log(userType);
 
     // const datas = {
@@ -295,27 +289,50 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
     //   mileage: 1000,
     // };
     // chek if the order id is in the selected valet or started valet and check if the order is an object or an array and get the id
-    const orderId = !isObjEmpty(selectedValet) ? Array.isArray(selectedValet.order) ? selectedValet.order[0].orderId : selectedValet.order.orderId : !isObjEmpty(startedValet) ? Array.isArray(startedValet.order) ? startedValet.order[0].orderId : startedValet.order.orderId : "";
-    // check if the customer id is in the selected valet or started valet and get the id
-    const customerId = selectedValet.customerId || startedValet.customer.userId;
+    const getOrderId = () => {
+      const valets = [selectedValet, startedValet];
+      for (const valet of valets) {
+        if (!isObjEmpty(valet) && valet.order) {
+          return Array.isArray(valet.order)
+            ? valet.order[0].orderId
+            : valet.order.orderId;
+        }
+      }
+      return "";
+    };
+
+    const getCustomerId = () => {
+      return selectedValet.customerId || startedValet.customer.userId;
+    };
+
+    const getDealershipId = () => {
+      return selectedValet.dealership.dealershipId;
+    };
+
+    const orderId = getOrderId();
+    const customerId = getCustomerId();
+    const dealershipId = getDealershipId();
+
+    const valetDatas = {
+      frontImage: frontImgUrl,
+      backImage: backImgUrl,
+      leftImage: leftImgUrl,
+      rightImage: rightImgUrl,
+      mileage: Number.parseInt(mileage),
+      gasLevel: Number.parseInt(gasLevel),
+      comments: comments,
+      customerId: customerId,
+      dealershipId: dealershipId,
+      orderId: orderId,
+      userType: userType,
+    };
+
     if (userType === "dealership") {
-      console.log(orderId)
       try {
-        const create = await onCreateValet({
-          frontImage: frontImgUrl,
-          backImage: backImgUrl,
-          leftImage: leftImgUrl,
-          rightImage: rightImgUrl,
-          mileage: Number.parseInt(mileage),
-          gasLevel: Number.parseInt(gasLevel),
-          comments: comments,
-          customerId: customerId,
-          dealershipId: selectedValet.dealership.dealershipId,
-          orderId: orderId,
-          userType: userType,
-        });
+        const create = await onCreateValet(valetDatas);
         if (create) navigation.navigate("Map");
       } catch (error: any) {
+        // Handle error
       } finally {
         setInProgress(false);
         setLoading(false);
@@ -325,19 +342,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
         const start = await onStartValet(
           ValetStatus.CUSTOMER_VEHICLE_PICK_UP,
           valetData.valetId || startedValet.valetId,
-          {
-            frontImage: frontImgUrl,
-            backImage: backImgUrl,
-            leftImage: leftImgUrl,
-            rightImage: rightImgUrl,
-            mileage: Number.parseInt(mileage),
-            gasLevel: Number.parseInt(gasLevel),
-            comments: comments,
-            customerId: customerId,
-            dealershipId: selectedValet.dealership.dealershipId,
-            orderId: orderId,
-            userType: userType,
-          }
+          valetDatas
         );
         if (start) navigation.navigate("Map");
       } catch (error: any) {

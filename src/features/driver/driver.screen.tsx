@@ -94,11 +94,16 @@ export const DriverScreen: FC<DriverScreenProps> = ({
         licenseState: licenseState,
         licenseNumber: licenseNumber,
       });
-      console.log("license added")
       await onGetUserData();
-      console.log(profile)
     } catch (error: any) {
     } finally {
+      if (!profile.firstName || !profile.lastName) {
+        setScreen(screens.names);
+        return;
+      } else if (isObjEmpty(profile.profilePicture)) {
+        setScreen(screens.profile);
+        return;
+      }
       setLoading(false);
     }
   };

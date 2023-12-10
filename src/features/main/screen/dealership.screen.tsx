@@ -132,7 +132,6 @@ export const DealershipScreen: React.FC<DealershipScreenProps> = ({
         <InputComponent
           placeholder={"Search..."}
           onChangeText={async (text) => {
-            console.log(text);
             setSearchTerm(text);
           }}
         />
@@ -155,7 +154,7 @@ export const DealershipScreen: React.FC<DealershipScreenProps> = ({
                 data={item}
                 key={item.dealershipId}
                 onPress={() => {
-                  console.log(item);
+                  // console.log(item);
                 }}
               />
             </>

@@ -137,12 +137,6 @@ export const PendingRequestsScreen: React.FC<PendingRequestsScreenProps> = ({
     getdata();
   }, []);
 
-  useEffect(() => {
-    if (error) {
-      console.log("error", error);
-    }
-  }, [error]);
-
   const isSameDay = (d1: any, d2: any) =>
     format(d1, "yyyy-MM-dd") === format(d2, "yyyy-MM-dd");
 

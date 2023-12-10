@@ -33,6 +33,7 @@ interface AuthContextProps {
   loading: boolean;
   user: User | null;
   isAuthenticated: boolean;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   onLogin: (username: string, password: string) => Promise<void>;
   onLogout: () => Promise<any>;
   onChangePassword: (oldPassword: string, newPassword: string) => Promise<void>;
@@ -69,7 +70,7 @@ interface AuthContextProps {
     username: string,
     password: string,
     email: string
-  ) => Promise<void>;
+  ) => Promise<any>;
   firstName: string;
   setfirstName: React.Dispatch<React.SetStateAction<string>>;
   firstNameError: boolean;
@@ -80,6 +81,8 @@ interface AuthContextProps {
   setlastNameError: React.Dispatch<React.SetStateAction<boolean>>;
   updatePhoneMutation: (phone: string) => Promise<void>;
   resetAll: () => void;
+  logOutCalled: boolean;
+  setLogOutCalled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const AuthContext = createContext<Partial<AuthContextProps>>({});
@@ -110,6 +113,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const [emailError, setEmailError] = useState(false);
   const [phone, setPhone] = useState("");
   const [phoneError, setPhoneError] = useState(false);
+  const [logOutCalled, setLogOutCalled] = useState(false);
 
   // names
   const [firstName, setfirstName] = useState("");
@@ -173,7 +177,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
       setLoading(loginLoading);
       return data;
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
       setLoading(false);
     }
   };
@@ -183,7 +187,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
     try {
       setIsAuthenticated(false);
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
     } finally {
       setLoading(false);
     }
@@ -211,12 +215,12 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
         }
         if (error) {
           setIsAuthenticated(false);
-          setError(error.message);
+          setError("There was an error, please try again");
         }
       }
     } catch (error: any) {
       setIsAuthenticated(false);
-      setError(error.message);
+      setError("There was an error, please try again");
     } finally {
       setLoading(false);
     }
@@ -230,7 +234,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
       });
       return data;
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
     } finally {
       setLoading(false);
     }
@@ -244,7 +248,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
       });
       return data;
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
     } finally {
       setLoading(false);
     }
@@ -258,7 +262,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
       });
       return data;
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
     } finally {
       setLoading(false);
     }
@@ -272,7 +276,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
       });
       return data;
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
     } finally {
       setLoading(false);
     }
@@ -300,7 +304,7 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
       });
       await onGetUserData();
     } catch (error: any) {
-      setError(error.message);
+      setError("There was an error, please try again");
     } finally {
       setLoading(false);
     }
@@ -347,10 +351,8 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
           licenseNumber,
         },
       });
-      console.log("license added");
     } catch (error: any) {
-      console.log("error", error);
-      setError(error.message);
+      setError("There was an error, please try again");
     } finally {
       setLoading(false);
     }
@@ -394,8 +396,11 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
         loading,
         user,
         isAuthenticated,
+        setIsAuthenticated,
         onLogin,
         onLogout,
+        logOutCalled,
+        setLogOutCalled,
         onChangePassword,
         onChangeEmail,
         onChangeUsername,

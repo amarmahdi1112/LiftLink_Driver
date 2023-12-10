@@ -69,13 +69,13 @@ interface ValetInfoScreenProps {
 export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
   const {
     selectedValet,
-    setSelectedValet,
-    setScreen,
     exists,
     onValetExists,
+    onGetValetData,
     userType,
     startedValet,
-    setStartedValet,
+    valetData,
+    setScreen,
   } = useContext(ValetContext);
   const { profile } = useContext(DriverContext);
   const [getCustomerInfo, { data, error: customerInfoError }] = useLazyQuery(
@@ -103,8 +103,25 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
   }, [selectedValet]);
 
   useEffect(() => {
-    onValetExists(Array.isArray(selectedValet.order) ? selectedValet.order[0].orderId : selectedValet.order.orderId);
+    onValetExists(
+      Array.isArray(selectedValet.order)
+        ? selectedValet.order[0].orderId
+        : selectedValet.order.orderId
+    );
   }, []);
+
+  useEffect(() => {
+    if (exists) {
+      const getValet = async () => {
+        await onGetValetData(
+          Array.isArray(selectedValet.order)
+            ? selectedValet.order[0].orderId
+            : selectedValet.order.orderId
+        );
+      };
+      getValet();
+    }
+  }, [exists]);
 
   // const obj2 = {
   //   userType: "customer", //
@@ -151,7 +168,7 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
       navigation.navigate("Valet");
     }
   }, [exists]);
-  
+
   return !isObjEmpty(startedValet) || !isObjEmpty(selectedValet) ? (
     <>
       <Spacer variant="top.large" />
@@ -259,7 +276,10 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
       <LabelComponent>Customer Location</LabelComponent>
       <Spacer variant="top.medium" />
       <LabelComponent title2={true}>
-        #{Array.isArray(selectedValet.order) ? selectedValet.order[0].pickupLocation : selectedValet.order.pickupLocation || "N/A"}
+        #
+        {Array.isArray(selectedValet.order)
+          ? selectedValet.order[0].pickupLocation
+          : selectedValet.order.pickupLocation || "N/A"}
       </LabelComponent>
       <Spacer variant="top.large" />
       {userType === "customer" && (
@@ -268,7 +288,7 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
           <Spacer variant="top.medium" />
           <Chip>
             <LabelComponent title2={true}>
-              {startedValet.valetStatus.split("_").join(" ")}
+              {startedValet.valetStatus}
             </LabelComponent>
           </Chip>
           <Spacer variant="top.large" />
@@ -291,8 +311,20 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
           <Chip>
             <LabelComponent title2={true}>
               {!isObjEmpty(startedValet)
-                ? startedValet.valetStatus.split("_").join(" ")
-                : selectedValet.valetStatus.split("_").join(" ")}
+                ? startedValet.valetStatus &&
+                  startedValet.valetStatus.includes("_")
+                  ? startedValet.valetStatus.split("_").join(" ")
+                  : startedValet.valetStatus
+                : !isObjEmpty(selectedValet)
+                ? selectedValet.valetStatus &&
+                  selectedValet.valetStatus.includes("_")
+                  ? selectedValet.valetStatus.split("_").join(" ")
+                  : selectedValet.valetStatus
+                : !isObjEmpty(valetData)
+                ? valetData.valetStatus && valetData.valetStatus.includes("_")
+                  ? valetData.valetStatus.split("_").join(" ")
+                  : valetData.valetStatus
+                : ""}
             </LabelComponent>
           </Chip>
           <Spacer variant="top.large" />
@@ -324,7 +356,11 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
       <LabelComponent title2={true}>
         #
         {format(
-          new Date(Array.isArray(selectedValet.order) ? selectedValet.order[0].orderDeliveryDate : selectedValet.order.orderDeliveryDate),
+          new Date(
+            Array.isArray(selectedValet.order)
+              ? selectedValet.order[0].orderDeliveryDate
+              : selectedValet.order.orderDeliveryDate
+          ),
           "dd MMM, yyyy"
         )}
       </LabelComponent>
@@ -332,9 +368,56 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
       <ButtonComponent
         title={userType === "customer" ? "Ready to inspect?" : "Next"}
         onPress={() => {
-          if (userType !== "confirm_completion") setScreen("loaner");
-          else {
+          if (userType === "confirm_completion") navigation.navigate("Home");
+          if (
+            (!isObjEmpty(valetData) &&
+              valetData.valetStatus === ValetStatus.COMPLETED.valueOf()) ||
+            valetData.valetStatus ===
+              ValetStatus.CUSTOMER_RETURN_COMPLETED.valueOf()
+          ) {
             navigation.navigate("Home");
+            return;
+          } 
+          if (
+            isObjEmpty(valetData) &&
+            (!isObjEmpty(startedValet) || !isObjEmpty(selectedValet))
+          ) {
+            if (!isObjEmpty(selectedValet)) {
+              if (selectedValet.assignStatus === "RETURN_INITIATED") {
+                navigation.navigate("Map");
+                return;
+              }
+            }
+            setScreen("loaner");
+            return;
+          }
+          if (
+            !isObjEmpty(valetData) &&
+            valetData.valetStatus ===
+              ValetStatus.CUSTOMER_TO_DEALERSHIP_COMPLETED.valueOf()
+          ) {
+            if (valetData.order.orderStatus === "RETURN_ACCEPTED") {
+              navigation.navigate("Map");
+              return;
+            }
+            navigation.navigate("Home");
+            return;
+          }
+          if (
+            !isObjEmpty(valetData) &&
+            valetData.valetStatus ===
+              ValetStatus.CUSTOMER_RETURN_COMPLETED.valueOf()
+          ) {
+            navigation.navigate("Home");
+            return;
+          }
+          if (
+            !isObjEmpty(valetData) &&
+            valetData.valetStatus ===
+              ValetStatus.DEALERSHIP_TO_CUSTOMER_COMPLETED.valueOf()
+          ) {
+            setScreen("loaner");
+            return;
           }
         }}
       >

@@ -51,7 +51,7 @@ const Divider = styled.View`
 
 export const SettingsScreen: React.FC<SettingsProps> = ({ navigation }) => {
   const { profile } = useContext(DriverContext);
-  const { onLogout } = useContext(AuthContext);
+  const { setLogOutCalled, setIsAuthenticated } = useContext(AuthContext);
 
   return (
     <MainContainer navigation={navigation} secondaryPage={true} showSecondaryAvatar={true}>
@@ -67,14 +67,14 @@ export const SettingsScreen: React.FC<SettingsProps> = ({ navigation }) => {
             height={72}
             width={72}
             showGreetings={true}
-            fullName={`${profile?.firstName} ${profile?.lastName}`}
+            fullName={profile.username}
             fullNameStyle={{
               color: "black",
               fontSize: 24,
               fontWeight: "bold",
               textAlign: "center",
             }}
-            greetingMessage="Your Profile"
+            greetingMessage="Username"
             greetingStyle={{
               color: "black",
               fontSize: 16,
@@ -121,8 +121,9 @@ export const SettingsScreen: React.FC<SettingsProps> = ({ navigation }) => {
         <Spacer variant="top.small" />
         <ListItem
           onPress={async () => {
+            setLogOutCalled!(true);
+            setIsAuthenticated!(false);
             navigation.reset({
-              index: 0,
               routes: [{ name: "Auth" }],
             });
           }}

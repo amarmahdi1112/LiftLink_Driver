@@ -41,23 +41,36 @@ export const SigninScreen: FC<SigninScreenProps> = ({ navigation }) => {
     passwordError,
     setPasswordError,
     resetAll,
+    logOutCalled,
+    setLogOutCalled,
+    isAuthenticated,
   } = useContext(AuthContext);
   const { resetAllConfirmation } = useContext(ConfirmationContext);
   const { resetAllOrders } = useContext(OrdersContext);
   const { resetAllValet } = useContext(ValetContext);
   const { resetAllDriver } = useContext(DriverContext);
+  const isFocused = navigation.isFocused();
 
   React.useEffect(() => {
-    const logout = async () => {
-      await AsyncStorage.clear();
-      resetAll!();
-      resetAllConfirmation!();
-      resetAllOrders!();
-      resetAllValet!();
-      resetAllDriver!();
-    };
-    logout();
-  }, []);
+    if (logOutCalled) {
+      const logout = async () => {
+        await AsyncStorage.clear();
+        resetAll!();
+        resetAllConfirmation!();
+        resetAllOrders!();
+        resetAllValet!();
+        resetAllDriver!();
+        setLogOutCalled!(false);
+      };
+      logout();
+    }
+  }, [isFocused]);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigation.navigate("Main");
+    }
+  }, [isAuthenticated]);
 
   return (
     <>

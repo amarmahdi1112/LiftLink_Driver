@@ -433,21 +433,105 @@ export const GET_STARTED_VALET = gql`
 `;
 
 export const GET_PENDING_CONFIRMATION = gql`
-query {
-  getPendingConfirmations {
-    dealership {
-      dealershipName
-      dealershipId
-      dealershipCity
-      dealershipCountry
-      dealershipAddress
-      dealershipZipCode
-      dealershipState
+  query {
+    getPendingConfirmations {
+      dealership {
+        dealershipName
+        dealershipId
+        dealershipCity
+        dealershipCountry
+        dealershipAddress
+        dealershipZipCode
+        dealershipState
+      }
+      confirmationDate
+      confirmationId
+      confirmationStatus
+      updatedAt
     }
-    confirmationDate
-    confirmationId
-    confirmationStatus
-    updatedAt
   }
-}
+`;
+
+export const GET_VALET_INFO = gql`
+  query ($orderId: String!) {
+    getValet(orderId: $orderId) {
+      createdAt
+      comments
+      customer {
+        userId
+        accountType
+        profilePicture {
+          pictureLink
+        }
+        firstName
+        lastName
+      }
+      customerDropOffTime
+      customerPickUpTime
+      customerVehiclChecks {
+        backImage
+        checkInTime
+        checkOutTime
+        frontImage
+        gasLevel
+        leftImage
+      }
+      dealership {
+        dealershipId
+      }
+      updatedAt
+      valetDropOffTime
+      valetId
+      valetPickUpTime
+      valetStatus
+      valetVehicleChecks {
+        backImage
+        checkInTime
+        checkOutTime
+        frontImage
+        gasLevel
+        leftImage
+        mileage
+        rightImage
+        vehicleCheckId
+      }
+      order {
+        orderId
+        notes
+        orderDeliveryDate
+        orderStatus
+        pickupLocation
+        serviceType {
+          servicePackageName
+          dealershipId
+        }
+        valetVehicleRequest
+        vehicle {
+          carImage {
+            imageId
+            imageLink
+          }
+        }
+      }
+      dealership {
+        active
+        dealershipAddress
+        dealershipCity
+        dealershipCountry
+        dealershipId
+        dealershipName
+        dealershipState
+        dealershipZipCode
+      }
+    }
+  }
+`;
+
+export const GET_ORDER = gql`
+  query ($getOrderId: String!) {
+    getOrder(id: $getOrderId) {
+      orderId
+      orderStatus
+    }
+  }
 `;

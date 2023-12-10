@@ -5,7 +5,6 @@ import {
 } from "../../../infrastructure/service/driver/context/driver.context";
 // import LogoSvg from "../../../../assets/svgs/logoLoadingIndicator";
 import styled from "styled-components/native";
-import { StackNavigationProp } from "@react-navigation/stack";
 
 export const isObjEmpty = (obj: any): boolean => {
   return typeof obj === "undefined" || obj === null
@@ -45,7 +44,7 @@ const FixedBackground = styled.ImageBackground`
 `;
 
 interface MainScreenProps {
-  navigation: StackNavigationProp<any>; // Replace 'any' with the type of your navigation
+  navigation: any;
 }
 
 export const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
@@ -57,7 +56,6 @@ export const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("MainScreen: useEffect");
     const fetchUserData = async () => {
       if (isObjEmpty(profile)) {
         await onGetUserData();
