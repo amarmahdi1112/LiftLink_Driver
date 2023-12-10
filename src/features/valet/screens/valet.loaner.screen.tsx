@@ -238,7 +238,12 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
       rightImgUrl = await uploadImage(right, setProgressRight);
       backImgUrl = await uploadImage(back, setProgressBack);
       leftImgUrl = await uploadImage(left, setProgressLeft);
-    } catch (error: any) {}
+    } catch (error: any) {
+      setInProgress(false);
+      setError("There was an error uploading pictures, please try again");
+      setLoading(false);
+      return;
+    }
 
     // Check if the image URLs are empty and set the errors
     checkAndSetError(frontImgUrl, setFimgError, "Front image url is empty");
@@ -248,9 +253,48 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
 
     if (isError || fimgError || bimgError || limgError || rimgError) {
       setInProgress(false);
+      setError("Please take all the pictures");
+      setLoading(false);
       return;
     }
-    
+
+    // console.log(userType);
+
+    // const datas = {
+    //   frontImage: frontUrl,
+    //   backImage: backUrl,
+    //   leftImage: leftUrl,
+    //   rightImage: rightUrl,
+    //   mileage: Number.parseInt(mileage),
+    //   gasLevel: Number.parseInt(gasLevel),
+    //   comments: comments,
+    //   customerId: selectedValet.customerId ?? startedValet.customer.userId,
+    //   dealershipId: selectedValet.dealership.dealershipId,
+    //   orderId: selectedValet.order[0].orderId ?? startedValet.order.orderId,
+    //   userType: userType,
+    // };
+    // console.log("datas", datas);
+
+    // console.log("selectedValet", startedValet);
+
+    // const datas = {
+    //   userType: userType,
+    //   customerId: selectedValet.customerId || startedValet.customer.userId,
+    //   dealershipId:
+    //     selectedValet.dealership.dealershipId || startedValet.dealershipId,
+    //   orderId: selectedValet.order.orderId || startedValet.order.orderId,
+    //   backImage:
+    //     "https://media.istockphoto.com/id/854923054/photo/three-dimensional-modern-white-car.jpg?s=2048x2048&w=is&k=20&c=FIGHMkABg9xpB4vHMEOcCjVRZzw3ogGbLJVpSAryJmw=",
+    //   rightImage:
+    //     "https://media.istockphoto.com/id/1157655660/photo/generic-red-suv-on-a-white-background-side-view.jpg?s=2048x2048&w=is&k=20&c=u_vqLBX3koM67osQVXrWogzYtvgpx__mORzyfBLXo6U=",
+    //   frontImage:
+    //     "https://media.istockphoto.com/id/1154617648/photo/3d-illustration-of-generic-compact-car-front-view.jpg?s=2048x2048&w=is&k=20&c=scw578Hsr_L2-857IQz9oiiTBJIdovTMlLuISOrKuF4=",
+    //   leftImage:
+    //     "https://media.istockphoto.com/id/1135255668/photo/blue-hatchback-car.jpg?s=1024x1024&w=is&k=20&c=KDl9n7tu0f73NiymNk_G_KOzIvtijZSJkVWLZ7s8L1Y=",
+    //   comments: "something something......",
+    //   gasLevel: 100,
+    //   mileage: 1000,
+    // };
     // chek if the order id is in the selected valet or started valet and check if the order is an object or an array and get the id
     const getOrderId = () => {
       const valets = [selectedValet, startedValet];
@@ -425,7 +469,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
           <ProceedSvg width={23} height={23} />
         </ButtonComponent>
       </ButtonContainer>
-      {inProgress && (
+      {inProgress && loading && (
         <OverlayComponent
           override={true}
           onCancel={() => console.log("hello cancel")}

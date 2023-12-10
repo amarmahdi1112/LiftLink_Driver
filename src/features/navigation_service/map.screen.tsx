@@ -28,6 +28,7 @@ import { DriverContext } from "../../infrastructure/service/driver/context/drive
 import { theme } from "../../infrastructure/theme";
 import { ErrorContext } from "../../infrastructure/service/error/error.context";
 import { ErrorComponent } from "../../components/error.component";
+import { useFocusEffect } from "@react-navigation/native";
 
 const BottomOverflowContainer = styled.View`
   width: 100%;
@@ -176,7 +177,6 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
   const [destinationLocation, setDestinationLocation] = useState("");
   const [destinationCoords, setDestinationCoords] = useState({});
   const [polylineCoords, setPolylineCoords] = useState([]);
-  const [bounds, setBounds] = useState({});
   const mapRef = useRef(null);
   const [cameraPosition, setCameraPosition] = useState<{
     center: { latitude: number; longitude: number };
@@ -185,7 +185,6 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
     zoom: number;
     altitude: number;
   } | null>(null);
-  const [count, setCount] = useState(0);
   const [currentLocationTracker, setCurrentLocationTracker] = useState<any>({});
   const [loaded, setLoaded] = useState(false);
   const [customerProfilePicture, setCustomerProfilePicture] = useState("");
@@ -216,6 +215,8 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
   const changeCurrentLocation = async (curLoc: any) => {
     setCurrentLocationTracker(curLoc);
   };
+
+  const isFocused = navigation.isFocused();
 
   useEffect(() => {
     setLoading(true);
@@ -249,10 +250,10 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
         }
       }
       return null;
-    }; 
+    };
 
     // Use the helper functions to get the customer and order
-    const customer = getCustomer(); 
+    const customer = getCustomer();
     const order = getOrder();
 
     // Set the customer profile picture
@@ -368,7 +369,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
         setUserType("dealership");
       } else if (
         selectedValet.valetStatus ===
-          ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED ||
+        ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED ||
         selectedValet.valetStatus === ValetStatus.CUSTOMER_VEHICLE_PICK_UP
       ) {
         setUserType("customer");
@@ -398,7 +399,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
     else if (userType === "customer")
       setDestinationLocation(selectedValet.dealership.dealershipAddress);
     else setError("Invalid user type");
-  }, []);
+  }, [isFocused]);
 
   useEffect(() => {
     if (!isObjEmpty(currentLocation)) {
@@ -528,7 +529,7 @@ export const MapScreen: FC<MapScreenProps> = ({ navigation }) => {
       (startedValet.valetStatus ===
         ValetStatus.DEALERSHIP_TO_CUSTOMER_STARTED ||
         startedValet.valetStatus ===
-          ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED ||
+        ValetStatus.CUSTOMER_TO_DEALERSHIP_STARTED ||
         startedValet.valetStatus === ValetStatus.CUSTOMER_RETURN_STARTED)
     ) {
       setStarted(true);

@@ -2,7 +2,7 @@
   "expo": {
     "name": "LiftLink Driver",
     "slug": "LiftLink_Drivers",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.liftlink.driver",
-      "buildNumber": "5",
+      "buildNumber": "7",
       "config": {
         "googleMapsApiKey": "AIzaSyCQ_V0ZfCs0h_ruPXAUhpkh8P-IK89P_LM"
       }

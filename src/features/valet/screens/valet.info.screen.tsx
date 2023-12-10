@@ -12,7 +12,7 @@ import {
 import { format } from "date-fns";
 import ProceedSvg from "../../../../assets/svgs/proceed";
 import { isObjEmpty } from "../../../features/main/screen/main.screen";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import { GET_USER_INFO_BY_ID } from "../../../infrastructure/service/query";
 import { Alert } from "react-native";
 import { DriverContext } from "../../../infrastructure/service/driver/context/driver.context";
@@ -78,29 +78,167 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
     setScreen,
   } = useContext(ValetContext);
   const { profile } = useContext(DriverContext);
-  const [getCustomerInfo, { data, error: customerInfoError }] = useLazyQuery(
-    GET_USER_INFO_BY_ID,
-    {
-      variables: {
-        userId: selectedValet.customerId,
-      },
-    }
-  );
+  const getCustomerInfo = useQuery(
+    GET_USER_INFO_BY_ID, {
+    fetchPolicy: "network-only",
+  });
   const [customerInfos, setCustomerInfos] = useState<any>({});
   const [customerInfoLoading, setCustomerInfoLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [customerProfilePicture, setCustomerProfilePicture] = useState("");
+  const [customerFirstName, setCustomerFirstName] = useState("");
+  const [customerLastName, setCustomerLastName] = useState("");
+  const [customerAccountType, setCustomerAccountType] = useState("");
+  const [serviceDeliveryDate, setServiceDeliveryDate] = useState("");
+  const [pickupLocation, setPickupLocation] = useState("");
+  const [valetStatus, setValetStatus] = useState("");
+  const [dealershipFullAddress, setDealershipFullAddress] = useState("");
+  const [dealershipName, setDealershipName] = useState("");
+  const [orderStatus, setOrderStatus] = useState("");
+  const [type, setType] = useState("");
 
   useEffect(() => {
-    if (data) {
-      setCustomerInfos(data.getUserInfoById);
-      setCustomerInfoLoading(false);
-    }
-  }, [data]);
+    setLoading(true);
+    // if (!isObjEmpty(valetData)) {
+    //   if (
+    //     valetData.valetStatus ===
+    //       ValetStatus.CUSTOMER_TO_DEALERSHIP_COMPLETED.valueOf() ||
+    //     valetData.valetStatus === ValetStatus.CUSTOMER_RETURN_STARTED.valueOf()
+    //   ) {
+    //     setType("return");
+    //   }
+    // }
+    // Define a helper function to get the first valid customer from selectedValet, startedValet, or valetData
+    const getDatas = async () => {
+      const getCustomer = async () => {
+        const valets = [selectedValet, startedValet, valetData];
+        for (const valet of valets) {
+          if (valet && valet.customer) {
+            const customer = await getCustomerInfo.refetch({
+              userId: valet.customer.customerId,
+            });
+            return customer.data.getUserInfoById;
+          } else if (valet && valet.customerId) {
+            const customer = await getCustomerInfo.refetch({
+              userId: valet.customerId,
+            });
+            return customer.data.getUserInfoById;
+          }
+        }
+        return null;
+      };
 
-  useEffect(() => {
-    if (selectedValet) {
-      getCustomerInfo();
+      // Define a helper function to get the first valid order from selectedValet, startedValet, or valetData
+      const getOrder = () => {
+        const valets = [selectedValet, startedValet, valetData];
+        for (const valet of valets) {
+          if (valet && valet.order) {
+            return Array.isArray(valet.order) ? valet.order[0] : valet.order;
+          }
+        }
+        return null;
+      };
+
+      const getValetStatus = () => {
+        const valets = [selectedValet, startedValet, valetData];
+        for (const valet of valets) {
+          if (valet && valet.valetStatus) {
+            return valet.valetStatus;
+          }
+        }
+        return null;
+      }
+
+      const getDealershipFullAddress = () => {
+        const valets = [selectedValet, startedValet, valetData];
+        for (const valet of valets) {
+          if (valet && valet.dealership) {
+            return (
+              valet.dealership.dealershipAddress +
+              ", " +
+              valet.dealership.dealershipCity +
+              ", " +
+              valet.dealership.dealershipState +
+              ", " +
+              valet.dealership.dealershipCountry +
+              ", " +
+              valet.dealership.dealershipZipCode
+            );
+          }
+        }
+        return null;
+      }
+
+      const getDealershipName = () => {
+        const valets = [selectedValet, startedValet, valetData];
+        for (const valet of valets) {
+          if (valet && valet.dealership) {
+            return valet.dealership.dealershipName;
+          }
+        }
+        return null;
+      }
+
+      // Use the helper functions to get the customer and order
+      const customer = await getCustomer();
+      const order = getOrder();
+      const valetStatus = getValetStatus();
+      const dealershipFullAddress = getDealershipFullAddress();
+      const dealershipName = getDealershipName();
+
+      // Set the customer profile picture
+      if (customer && customer.profilePicture) {
+        const profilePicture = Array.isArray(customer.profilePicture)
+          ? customer.profilePicture[0]
+          : customer.profilePicture;
+        setCustomerProfilePicture(profilePicture.pictureLink);
+      }
+
+      // Set the customer first name, last name, and account type
+      if (customer) {
+        if (customer.firstName) {
+          setCustomerFirstName(customer.firstName);
+        }
+        if (customer.lastName) {
+          setCustomerLastName(customer.lastName);
+        }
+        if (customer.accountType) {
+          setCustomerAccountType(customer.accountType);
+        }
+      }
+
+      // Set the service delivery date and pickup location
+      if (order) {
+        if (order.orderDeliveryDate) {
+          setServiceDeliveryDate(order.orderDeliveryDate);
+        }
+        if (order.pickupLocation) {
+          setPickupLocation(order.pickupLocation);
+        }
+        if (order.orderStatus === "RETURN_ACCEPTED") {
+          setType("return");
+        }
+        setOrderStatus(order.orderStatus);
+      }
+
+      // Set the valet status
+      if (valetStatus) {
+        setValetStatus(valetStatus);
+      }
+
+      // Set the dealership full address
+      if (dealershipFullAddress) {
+        setDealershipFullAddress(dealershipFullAddress);
+      }
+
+      // Set the dealership name
+      if (dealershipName) {
+        setDealershipName(dealershipName);
+      }
+      setLoading(false);
     }
-  }, [selectedValet]);
+    getDatas();
+  }, []);
 
   useEffect(() => {
     onValetExists(
@@ -169,262 +307,170 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
     }
   }, [exists]);
 
-  return !isObjEmpty(startedValet) || !isObjEmpty(selectedValet) ? (
-    <>
-      <Spacer variant="top.large" />
-      <LabelComponent>Your Info</LabelComponent>
-      <AvatarContainer>
-        <UserProfileContainer>
-          <Avatar>
-            <AvatarImage
-              source={{
-                uri: profile.profilePicture[0].pictureLink,
-              }}
-            />
-          </Avatar>
-          <Spacer variant="left.medium" />
-          <UserInfoContainer>
-            <LabelComponent>
-              {profile.firstName} {profile.lastName}
-            </LabelComponent>
-            <Spacer variant="top.small" />
-            <Chip>
-              <LabelComponent
-                styles={{
-                  fontSize: 12,
-                }}
-                title2={true}
-              >
-                {profile.accountType.toUpperCase()}
-              </LabelComponent>
-            </Chip>
-          </UserInfoContainer>
-        </UserProfileContainer>
-        {/* <UserInfoContainer>
-          <LabelComponent
-            styles={{
-              fontSize: 12,
+  return !loading && (<>
+    <Spacer variant="top.large" />
+    <LabelComponent>Your Info</LabelComponent>
+    <AvatarContainer>
+      <UserProfileContainer>
+        <Avatar>
+          <AvatarImage
+            source={{
+              uri: profile?.profilePicture[0]?.pictureLink || 'default_image_link',
             }}
-            title2={true}
-          >
-            UID 112233
+          />
+        </Avatar>
+        <Spacer variant="left.medium" />
+        <UserInfoContainer>
+          <LabelComponent>
+            {profile?.firstName || 'N/A'} {profile?.lastName || 'N/A'}
           </LabelComponent>
-          <Spacer variant="left.medium" />
-          <LabelComponent
-            styles={{
-              fontSize: 12,
-            }}
-            title2={true}
-          >
-            5 Reviews
-          </LabelComponent>
-        </UserInfoContainer> */}
-      </AvatarContainer>
-      {/* Customer Info */}
-      <Spacer variant="top.large" />
-      <LabelComponent>Customer Info</LabelComponent>
-      {!customerInfoLoading && !isObjEmpty(customerInfos) && (
-        <AvatarContainer>
-          <UserProfileContainer>
-            <Avatar>
-              <AvatarImage
-                source={{
-                  uri: customerInfos.profilePicture[0].pictureLink,
-                }}
-              />
-            </Avatar>
-            <Spacer variant="left.medium" />
-            <UserInfoContainer>
-              <LabelComponent>
-                {customerInfos.firstName} {customerInfos.lastName}
-              </LabelComponent>
-              <Spacer variant="top.small" />
-              <Chip>
-                <LabelComponent
-                  styles={{
-                    fontSize: 12,
-                  }}
-                  title2={true}
-                >
-                  {customerInfos.accountType.toUpperCase()}
-                </LabelComponent>
-              </Chip>
-            </UserInfoContainer>
-          </UserProfileContainer>
-          {/* <UserInfoContainer>
+          <Spacer variant="top.small" />
+          <Chip>
             <LabelComponent
               styles={{
                 fontSize: 12,
               }}
               title2={true}
             >
-              UID 112233
+              {profile?.accountType?.toUpperCase() || 'N/A'}
             </LabelComponent>
-            <Spacer variant="left.medium" />
+          </Chip>
+        </UserInfoContainer>
+      </UserProfileContainer>
+    </AvatarContainer>
+    <Spacer variant="top.large" />
+    <LabelComponent>Customer Info</LabelComponent>
+    <AvatarContainer>
+      <UserProfileContainer>
+        <Avatar>
+          <AvatarImage
+            source={{
+              uri: customerProfilePicture || 'default_image_link',
+            }}
+          />
+        </Avatar>
+        <Spacer variant="left.medium" />
+        <UserInfoContainer>
+          <LabelComponent>
+            {customerFirstName || 'N/A'} {customerLastName || 'N/A'}
+          </LabelComponent>
+          <Spacer variant="top.small" />
+          <Chip>
             <LabelComponent
               styles={{
                 fontSize: 12,
               }}
               title2={true}
             >
-              5 Reviews
-            </LabelComponent>
-          </UserInfoContainer> */}
-        </AvatarContainer>
-      )}
-      <Spacer variant="top.medium" />
-      <LabelComponent>Customer Location</LabelComponent>
-      <Spacer variant="top.medium" />
-      <LabelComponent title2={true}>
-        #
-        {Array.isArray(selectedValet.order)
-          ? selectedValet.order[0].pickupLocation
-          : selectedValet.order.pickupLocation || "N/A"}
-      </LabelComponent>
-      <Spacer variant="top.large" />
-      {userType === "customer" && (
-        <>
-          <LabelComponent>Valet Info</LabelComponent>
-          <Spacer variant="top.medium" />
-          <Chip>
-            <LabelComponent title2={true}>
-              {startedValet.valetStatus}
+              {customerAccountType?.toUpperCase() || 'N/A'}
             </LabelComponent>
           </Chip>
-          <Spacer variant="top.large" />
-          <LabelComponent>Valet Next Step</LabelComponent>
-          <Spacer variant="top.medium" />
-          <Chip>
-            <LabelComponent title2={true}>
-              {startedValet.valetStatus ===
-                ValetStatus.DEALERSHIP_TO_CUSTOMER_COMPLETED &&
-                "Customer Vehicle pickup".toUpperCase()}
-            </LabelComponent>
-          </Chip>
-          <Spacer variant="top.large" />
-        </>
-      )}
-      {userType === "confirm_completion" && (
-        <>
-          <LabelComponent>Valet Info</LabelComponent>
-          <Spacer variant="top.medium" />
-          <Chip>
-            <LabelComponent title2={true}>
-              {!isObjEmpty(startedValet)
-                ? startedValet.valetStatus &&
-                  startedValet.valetStatus.includes("_")
-                  ? startedValet.valetStatus.split("_").join(" ")
-                  : startedValet.valetStatus
-                : !isObjEmpty(selectedValet)
-                ? selectedValet.valetStatus &&
-                  selectedValet.valetStatus.includes("_")
-                  ? selectedValet.valetStatus.split("_").join(" ")
-                  : selectedValet.valetStatus
-                : !isObjEmpty(valetData)
-                ? valetData.valetStatus && valetData.valetStatus.includes("_")
-                  ? valetData.valetStatus.split("_").join(" ")
-                  : valetData.valetStatus
-                : ""}
-            </LabelComponent>
-          </Chip>
-          <Spacer variant="top.large" />
-        </>
-      )}
-      <LabelComponent>Dealership Name</LabelComponent>
-      <Spacer variant="top.medium" />
-      <LabelComponent title2={true}>
-        #{selectedValet.dealership.dealershipName}
-      </LabelComponent>
-      <Spacer variant="top.large" />
-      <LabelComponent>Dealership Location</LabelComponent>
-      <Spacer variant="top.medium" />
-      <LabelComponent title2={true}>
-        #
-        {selectedValet.dealership.dealershipAddress +
-          ", " +
-          selectedValet.dealership.dealershipCity +
-          ", " +
-          selectedValet.dealership.dealershipState +
-          ", " +
-          selectedValet.dealership.dealershipCountry +
-          ", " +
-          selectedValet.dealership.dealershipZipCode}
-      </LabelComponent>
-      <Spacer variant="top.large" />
-      <LabelComponent>Requested Date</LabelComponent>
-      <Spacer variant="top.medium" />
-      <LabelComponent title2={true}>
-        #
-        {format(
-          new Date(
-            Array.isArray(selectedValet.order)
-              ? selectedValet.order[0].orderDeliveryDate
-              : selectedValet.order.orderDeliveryDate
-          ),
-          "dd MMM, yyyy"
-        )}
-      </LabelComponent>
-      <Spacer variant="top.large" />
-      <ButtonComponent
-        title={userType === "customer" ? "Ready to inspect?" : "Next"}
-        onPress={() => {
-          if (userType === "confirm_completion") navigation.navigate("Home");
-          if (
-            (!isObjEmpty(valetData) &&
-              valetData.valetStatus === ValetStatus.COMPLETED.valueOf()) ||
-            valetData.valetStatus ===
-              ValetStatus.CUSTOMER_RETURN_COMPLETED.valueOf()
-          ) {
-            navigation.navigate("Home");
-            return;
-          } 
-          if (
-            isObjEmpty(valetData) &&
-            (!isObjEmpty(startedValet) || !isObjEmpty(selectedValet))
-          ) {
-            if (!isObjEmpty(selectedValet)) {
-              if (selectedValet.assignStatus === "RETURN_INITIATED") {
-                navigation.navigate("Map");
-                return;
-              }
-            }
-            setScreen("loaner");
+        </UserInfoContainer>
+      </UserProfileContainer>
+    </AvatarContainer>
+    <Spacer variant="top.medium" />
+    <LabelComponent>Customer Location</LabelComponent>
+    <Spacer variant="top.medium" />
+    <LabelComponent title2={true}>
+      # {pickupLocation || 'N/A'}
+    </LabelComponent>
+    <Spacer variant="top.large" />
+    {userType === "customer" && (
+      <>
+        <LabelComponent>Valet Info</LabelComponent>
+        <Spacer variant="top.medium" />
+        <Chip>
+          <LabelComponent title2={true}>
+            {valetStatus || 'N/A'}
+          </LabelComponent>
+        </Chip>
+        <Spacer variant="top.large" />
+        <LabelComponent>Valet Next Step</LabelComponent>
+        <Spacer variant="top.medium" />
+        <Chip>
+          <LabelComponent title2={true}>
+            {valetStatus === ValetStatus.DEALERSHIP_TO_CUSTOMER_COMPLETED ? 'Customer Vehicle pickup'.toUpperCase() : 'N/A'}
+          </LabelComponent>
+        </Chip>
+        <Spacer variant="top.large" />
+      </>
+    )}
+    {userType === "confirm_completion" && (
+      <>
+        <LabelComponent>Valet Info</LabelComponent>
+        <Spacer variant="top.medium" />
+        <Chip>
+          <LabelComponent title2={true}>
+            {valetStatus?.includes('_') ? valetStatus.split('_').join(' ') : valetStatus || 'N/A'}
+          </LabelComponent>
+        </Chip>
+        <Spacer variant="top.large" />
+      </>
+    )}
+    <LabelComponent>Dealership Name</LabelComponent>
+    <Spacer variant="top.medium" />
+    <LabelComponent title2={true}>
+      {dealershipName || 'N/A'}
+    </LabelComponent>
+    <Spacer variant="top.large" />
+    <LabelComponent>Dealership Location</LabelComponent>
+    <Spacer variant="top.medium" />
+    <LabelComponent title2={true}>
+      # {dealershipFullAddress || 'N/A'}
+    </LabelComponent>
+    <Spacer variant="top.large" />
+    <LabelComponent>Requested Date</LabelComponent>
+    <Spacer variant="top.medium" />
+    <LabelComponent title2={true}>
+      # {serviceDeliveryDate ? format(new Date(serviceDeliveryDate), 'MMM dd, yyyy') : 'N/A'}
+    </LabelComponent>
+    <Spacer variant="top.large" />
+    <ButtonComponent
+      title={userType === "customer" ? "Ready to inspect?" : "Next"}
+      onPress={() => {
+        console.log("valetStatus", valetStatus, "orderStatus", orderStatus, "userType", userType)
+        if (userType === "dealership" && orderStatus === "RETURN_ACCEPTED") {
+          navigation.navigate("Map");
+          return;
+        }
+
+        if (userType === "confirm_completion") {
+          navigation.navigate("Home");
+          return;
+        }
+
+        if (valetStatus === ValetStatus.COMPLETED || valetStatus === ValetStatus.CUSTOMER_RETURN_COMPLETED) {
+          navigation.navigate("Home");
+          return;
+        }
+
+        if (valetStatus === ValetStatus.CUSTOMER_TO_DEALERSHIP_COMPLETED) {
+          console.log("orderStatus", orderStatus)
+          if (orderStatus === "RETURN_ACCEPTED") {
+            navigation.navigate("Map");
             return;
           }
-          if (
-            !isObjEmpty(valetData) &&
-            valetData.valetStatus ===
-              ValetStatus.CUSTOMER_TO_DEALERSHIP_COMPLETED.valueOf()
-          ) {
-            if (valetData.order.orderStatus === "RETURN_ACCEPTED") {
-              navigation.navigate("Map");
-              return;
-            }
-            navigation.navigate("Home");
+          navigation.navigate("Home");
+          return;
+        }
+
+        if (valetStatus === ValetStatus.DEALERSHIP_TO_CUSTOMER_COMPLETED) {
+          setScreen("loaner");
+          return;
+        }
+
+        if (!isObjEmpty(startedValet) || !isObjEmpty(selectedValet)) {
+          if (!isObjEmpty(selectedValet) && selectedValet.assignStatus === "RETURN_INITIATED") {
+            navigation.navigate("Map");
             return;
           }
-          if (
-            !isObjEmpty(valetData) &&
-            valetData.valetStatus ===
-              ValetStatus.CUSTOMER_RETURN_COMPLETED.valueOf()
-          ) {
-            navigation.navigate("Home");
-            return;
-          }
-          if (
-            !isObjEmpty(valetData) &&
-            valetData.valetStatus ===
-              ValetStatus.DEALERSHIP_TO_CUSTOMER_COMPLETED.valueOf()
-          ) {
-            setScreen("loaner");
-            return;
-          }
-        }}
-      >
-        <ProceedSvg isIcon={true} width={24} height={24} />
-      </ButtonComponent>
-    </>
-  ) : (
-    <></>
-  );
+          setScreen("loaner");
+          return;
+        }
+      }}
+    >
+      <ProceedSvg isIcon={true} width={24} height={24} />
+    </ButtonComponent>
+  </>
+  )
 };

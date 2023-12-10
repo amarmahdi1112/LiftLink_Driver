@@ -111,55 +111,55 @@ export const OrderConfirmationProvider: FC<PropsWithChildren<{}>> = ({
   };
 
   const onGetConfirmedOrders = async () => {
+    // hasBeenServed();
+    // if (confirmedOrders.length === 0) {
+    //   setPagination({
+    //     page: 1,
+    //     perPage: 10,
+    //   });
+    // }
+    // if (confirmedOrders.length > 0)
+      // setConfirmedOrders((prev) => {
+      //   let newOrders: any[] = [];
+      //   data.getConfirmedOrders.forEach(
+      //     (newOrder: { order: any[]; assignId: any }) => {
+      //       const odr = newOrder.order[0];
+      //       newOrder.order = odr;
+      //       if (
+      //         !prev.some(
+      //           (order) => (order as any).assignId === newOrder.assignId
+      //         )
+      //       ) {
+      //         newOrders.push(newOrder);
+      //       }
+      //     }
+      //   );
+      //   return [...prev, ...newOrders];
+      // });
+    // else {
+    //   const orders = data.getConfirmedOrders.map(
+    //     (newOrder: { order: any[] }) => {
+    //       const odr = newOrder.order[0];
+    //       newOrder.order = odr;
+    //       return newOrder;
+    //     }
+    //   );
+    //   setConfirmedOrders(orders);
+    // }
+    // if (error) {
+    //   if (error.message.includes("No assigned orders found")) {
+    //     setCanLoadMore(false);
+    //   }
+    //   setError((error as any).message);
+    // }
     setLoading(true);
-    hasBeenServed();
-    if (confirmedOrders.length === 0) {
-      setPagination({
-        page: 1,
-        perPage: 10,
-      });
-    }
+    setConfirmedOrders([]);
     try {
-      const { data, error } = await getConfrmedOrders.refetch({
-        ...pagination,
-      });
+      const data = await getConfrmedOrders.refetch();
       if (data) {
-        if (confirmedOrders.length > 0)
-          setConfirmedOrders((prev) => {
-            let newOrders: any[] = [];
-            data.getConfirmedOrders.forEach(
-              (newOrder: { order: any[]; assignId: any }) => {
-                const odr = newOrder.order[0];
-                newOrder.order = odr;
-                if (
-                  !prev.some(
-                    (order) => (order as any).assignId === newOrder.assignId
-                  )
-                ) {
-                  newOrders.push(newOrder);
-                }
-              }
-            );
-            return [...prev, ...newOrders];
-          });
-        else {
-          const orders = data.getConfirmedOrders.map(
-            (newOrder: { order: any[] }) => {
-              const odr = newOrder.order[0];
-              newOrder.order = odr;
-              return newOrder;
-            }
-          );
-          setConfirmedOrders(orders);
-        }
+        setConfirmedOrders(data.data.getConfirmedOrders);
         setLoading(false);
         return;
-      }
-      if (error) {
-        if (error.message.includes("No assigned orders found")) {
-          setCanLoadMore(false);
-        }
-        setError((error as any).message);
       }
     } catch (error: any) {
       setError("There was an error, please try again");

@@ -36,12 +36,12 @@ const wsLink: any = new GraphQLWsLink(
       ? "ws://137.184.164.232/graphql/"
       : "wss://f657-198-161-203-4.ngrok-free.app/graphql",
     on: {
-      // connected: () => console.log("ws connected"),
-      // error: (e) => console.log("ws error", e),
-      // closed: () => console.log("ws closed"),
-      // connecting: () => console.log("ws connecting"),
-      // ping: () => console.log("ws ping"),
-      // pong: () => console.log("ws pong"),
+      connected: () => console.log("ws connected"),
+      error: (e) => console.log("ws error", e),
+      closed: () => console.log("ws closed"),
+      connecting: () => console.log("ws connecting"),
+      ping: () => console.log("ws ping"),
+      pong: () => console.log("ws pong"),
     },
     connectionParams: async () => {
       const token = await AsyncStorage.getItem("token");
