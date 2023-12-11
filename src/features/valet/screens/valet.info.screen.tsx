@@ -75,7 +75,11 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
     userType,
     startedValet,
     valetData,
+    setStartedValet,
+    setSelectedValet,
+    setValetData,
     setScreen,
+    setUserType,
   } = useContext(ValetContext);
   const { profile } = useContext(DriverContext);
   const getCustomerInfo = useQuery(
@@ -435,12 +439,24 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
         }
 
         if (userType === "confirm_completion") {
-          navigation.navigate("Home");
+          navigation.reset({
+            routes: [{ name: "Home" }],
+          });
+          setUserType('dealership')
+          setStartedValet({});
+          setSelectedValet({});
+          setValetData({});
           return;
         }
 
         if (valetStatus === ValetStatus.COMPLETED || valetStatus === ValetStatus.CUSTOMER_RETURN_COMPLETED) {
-          navigation.navigate("Home");
+          navigation.reset({
+            routes: [{ name: "Home" }],
+          });
+          setUserType('dealership')
+          setStartedValet({});
+          setSelectedValet({});
+          setValetData({});
           return;
         }
 
@@ -450,7 +466,13 @@ export const ValetInfoScreen: FC<ValetInfoScreenProps> = ({ navigation }) => {
             navigation.navigate("Map");
             return;
           }
-          navigation.navigate("Home");
+          navigation.reset({
+            routes: [{ name: "Home" }],
+          });
+          setUserType('dealership')
+          setStartedValet({});
+          setSelectedValet({});
+          setValetData({});
           return;
         }
 

@@ -82,6 +82,7 @@ const PostitionedBackgroundImage = styled.Image`
   height: ${(props: any) => (props.showTab ? "220px" : "180px")};
   border-bottom-left-radius: 40px;
   border-bottom-right-radius: 40px;
+  background-color: ${(props) => props.theme.colors.bg.secondary};
 `;
 
 interface MainContainerProps {
@@ -92,12 +93,12 @@ interface MainContainerProps {
   showGreetings?: boolean;
   showAvatar?: boolean;
   showTab?: boolean;
-  tabs?: any[]; // Replace 'any' with the type of your tabs
-  styles?: any; // Replace 'any' with the type of your styles
+  tabs?: any[];
+  styles?: any;
   isLoading?: boolean;
   initial?: boolean;
   secondaryPage?: boolean;
-  navigation: any; // Replace 'any' with the type of your navigation
+  navigation: any;
   showSecondaryAvatar?: boolean;
 }
 

@@ -7,15 +7,7 @@ import { LabelComponent } from "../typography";
 import { format } from "date-fns";
 import { isObjEmpty } from "../../features/main/screen/main.screen";
 
-interface CardProp {
-  width?: string;
-  height?: string;
-  justifyContent?: string;
-  alignItems?: string;
-  bordered?: boolean;
-}
-
-const CardItem = styled.TouchableOpacity<CardProp>`
+const CardItem = styled.TouchableOpacity<any>`
   flex-direction: column;
   justify-content: ${(props: any) => props.justifyContent || "center"};
   align-items: ${(props: any) => props.alignItems || "center"};
@@ -27,6 +19,7 @@ const CardItem = styled.TouchableOpacity<CardProp>`
   border-radius: 20px;
   gap: 10px;
   position: relative;
+  background-color: ${(props) => props.transparent ? "transparent" : props.theme.colors.bg.secondary};
 `;
 
 const DateTimeContainer = styled.View`
@@ -78,7 +71,10 @@ const DarkBgImg = styled.Image`
 `;
 
 const CardPadding = styled.View`
-  padding: 20px;
+  padding-right: 40px;
+  padding-left: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   width: 100%;
 `;
 
@@ -108,15 +104,16 @@ const FooterContainer = styled.View`
 
 interface CardComponentProps {
   key?: string;
-  data?: any; // Replace 'any' with the type of your data
-  size?: any; // Replace 'any' with the type of your size
-  style?: any; // Replace 'any' with the type of your style
+  data?: any;
+  size?: any;
+  style?: any;
   overrideChildren?: boolean;
   justifyContent?: string;
   alignItems?: string;
   order?: boolean;
   bordered?: boolean;
   onPress?: () => void;
+  transparent?: boolean;
 }
 
 export const CardComponent: FC<PropsWithChildren<CardComponentProps>> = ({
@@ -131,6 +128,7 @@ export const CardComponent: FC<PropsWithChildren<CardComponentProps>> = ({
   order = false,
   bordered = false,
   onPress = () => {},
+  transparent = false,
 }) => {
   const [showDeliveryDate, setShowDeliveryDate] = useState(false);
 
@@ -155,6 +153,7 @@ export const CardComponent: FC<PropsWithChildren<CardComponentProps>> = ({
       style={style}
       bordered={bordered}
       onPress={onPress}
+      transparent={transparent}
     >
       {order && (
         <DarkBgImg

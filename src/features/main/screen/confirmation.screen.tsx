@@ -97,7 +97,7 @@ export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
   navigation,
 }) => {
   const { profile } = useContext(DriverContext);
-  const { confirmation, acceptRequest, rejectRequest } =
+  const { confirmation, acceptRequest, rejectRequest, setConfirmation } =
     useContext(ConfirmationContext);
   const [date, setDate] = useState(new Date());
   const [showDriverConfirmation, setShowDriverConfirmation] = useState(false);
@@ -151,7 +151,10 @@ export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
   };
 
   const onClose = () => {
-    navigation.navigate("Home");
+    navigation.reset({
+      routes: [{ name: "Home" }],
+    });
+    setConfirmation!({})
     closeModals();
   };
 

@@ -30,6 +30,7 @@ interface ValetContextProps {
   loading: boolean;
   userType: string;
   valetData: any;
+  setValetData: React.Dispatch<React.SetStateAction<any>>;
   startedValet: any;
   selectedValet: any;
   setScreen: React.Dispatch<React.SetStateAction<string>>;
@@ -64,6 +65,7 @@ interface ValetContextProps {
   isError: boolean;
   setIsError: React.Dispatch<React.SetStateAction<boolean>>;
   onGetValetData: (valetId: string) => Promise<void>;
+  setSearchResults: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 export enum ValetStatus {
@@ -103,7 +105,7 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const findDealerships = useQuery(FIND_DEALERSHIP, {
     fetchPolicy: "network-only",
   });
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<any>([]);
   const [selectedDealership, setSelectedDealership] = useState({} as any);
   const [requestMembership] = useMutation(REQUEST_MEMBERSHIP);
   const [sendLocation] = useMutation(SEND_LOCATION);
@@ -290,13 +292,15 @@ export const ValetProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         setIsError,
         setUserType,
         onStartValet,
+        setValetData,
         onCreateValet,
         onValetExists,
         resetAllValet,
         onGetValetData,
         setStartedValet,
-        onChangeLocation,
+        setSearchResults,
         setSelectedValet,
+        onChangeLocation,
         onGetStartedValet,
         onSearchDealership,
         onRequestMembership,
