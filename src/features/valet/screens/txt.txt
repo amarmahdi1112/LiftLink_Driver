@@ -1,0 +1,38 @@
+
+// console.log(userType);
+
+// const datas = {
+//   frontImage: frontUrl,
+//   backImage: backUrl,
+//   leftImage: leftUrl,
+//   rightImage: rightUrl,
+//   mileage: Number.parseInt(mileage),
+//   gasLevel: Number.parseInt(gasLevel),
+//   comments: comments,
+//   customerId: selectedValet.customerId ?? startedValet.customer.userId,
+//   dealershipId: selectedValet.dealership.dealershipId,
+//   orderId: selectedValet.order[0].orderId ?? startedValet.order.orderId,
+//   userType: userType,
+// };
+// console.log("datas", datas);
+
+// console.log("selectedValet", startedValet);
+
+// const datas = {
+//   userType: userType,
+//   customerId: selectedValet.customerId || startedValet.customer.userId,
+//   dealershipId:
+//     selectedValet.dealership.dealershipId || startedValet.dealershipId,
+//   orderId: selectedValet.order.orderId || startedValet.order.orderId,
+//   backImage:
+//     "https://media.istockphoto.com/id/854923054/photo/three-dimensional-modern-white-car.jpg?s=2048x2048&w=is&k=20&c=FIGHMkABg9xpB4vHMEOcCjVRZzw3ogGbLJVpSAryJmw=",
+//   rightImage:
+//     "https://media.istockphoto.com/id/1157655660/photo/generic-red-suv-on-a-white-background-side-view.jpg?s=2048x2048&w=is&k=20&c=u_vqLBX3koM67osQVXrWogzYtvgpx__mORzyfBLXo6U=",
+//   frontImage:
+//     "https://media.istockphoto.com/id/1154617648/photo/3d-illustration-of-generic-compact-car-front-view.jpg?s=2048x2048&w=is&k=20&c=scw578Hsr_L2-857IQz9oiiTBJIdovTMlLuISOrKuF4=",
+//   leftImage:
+//     "https://media.istockphoto.com/id/1135255668/photo/blue-hatchback-car.jpg?s=1024x1024&w=is&k=20&c=KDl9n7tu0f73NiymNk_G_KOzIvtijZSJkVWLZ7s8L1Y=",
+//   comments: "something something......",
+//   gasLevel: 100,
+//   mileage: 1000,
+// };

@@ -351,6 +351,10 @@ export const AuthProvider: FC<React.PropsWithChildren> = ({ children }) => {
           licenseNumber,
         },
       });
+      const _profile = { ...profile } as any;
+      _profile.isVerified = true;
+      setProfile(_profile);
+      return data;
     } catch (error: any) {
       setError("There was an error, please try again");
     } finally {

@@ -71,10 +71,7 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
 
   const handleSignup = async () => {
     try {
-      const data = await onSignup!(username as any, password as any, email as any);
-      if (data) {
-        navigation.navigate("MainNavigation");
-      }
+      await onSignup!(username as any, password as any, email as any);
     } catch (error) { }
   }
 
@@ -157,6 +154,7 @@ export const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
       {screen === "signup" && (
         <ButtonContainer>
           <ButtonComponent
+            loading={loadingState}
             title="Sign Up"
             onPress={async () => {
               if (username === "") setUsernameError!(true);

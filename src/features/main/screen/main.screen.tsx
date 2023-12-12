@@ -10,8 +10,8 @@ export const isObjEmpty = (obj: any): boolean => {
   return typeof obj === "undefined" || obj === null
     ? true
     : Object.keys(obj).length === 0
-    ? true
-    : false;
+      ? true
+      : false;
 };
 
 const ScreenCenteredView = styled.View`
@@ -73,7 +73,7 @@ export const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   }, [loading, profile]);
 
   const changePage = () => {
-    if (!profile.isVerified || isObjEmpty(profile.profilePicture)) {
+    if (!profile.isVerified || isObjEmpty(profile.profilePicture) || !profile.firstName || !profile.lastName) {
       navigation.navigate("Profile");
     } else {
       navigation.navigate("Home");

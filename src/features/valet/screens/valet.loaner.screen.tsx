@@ -238,7 +238,12 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
       rightImgUrl = await uploadImage(right, setProgressRight);
       backImgUrl = await uploadImage(back, setProgressBack);
       leftImgUrl = await uploadImage(left, setProgressLeft);
-    } catch (error: any) {}
+    } catch (error: any) {
+      setInProgress(false);
+      setError("There was an error uploading pictures, please try again");
+      setLoading(false);
+      return;
+    }
 
     // Check if the image URLs are empty and set the errors
     checkAndSetError(frontImgUrl, setFimgError, "Front image url is empty");
@@ -248,6 +253,8 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
 
     if (isError || fimgError || bimgError || limgError || rimgError) {
       setInProgress(false);
+      setError("Please take all the pictures");
+      setLoading(false);
       return;
     }
 
@@ -462,7 +469,7 @@ export const ValetLoanerScreen: FC<ValetLoanerScreenProps> = ({
           <ProceedSvg width={23} height={23} />
         </ButtonComponent>
       </ButtonContainer>
-      {inProgress && (
+      {inProgress && loading && (
         <OverlayComponent
           override={true}
           onCancel={() => console.log("hello cancel")}

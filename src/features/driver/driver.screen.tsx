@@ -24,15 +24,13 @@ import { ErrorContext } from "../../infrastructure/service/error/error.context";
 import { AuthContext } from "../../infrastructure/service/authentication/context/auth.context";
 import { ErrorComponent } from "../../components/error.component";
 import { DriverLicenseScreen } from "./screens/driver.licence.screen";
+import { OverlayComponent } from "../../components/overlay.component";
 
 const LoaderContainer = styled.View`
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50px, -50px);
-  z-index: 2;
-  justify-content: center;
-  align-items: center;
+  top: 0;
+  left: 0;
+  z-index: 100000;
 `;
 
 const LabelContainer = styled.View`
@@ -60,7 +58,7 @@ export const DriverScreen: FC<DriverScreenProps> = ({
   children,
   navigation,
 }) => {
-  const { screen, setScreen, profile, onGetUserData } = useContext(DriverContext);
+  const { screen, setScreen, profile, setProfile } = useContext(DriverContext);
   const { updateNames, firstName, lastName, addLicense } =
     useContext(AuthContext);
   const { error, setError } = useContext(ErrorContext);
@@ -94,16 +92,9 @@ export const DriverScreen: FC<DriverScreenProps> = ({
         licenseState: licenseState,
         licenseNumber: licenseNumber,
       });
-      await onGetUserData();
     } catch (error: any) {
+      setError(error.message);
     } finally {
-      if (!profile.firstName || !profile.lastName) {
-        setScreen(screens.names);
-        return;
-      } else if (isObjEmpty(profile.profilePicture)) {
-        setScreen(screens.profile);
-        return;
-      }
       setLoading(false);
     }
   };
@@ -115,8 +106,15 @@ export const DriverScreen: FC<DriverScreenProps> = ({
     setLoading(false);
   }, [isFocused]);
 
+  useEffect(() => {
+    checker();
+  }, [profile]);
+
   return (
     <>
+      {loading && (
+        <OverlayComponent override={true} onCancel={() => console.log('canceled')} onConfirm={() => console.log("confirmed")} />
+      )}
       <MainContainer navigation={navigation} showAvatar={false} showLogo={true}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -132,24 +130,17 @@ export const DriverScreen: FC<DriverScreenProps> = ({
                 Enter the required information mentioned down below.
               </LabelComponent>
             </LabelContainer>
-            {loading && (
-              <LoaderContainer>
-                {/* <LogoLoadingIndicator width={100} height={100} /> */}
-              </LoaderContainer>
-            )}
-            {!loading && (
-              <>
-                {screen === screens.license && (
-                  <DriverLicenseScreen navigation={navigation} />
-                )}
-                {screen === screens.names && (
-                  <DriverInfoScreen navigation={navigation} />
-                )}
-                {screen === screens.profile && (
-                  <DriverProfileScreen navigation={navigation} />
-                )}
-              </>
-            )}
+            <>
+              {screen === screens.license && (
+                <DriverLicenseScreen navigation={navigation} />
+              )}
+              {screen === screens.names && (
+                <DriverInfoScreen navigation={navigation} />
+              )}
+              {screen === screens.profile && (
+                <DriverProfileScreen navigation={navigation} />
+              )}
+            </>
           </ScrollView>
         </KeyboardAvoidingView>
       </MainContainer>
@@ -185,7 +176,6 @@ export const DriverScreen: FC<DriverScreenProps> = ({
                 backImage !== null && typeof backImage !== "undefined"
               ) {
                 await handleUpload();
-                checker();
               } else {
                 setError("Please upload a profile picture.");
                 setLoading(false);

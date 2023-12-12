@@ -9,11 +9,9 @@ import { colors } from "../../../infrastructure/theme/colors";
 import { LabelComponent } from "../../../components/typography";
 import { Spacer } from "../../../components/utils/spacer.component";
 import { ValetContext } from "../../../infrastructure/service/valet/context/valet.context";
-import { ActivityIndicator } from "react-native-paper";
-import { OverlayComponent } from "../../../components/overlay.component";
-// import LogoSvg from "../../../../assets/svgs/logoLoadingIndicator";
 import { MainContainer } from "../../../components/main.component";
 import { isObjEmpty } from "./main.screen";
+import { RefreshControl } from "react-native-gesture-handler";
 
 interface HomeProps {
   showAvatar?: boolean;
@@ -50,7 +48,7 @@ interface OrderProps {
   backgroundColor?: string;
 }
 
-const OrderContainer = styled(CardComponent)<OrderProps>`
+const OrderContainer = styled(CardComponent) <OrderProps>`
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
@@ -84,41 +82,45 @@ export const ConfirmedOrdersScreen: React.FC<ConfirmedOrdersScreenProps> = ({
   const {
     confirmedOrders,
     onGetConfirmedOrders,
-    loading,
-    incrementPage,
   }: OrderConfirmationContextProps = useContext(OrderConfirmationContext);
   const { setSelectedValet } = useContext(ValetContext);
-  const [isEndReached, setIsEndReached] = useState(false);
-  const scrollViewRef = useRef();
+  const [refreshing, setRefreshing] = useState(false);
+
+
+  // const handleScroll = (event: any) => {
+  //   const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+  //   const isEnd =
+  //     layoutMeasurement.height + contentOffset.y >= contentSize.height;
+  //   setIsEndReached(isEnd);
+  // };
+
+  // const handleContentSizeChange = (contentWidth: any, contentHeight: any) => {
+  //   const isEnd =
+  //     (scrollViewRef.current as any).getScrollResponder().getScrollableNode()
+  //       .offsetHeight <= contentHeight;
+  //   setIsEndReached(isEnd);
+  // };
+
+  // const handleEndReached = async () => {
+  //   if (isEndReached) {
+  //     await onGetConfirmedOrders();
+  //     incrementPage();
+  //   }
+  // };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await onGetConfirmedOrders();
+    setRefreshing(false);
+  }
 
   useEffect(() => {
     const getData = async () => {
-      await onGetConfirmedOrders();
+      await onRefresh();
     };
 
     getData();
   }, []);
-
-  const handleScroll = (event: any) => {
-    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-    const isEnd =
-      layoutMeasurement.height + contentOffset.y >= contentSize.height;
-    setIsEndReached(isEnd);
-  };
-
-  const handleContentSizeChange = (contentWidth: any, contentHeight: any) => {
-    const isEnd =
-      (scrollViewRef.current as any).getScrollResponder().getScrollableNode()
-        .offsetHeight <= contentHeight;
-    setIsEndReached(isEnd);
-  };
-
-  const handleEndReached = async () => {
-    if (isEndReached) {
-      await onGetConfirmedOrders();
-      incrementPage();
-    }
-  };
 
   return (
     <>
@@ -128,12 +130,11 @@ export const ConfirmedOrdersScreen: React.FC<ConfirmedOrdersScreenProps> = ({
         navigation={navigation}
       >
         <HomeContainer
-          ref={scrollViewRef}
-          onScroll={handleScroll}
-          onContentSizeChange={handleContentSizeChange}
-          onScrollEndDrag={handleEndReached}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
-          {confirmedOrders.length === 0 && !loading && (
+          {confirmedOrders.length === 0 && !refreshing && (
             <NoOrderContainer>
               <NoOrderImg
                 source={{
@@ -155,7 +156,7 @@ export const ConfirmedOrdersScreen: React.FC<ConfirmedOrdersScreenProps> = ({
               </LabelComponent>
             </NoOrderContainer>
           )}
-          {!isObjEmpty(confirmedOrders) && confirmedOrders.length > 0 && !loading && (
+          {!isObjEmpty(confirmedOrders) && confirmedOrders.length > 0 && !refreshing && (
             <TopSpacer none={confirmedOrders.length !== 0}>
               <LabelComponent title={true}>Confirmed Order(s)</LabelComponent>
               {confirmedOrders.map((item) => (
@@ -180,20 +181,6 @@ export const ConfirmedOrdersScreen: React.FC<ConfirmedOrdersScreenProps> = ({
                 </OrderContainer>
               ))}
             </TopSpacer>
-          )}
-          {/* {showError && (
-            <OverlayComponent
-              onConfirm={closeModals}
-              onCancel={onClose}
-              btnText={"Return Home"}
-            >
-              <LabelComponent title2={true}>{errorMessage}</LabelComponent>
-            </OverlayComponent>
-          )} */}
-          {loading && (
-            <LoadingContainer>
-              {/* <LogoSvg width={100} height={120} /> */}
-            </LoadingContainer>
           )}
         </HomeContainer>
       </MainContainer>

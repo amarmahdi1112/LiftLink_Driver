@@ -73,6 +73,7 @@ export const OrdersProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       } as never;
       setOrders([orderObj, ...orders]);
     }
+    console.log("assignedOrderSubscription", assignedOrderSubscription);
   }, [assignedOrderSubscription]);
 
   return (

@@ -15,7 +15,7 @@ export interface DriverContextProps {
   profile: any; // Replace 'any' with the type of your profile
   setProfile: React.Dispatch<React.SetStateAction<any>>; // Replace 'any' with the type of your profile
   loading: boolean;
-  onGetUserData: () => Promise<void>;
+  onGetUserData: () => Promise<any>;
   screen: string;
   setScreen: React.Dispatch<React.SetStateAction<string>>;
   resetAllDriver: () => void;
@@ -37,19 +37,6 @@ export const DriverProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
     fetchPolicy: "network-only",
   });
   const { error, setError } = useContext(ErrorContext);
-
-  // const importUserData = async () => {
-  //   if (!loadingDriver && data) {
-  //     const profilePicture =
-  //       Object.keys(data.getUserInfo.profilePicture).length > 0
-  //         ? data.getUserInfo.profilePicture[0]
-  //         : {};
-  //     console.log(data);
-  //     data.getUserInfo.car ?? (data.getUserInfo.car = {});
-  //     const modifiedUserInfo = { ...data.getUserInfo, profilePicture };
-  //     setProfile(modifiedUserInfo);
-  //   }
-  // };
 
   const onGetUserData = async () => {
     setLoading(true);

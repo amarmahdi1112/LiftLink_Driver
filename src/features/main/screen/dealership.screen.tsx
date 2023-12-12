@@ -84,6 +84,7 @@ export const DealershipScreen: React.FC<DealershipScreenProps> = ({
   const {
     onSearchDealership,
     searchResults,
+    setSearchResults,
     onRequestMembership,
     selectedDealership,
     setSelectedDealership,
@@ -170,7 +171,10 @@ export const DealershipScreen: React.FC<DealershipScreenProps> = ({
             title="Back"
             background={theme.colors.ui.secondary}
             onPress={() => {
-              navigation.navigate("Home");
+              navigation.reset({
+                routes: [{ name: "Home" }],
+              });
+              setSearchResults!([]);
             }}
           >
             <BackSvg width={24} height={24} />

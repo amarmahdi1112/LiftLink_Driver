@@ -49,7 +49,14 @@ export const SignupScreen: FC<SignupScreenProps> = ({ navigation }) => {
     setEmail,
     emailError,
     setEmailError,
+    isAuthenticated,
   } = useContext(AuthContext);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigation.navigate("Main");
+    }
+  }, [isAuthenticated]);
 
   return (
     <>

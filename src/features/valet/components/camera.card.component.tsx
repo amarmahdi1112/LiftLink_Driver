@@ -11,6 +11,7 @@ const CustomCard = styled.View`
   align-items: center;
   width: 100%;
   height: 100%;
+  padding-left: 20px;
 `;
 
 const Picture = styled.Image`
@@ -127,7 +128,8 @@ export const CamCardComponent: FC<CamCardComponentProps> = ({ imageLink, clearCo
         height: "250px",
         width: "100%",
       }}
-      onPress={pickImage}
+      onPress={takeImage}
+      transparent={true}
     >
       <CustomCard>
         {image && !imageLink && side ? (

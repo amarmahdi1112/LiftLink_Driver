@@ -12,8 +12,6 @@ const CardItemsContainer = styled.Pressable`
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 20px;
-  padding-left: 40px;
   height: 100%;
 `;
 
