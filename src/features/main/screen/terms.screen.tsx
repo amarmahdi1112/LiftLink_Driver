@@ -17,70 +17,71 @@ const Container = styled.ScrollView`
 
 export const TermsScreen: React.FC<TermsProps> = ({ navigation }) => {
   return (
-    <MainContainer navigation={navigation} secondaryPage={true} showSecondaryAvatar={true}>
+    <MainContainer
+      navigation={navigation}
+      secondaryPage={true}
+      showSecondaryAvatar={true}
+    >
       <Spacer variant="top.large" />
       <Container>
         <LabelComponent title2={true}>
-          Welcome to Liftlink application! By using our services, you agree to
-          the following terms and conditions:
+          Welcome to LiftLink Driver! By offering valet services through our
+          application, you agree to the following terms and conditions:
         </LabelComponent>
         <Spacer variant="top.large" />
         <LabelComponent title2={true}>
-          1. Eligibility: You must be at least 18 years old and possess a valid
-          driver's license to use Liftlink application as a driver. Passengers
-          must be at least 16 years old.
+          1. Eligibility: To use LiftLink Driver, you must be at least 18 years
+          old and possess a valid driver's license.
         </LabelComponent>
         <Spacer variant="top.large" />
         <LabelComponent title2={true}>
-          2. User Conduct: You agree to use Liftlink application only for lawful
-          purposes and in compliance with all applicable laws and regulations.
-          You will not engage in any activity that interferes with or disrupts
-          the operation of the application or the services provided by it.
+          2. User Conduct: Agree to use LiftLink Driver solely for lawful and
+          professional valet purposes, complying with all applicable laws and
+          regulations. Do not engage in any activity that disrupts the operation
+          of the application or its valet services.
         </LabelComponent>
         <Spacer variant="top.large" />
         <LabelComponent title2={true}>
-          3. User Accounts: To use Liftlink application, you must create an
-          account by providing accurate and complete information about yourself.
-          You are responsible for maintaining the confidentiality of your
-          account information, including your password, and for all activities
-          that occur under your account.
+          3. User Accounts: Create an account with accurate information to
+          access LiftLink Driver. Safeguard your account details and take
+          responsibility for all activities conducted under your account.
         </LabelComponent>
         <Spacer variant="top.large" />
         <LabelComponent title2={true}>
-          4. Payment: Passengers will be charged based on the distance traveled
-          and other factors such as time of day, demand, etc.
+          4. Safety: Uphold safety standards by ensuring you possess a valid
+          driver's license, insurance, and a safe vehicle. Follow safety
+          protocols and guidelines during valet services.
         </LabelComponent>
         <Spacer variant="top.large" />
         <LabelComponent title2={true}>
-          5. Safety: We take safety seriously and expect all users to do the
-          same. Drivers must have a valid driver's license, insurance, and a
-          safe vehicle. Passengers should always wear seat belts and behave
-          appropriately during rides.
+          5. Vehicle Inspection: Before and after each valet service, conduct a
+          thorough inspection of the vehicle, including capturing images from
+          four angles (front, right, back, left). Report gas level, mileage, and
+          note any defects for transparency.
         </LabelComponent>
         <Spacer variant="top.large" />
         <LabelComponent title2={true}>
-          6. Liability: We are not responsible for any damages or injuries that
-          occur during rides arranged through Liftlink application.
+          6. Liability: LiftLink Driver is not liable for any damages or
+          injuries occurring during valet services arranged through the
+          application.
         </LabelComponent>
         <Spacer variant="top.large" />
         <LabelComponent title2={true}>
-          7. Termination: We reserve the right to terminate any user's account
-          at any time if they violate these terms of service or engage in any
+          7. Termination: LiftLink reserves the right to terminate any driver's
+          account if they violate these terms of service or engage in any
           illegal activity.
         </LabelComponent>
         <Spacer variant="top.large" />
         <LabelComponent title2={true}>
-          8. Changes to Terms of Service: We may modify these terms of service
-          at any time without notice by posting updated terms on our website or
-          within the Liftlink application itself.
+          8. Changes to Terms of Service: We may update these terms of service
+          at any time without notice by posting revised terms on our website or
+          within the LiftLink Driver application.
         </LabelComponent>
         <Spacer variant="top.large" />
         <LabelComponent title2={true}>
-          By using Liftlink application, you acknowledge that you have read
-          these terms of service and agree to abide by them while using our
-          services.
+          By providing valet services through LiftLink Driver, you acknowledge
+          that you have read and agree to abide by these terms of service.
         </LabelComponent>
-        <Spacer variant="top.large" />
       </Container>
     </MainContainer>
   );
